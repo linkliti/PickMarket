@@ -1,0 +1,52 @@
+{
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "hidefiles.configurationType": "local",
+  "hidefiles.globalConfig": {
+    "profiles": [
+      {
+        "name": "Hide Files",
+        "detail": "",
+        "description": "Hides configuration files",
+        "hidden": [
+          // frontend
+          "frontend/node_modules",
+          "frontend/.eslintrc.cjs",
+          "frontend/package*",
+          "frontend/*config.*",
+          "*/vite.config.ts",
+          // backend
+          "go.work",
+          "**/go.mod",
+          // parser
+          "parser/venv",
+          // global
+          ".gitignore",
+          ".vscode/"
+        ]
+      }
+    ]
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "frontend/node_modules": true,
+    "frontend/.eslintrc.cjs": true,
+    "frontend/package*": true,
+    "frontend/*config.*": true,
+    "*/vite.config.ts": true,
+    "go.work": true,
+    "**/go.mod": true,
+    "parser/venv": true,
+    ".gitignore": true,
+    ".vscode/": true
+  },
+  "hidefiles.selectedProfile": "Hide Files"
+}
