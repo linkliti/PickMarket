@@ -6,12 +6,15 @@
     "strings": "on"
   },
   "hidefiles.configurationType": "local",
+  "debug.javascript.terminalOptions": {
+    "skipFiles": ["<node_internals>/**"]
+  },
   "hidefiles.globalConfig": {
     "profiles": [
       {
         "name": "Hide Files",
         "detail": "",
-        "description": "Hides configuration files",
+        "description": "Hides configuration/cache files",
         "hidden": [
           // frontend
           "frontend/node_modules",
@@ -24,6 +27,8 @@
           "**/go.mod",
           // parser
           "parser/venv",
+          "parser/__pycache__",
+          "parser/requirements.txt",
           // global
           ".gitignore",
           ".vscode/"
@@ -45,6 +50,8 @@
     "go.work": true,
     "**/go.mod": true,
     "parser/venv": true,
+    "parser/__pycache__": true,
+    "parser/requirements.txt": true,
     ".gitignore": true,
     ".vscode/": true
   },

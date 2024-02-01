@@ -1,0 +1,61 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dev.dockerfile
+    volumes:
+      - ./frontend:/src/app
+    ports:
+      - "3000:3000"
+    environment:
+      - DEV=True
+    hostname: pickmarket.ru
+
+  backend-requestHandler:
+    build:
+      context: ./backend/requestHandler
+      dockerfile: dev.dockerfile
+    volumes:
+      - ./backend/requestHandler:/src/app
+    ports:
+      - "8081:8081"
+    environment:
+      - DEV=True
+    hostname: pm-api.ru
+
+  backend-productsWorker:
+    build:
+      context: ./backend/productsWorker
+      dockerfile: dev.dockerfile
+    volumes:
+      - ./backend/productsHandler:/src/app
+    ports:
+      - "8082:8082"
+    environment:
+      - DEV=True
+    hostname: pm-products.ru
+
+  backend-categoriesWorker:
+    build:
+      context: ./backend/categoriesWorker
+      dockerfile: dev.dockerfile
+    volumes:
+      - ./backend/categoriesHandler:/src/app
+    ports:
+      - "8083:8083"
+    environment:
+      - DEV=True
+    hostname: pm-categories.ru
+
+  flask-app:
+    build:
+      context: ./parser
+      dockerfile: dev.dockerfile
+    volumes:
+      - ./parser:/src/app
+    ports:
+      - "5000:5000"
+    environment:
+      - DEV=True
+    hostname: pm-parse.ru
