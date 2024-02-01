@@ -1,6 +1,9 @@
 from application import app
+from application.utils import getEnv
+from application.server import server
 import os
 
 if __name__ == '__main__':
-  app.run(debug=os.environ.get('DEV', False),
-          port=os.environ.get('PORT', 5000))
+  # app.run(debug=getEnv('DEV', False),
+  #         port=getEnv('PORT', 5000))
+  server()

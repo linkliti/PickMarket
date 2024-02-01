@@ -27,7 +27,7 @@
           "**/go.mod",
           // parser
           "parser/venv",
-          "parser/__pycache__",
+          "**/__pycache__",
           "parser/requirements.txt",
           // global
           ".gitignore",
@@ -41,19 +41,7 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true,
-    "frontend/node_modules": true,
-    "frontend/.eslintrc.cjs": true,
-    "frontend/package*": true,
-    "frontend/*config.*": true,
-    "*/vite.config.ts": true,
-    "go.work": true,
-    "**/go.mod": true,
-    "parser/venv": true,
-    "parser/__pycache__": true,
-    "parser/requirements.txt": true,
-    ".gitignore": true,
-    ".vscode/": true
+    "**/.DS_Store": true
   },
-  "hidefiles.selectedProfile": "Hide Files"
+  "hidefiles.selectedProfile": "Show All Files"
 }
