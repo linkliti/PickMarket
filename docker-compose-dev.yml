@@ -50,10 +50,10 @@ services:
 
   flask-app:
     build:
-      context: ./parser
+      context: ./pmparser
       dockerfile: dev.dockerfile
     volumes:
-      - ./parser:/src/app
+      - ./pmparser:/src/app
     ports:
       - "5000:5000"
     environment:

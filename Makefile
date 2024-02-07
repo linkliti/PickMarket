@@ -9,7 +9,7 @@ RMDIR := rm -rf
 ENVSET := export
 ENVGET := $
 endif
-PYENV := conda activate "./parser/venv" && cd parser
+PYENV := conda activate "./pmparser/venv" && cd pmparser
 JSENV := cd frontend
 # Hints for Makefile
 # $(RMDIR) "./folder"
@@ -25,7 +25,7 @@ js-dev:
 
 # Parser
 py-venv:
-	@conda create --prefix ./parser/venv python=3.12 -y
+	@conda create --prefix ./pmparser/venv python=3.12 -y
 	@$(PYENV) && pip install -r "requirements.txt"
 
 py-dev:
@@ -36,7 +36,10 @@ py-freeze:
 
 # Clean
 clean:
-	@conda env remove -p ./parser/venv -y
-	@$(RMDIR) "./parser/venv"
-	@$(RMDIR) "./parser/application/__pycache__"
+	@$(RMDIR) "./pmparser/app/__pycache__"
+	@$(RMDIR) "./*.log"
+	@$(RMDIR) "./.pytest_cache"
+
+remove: clean
 	@$(RMDIR) "./frontend/node_modules"
+	@conda env remove -p ./pmparser/venv -y

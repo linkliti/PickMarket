@@ -6,16 +6,15 @@
   "configurations": [
     {
       "name": "Py: Launch app.py",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/parser/app.py",
+      "program": "${workspaceFolder}/pmparser/app.py",
       "console": "integratedTerminal",
       "justMyCode": true
     },
-
     {
       "name": "Py: Remote Attach",
-      "type": "python",
+      "type": "debugpy",
       "request": "attach",
       "connect": { "host": "localhost", "port": 5678 },
       "pathMappings": [
