@@ -1,13 +1,22 @@
 """ Test BaseParser Module """
-# pylint: disable = unused-import, invalid-name, import-error
-from app.parsers.baseParser import Parser
+# pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument
+from app.utilities.log import setupLogger
+from app.parsers.ozonParser import OzonParser
+import pytest
 
+@pytest.fixture
+def logger() -> None:
+  """Logger"""
+  setupLogger(name='root', debug=True)
 
-def testGetData() -> None:
-  """Test getData"""
-  p = Parser()
-  html: str = p.getData(host="www.ozon.ru", url="/categories/")
-  print(html)
-  file = open(file="./.temp/test.html", mode='w', encoding="utf-8")
-  file.write(html)
-  assert html != ""
+def test_getRootCategories(logger) -> None:
+  """Test getRootCategories"""
+  p = OzonParser()
+  for i in p.getRootCategories():
+    print(i)
+
+def test_getSubCategories(logger) -> None:
+  """Test getRootCategories"""
+  p = OzonParser()
+  for i in p.getSubCategories('/category/zhenskaya-odezhda-7501'):
+    print(i)

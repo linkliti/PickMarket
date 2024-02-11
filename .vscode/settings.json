@@ -7,7 +7,9 @@
   },
   "hidefiles.configurationType": "local",
   "debug.javascript.terminalOptions": {
-    "skipFiles": ["<node_internals>/**"]
+    "skipFiles": [
+      "<node_internals>/**"
+    ]
   },
   "hidefiles.globalConfig": {
     "profiles": [
@@ -31,7 +33,8 @@
           "parser/requirements.txt",
           // global
           ".gitignore",
-          ".vscode/"
+          ".vscode/",
+          ".trunk"
         ]
       }
     ]
@@ -41,7 +44,29 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "frontend/node_modules": true,
+    "frontend/.eslintrc.cjs": true,
+    "frontend/package*": true,
+    "frontend/*config.*": true,
+    "*/vite.config.ts": true,
+    "go.work": true,
+    "**/go.mod": true,
+    "parser/venv": true,
+    "**/__pycache__": true,
+    "parser/requirements.txt": true,
+    ".gitignore": true,
+    ".vscode/": true,
+    ".trunk": true
   },
-  "hidefiles.selectedProfile": "Show All Files"
+  "hidefiles.selectedProfile": "Hide Files",
+  "python.testing.pytestArgs": [
+    "pmparser",
+    "-s"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportShadowedImports": "none"
+  }
 }

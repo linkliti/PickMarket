@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package category;
+
+message Category {
+  string title = 1;
+  string url = 2;
+  string parent = 3;
+}
