@@ -44,22 +44,9 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true,
-    "frontend/node_modules": true,
-    "frontend/.eslintrc.cjs": true,
-    "frontend/package*": true,
-    "frontend/*config.*": true,
-    "*/vite.config.ts": true,
-    "go.work": true,
-    "**/go.mod": true,
-    "parser/venv": true,
-    "**/__pycache__": true,
-    "parser/requirements.txt": true,
-    ".gitignore": true,
-    ".vscode/": true,
-    ".trunk": true
+    "**/.DS_Store": true
   },
-  "hidefiles.selectedProfile": "Hide Files",
+  "hidefiles.selectedProfile": "Show All Files",
   "python.testing.pytestArgs": [
     "pmparser",
     "-s"
