@@ -20,7 +20,7 @@ class OzonParserCategories(OzonParser):
 
     log.info('Converting to JSON: root')
     j: dict = json.loads(jString)
-    j = self.__getEmbededJson__(j=j["widgetStates"], keyName="categoryMenuRoot")
+    j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenuRoot")
 
     log.info('Filtering JSON: root')
     for category in j["categories"]:
@@ -36,7 +36,7 @@ class OzonParserCategories(OzonParser):
 
     log.info('Converting to JSON: %s', categoryUrl)
     j: dict = json.loads(jString)
-    j = self.__getEmbededJson__(j=j["widgetStates"], keyName="categoryMenu")
+    j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenu")
 
     log.info('Parsing JSON: %s', categoryUrl)
     while len(j["categories"]) == 1:

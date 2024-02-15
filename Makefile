@@ -36,9 +36,8 @@ py-freeze:
 
 # Clean
 clean:
-	@$(RMDIR) "./pmparser/app/__pycache__"
-	@$(RMDIR) "./*.log"
-	@$(RMDIR) "./.pytest_cache"
+#	@git clean -Xdf
+	@git clean -Xd
 
 remove: clean
 	@$(RMDIR) "./frontend/node_modules"

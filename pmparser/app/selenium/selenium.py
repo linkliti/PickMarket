@@ -6,7 +6,8 @@ from seleniumbase import undetected
 log = logging.getLogger(__name__)
 
 BADLIST: list[str] = [
-  'Just a moment', 'We need to make sure that you are not a robot.', 'Checking your browser'
+  'Just a moment', 'We need to make sure that you are not a robot.', 'Checking your browser',
+  'Один момент'
 ]
 
 

@@ -12,11 +12,11 @@ log = logging.getLogger(__name__)
 def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = None) -> str:
   """Fallback method for getting data"""
   canBeClosed = False
-  ua = header.get('User-Agent', None)
-  cookies = header.get('Cookie', None)
-  mobile = bool(ua)
   # Init driver
   if driver is None:
+    ua = header.get('User-Agent', None)
+    cookies = header.get('Cookie', None)
+    mobile = bool(ua)
     canBeClosed = True
     driver: undetected.Chrome = startSelenium(uc=True, headless=True, mobile=mobile)
     if cookies:
@@ -39,7 +39,7 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
   try:
     soup = BeautifulSoup(markup=data, features='html.parser')
     preTag: Tag = soup.find(name='pre')
-    data = json.loads(s=preTag.text)
-    return json.dumps(obj=data, ensure_ascii=False)
+    jsonData: dict = json.loads(s=preTag.text)
+    return json.dumps(obj=jsonData, ensure_ascii=False)
   except:
     return data
