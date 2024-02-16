@@ -2,6 +2,7 @@
 import logging
 import json
 from bs4 import BeautifulSoup, Tag
+from http.cookies import SimpleCookie
 from seleniumbase import undetected
 
 from app.selenium.selenium import checkForBlock, startSelenium
@@ -14,13 +15,20 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
   canBeClosed = False
   # Init driver
   if driver is None:
-    ua = header.get('User-Agent', None)
-    cookies = header.get('Cookie', None)
+    ua = header.get('user-agent', None)
+    cookies = header.get('cookie', None)
     mobile = bool(ua)
     canBeClosed = True
     driver: undetected.Chrome = startSelenium(uc=True, headless=True, mobile=mobile)
     if cookies:
-      driver.add_cookie(header)
+      driver.default_get("https://www.ozon.ru")
+      cookie = SimpleCookie()
+      cookie.load(rawdata=cookies)
+      for k, v in cookie.items():
+        cookieDict: dict = {}
+        cookieDict["name"] = k
+        cookieDict["value"] = v.value
+        driver.add_cookie(cookie_dict=cookieDict)
 
   # Get Page
   driver.default_get(url)

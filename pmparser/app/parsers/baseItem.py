@@ -1,8 +1,9 @@
 """ Base item class for marketplace items """
 import logging
-from typing import Any
+from typing import Any, Optional
+
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from bs4 import ResultSet, Tag
 from dataclasses_json import dataclass_json
 
@@ -46,6 +47,7 @@ class BaseItemDataClass:
   url: str
   imageUrl: str
   price: int
-  stars: float
-  comments: int
-  oldPrice: int = None
+  isAdult: bool
+  stars: Optional[float] = field(default=None)
+  comments: Optional[int] = field(default=None)
+  oldPrice: Optional[int] = field(default=None)

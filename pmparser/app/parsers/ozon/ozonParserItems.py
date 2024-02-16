@@ -1,7 +1,11 @@
 """ Ozon Parser Module for categories """
+import re
 from typing import Generator
 import logging
 
+import json
+
+import html
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.parsers.baseItem import BaseItemDataClass
@@ -12,36 +16,93 @@ log = logging.getLogger(__name__)
 class OzonParserItems(OzonParser):
   """ Ozon Parser Module for items """
 
-  # def getItems(self, pageUrl: str, query: str = None) -> Generator[BaseItemDataClass, None, None]:
-  #   """ Get items from Ozon """
-  #   log.debug('Getting items: %s', pageUrl)
-  #   reqParams: dict[str, str] = {"text": query}
-  #   jString: str = self.getData(host=self.host, url=self.api + pageUrl, params=reqParams)
+  def getItems(self,
+               pageUrl: str,
+               query: str = None,
+               numOfPages: int = None) -> Generator[BaseItemDataClass, None, None]:
+    """ Get items from Ozon """
+    log.debug('Getting items: %s', pageUrl)
+    reqParams: dict[str, str] = {}
+    if query:
+      reqParams = {"text": query}
+    jString: str = self.getData(host=self.host, url=self.api + pageUrl, params=reqParams)
 
-  #   log.debug('Parsing items JSON: %s', pageUrl)
-  #   log.debug(jString)
-    
+    log.info('Converting data to JSON: %s', pageUrl)
+    j: dict = json.loads(jString)
 
-  # def getItems(self, url: str, query: str = None) -> Generator[BaseItemDataClass, None, None]:
-  #   """ Get items from Ozon """
-  #   log.debug('Getting items: %s', url)
-  #   params: dict[str, str] = {"text": query}
-  #   html = self.getData(host=self.host, url=url, params=params)
+    log.info('Getting page info for items: %s', pageUrl)
+    jPage = self.getEmbededJson(j=j, keyName="shared")
+    totalItems: int = jPage["catalog"]["totalFound"]
+    totalPages = jPage["catalog"]["totalPages"]
+    if numOfPages:
+      totalPages: int = min(totalPages, numOfPages)
 
-  #   log.debug('Parsing items: %s', url)
-  #   items: ResultSet[Tag] = self.htmlStringToTags(html=html,
-  #                                                 selector="#paginatorContent > div > div > div")
-  #   log.debug("Got %s items", len(items))
-  #   log.debug(html)
-  #   for item in items:
-  #     t = BaseItemHelper(tag=item)
-  #     item = BaseItemDataClass(
-  #       name=t.getText(sel="a > div > span"),
-  #       url=t.getKey(sel="a:nth-child(1)", key="href"),
-  #       imageUrl=t.getKey(sel="img", key="src"),
-  #       price=t.getInt(sel="div:nth-child(1) > div:nth-child(1) > span:nth-child(1)"),
-  #       oldPrice=t.getInt(sel="div:nth-child(1) > div:nth-child(1) > span:nth-child(2)"),
-  #       stars=t.getFloat(sel="div:nth-child(4) span:nth-child(1) > span"),
-  #       comments=t.getInt(sel="span:nth-child(2) > span"))
-  #     log.debug("Got item: %s", item)
-  #     yield item.to_json() #pylint: disable=no-member
+    log.info('Item and page counts for %s: items %d, pages %d', pageUrl, totalItems, totalPages)
+    for i in self.getItemsFromPage(pageUrl=pageUrl, page=1, reqParams=reqParams, jString=jString):
+      yield i
+    for page in range(1, totalPages + 1):
+      for i in self.getItemsFromPage(pageUrl=pageUrl, page=page, reqParams=reqParams):
+        yield i
+
+  def getItemsFromPage(self,
+                       pageUrl: str,
+                       page: int,
+                       reqParams: dict[str, str],
+                       jString: str = None) -> Generator[BaseItemDataClass, None, None]:
+    """ Get items from page """
+    log.info('Getting items from page %d: %s', page, pageUrl)
+    if jString is None:
+      jString: str = self.getData(host=self.host,
+                                  url=self.api + pageUrl + "&page=" + str(page),
+                                  params=reqParams)
+
+    log.info('Converting data to JSON: %s', pageUrl)
+    j: dict = json.loads(jString)
+    jItems: dict = self.getEmbededJson(j=j["widgetStates"], keyName="searchResultsV2")
+    log.info('Parsing items: %s', pageUrl)
+    for item in jItems["items"]:
+      try:
+        data: BaseItemDataClass = self.getItem(itemJson=item)
+      except KeyError as e:
+        log.error("Failed to get item with error: %s %s: %s", type(e), e, item)
+        continue
+      log.debug("Item: %s", data)
+      yield data
+
+  def getItem(self, itemJson: dict) -> BaseItemDataClass:
+    """ Create an instance of BaseItemDataClass from JSON data """
+    stars = None
+    comments = None
+    oldPrice = None
+    # MainState Varibles
+    for item in itemJson["mainState"]:
+      atom: dict = item["atom"]
+      if "textAtom" in atom:
+        name: str = atom["textAtom"]["text"]
+        name = html.unescape(name)
+      elif "priceV2" in atom:
+        price = int(re.sub(r"\D", "", atom["priceV2"]["price"][0]["text"]))
+        if len(atom["priceV2"]["price"]) == 2:
+          oldPrice = int(re.sub(r"\D", "", atom["priceV2"]["price"][1]["text"]))
+      elif "labelList" in atom:
+        for item in atom["labelList"]["items"]:
+          if "icon" in item:
+            if item["icon"]["image"] == "ic_s_star_filled_compact":
+              stars = float(re.sub("<.*?>", "", item["title"]))
+            elif item["icon"]["image"] == "ic_s_dialog_filled_compact":
+              comments = int(re.sub(r"\D", "", item["title"]))
+    # Other Variables
+    url: str = itemJson["action"]["link"].split("?")[0]
+    try:
+      imageUrl: str = itemJson["tileImage"]["items"][0]["image"]["link"]
+    except KeyError:
+      imageUrl: str = itemJson["tileImage"]["items"][0]["video"]["preview"]
+    isAdult: bool = itemJson["isAdult"]
+    return BaseItemDataClass(name=name,
+                             url=url,
+                             imageUrl=imageUrl,
+                             price=price,
+                             isAdult=isAdult,
+                             stars=stars,
+                             comments=comments,
+                             oldPrice=oldPrice)
