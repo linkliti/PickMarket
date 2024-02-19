@@ -1,8 +1,8 @@
 """ Selenium Module for fallbacks """
 import logging
 import json
-from bs4 import BeautifulSoup, Tag
 from http.cookies import SimpleCookie
+from bs4 import BeautifulSoup, Tag
 from seleniumbase import undetected
 
 from app.selenium.selenium import checkForBlock, startSelenium
@@ -19,7 +19,7 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
     cookies = header.get('cookie', None)
     mobile = bool(ua)
     canBeClosed = True
-    driver: undetected.Chrome = startSelenium(uc=True, headless=True, mobile=mobile)
+    driver: undetected.Chrome = startSelenium(uc=True, mobile=mobile)
     if cookies:
       driver.default_get("https://www.ozon.ru")
       cookie = SimpleCookie()

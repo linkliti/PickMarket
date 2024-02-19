@@ -1,17 +1,11 @@
-""" Base item class for marketplace items """
-import logging
-from typing import Any, Optional
-
+""" Base HTML parser """
 import re
-from dataclasses import dataclass, field
+from typing import Any
 from bs4 import ResultSet, Tag
-from dataclasses_json import dataclass_json
-
-log: logging.Logger = logging.getLogger(__name__)
 
 
 class BaseItemHelper:
-  """ Helper item class for marketplace items from search """
+  """ Base HTML parser """
 
   def __init__(self, tag: Tag) -> None:
     self.tag: Tag = tag
@@ -38,16 +32,3 @@ class BaseItemHelper:
       numbers: list[Any] = re.findall(pattern=r"[-+]?\d*\.\d+|\d+", string=r[0].text)
       return float(''.join(numbers))
     return None
-
-@dataclass_json
-@dataclass
-class BaseItemDataClass:
-  """ Item class for storing item data"""
-  name: str
-  url: str
-  imageUrl: str
-  price: int
-  isAdult: bool
-  stars: Optional[float] = field(default=None)
-  comments: Optional[int] = field(default=None)
-  oldPrice: Optional[int] = field(default=None)

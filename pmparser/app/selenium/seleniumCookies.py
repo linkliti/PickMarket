@@ -22,7 +22,7 @@ def getCookies(driver: undetected.Chrome = None) -> str:
   log.debug("Cookies: Running Chrome")
   # Init driver
   if driver is None:
-    driver: undetected.Chrome = startSelenium(uc=True, headless=True, mobile=True)
+    driver: undetected.Chrome = startSelenium(uc=True, mobile=True)
   driver.default_get(ADULT_PAGE)
   if checkForBlock(data=driver.page_source):
     driver.get(ADULT_PAGE)

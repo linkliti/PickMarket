@@ -9,11 +9,19 @@ BADLIST: list[str] = [
   'Just a moment', 'We need to make sure that you are not a robot.', 'Checking your browser',
   'Один момент'
 ]
+DEBUG = True
 
 
-def startSelenium(*args, **kwargs) -> undetected.Chrome:
+def startSelenium(*args,
+                  uc: bool = False,
+                  mobile: bool = False,
+                  **kwargs) -> undetected.Chrome:
   """ Start Selenium """
-  driver: undetected.Chrome = Driver(*args, **kwargs)
+  driver: undetected.Chrome = Driver(uc=uc,
+                                     headless=not DEBUG,
+                                     mobile=mobile,
+                                     *args,
+                                     **kwargs)
   return driver
 
 

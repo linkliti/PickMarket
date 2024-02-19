@@ -17,11 +17,13 @@ class OzonParser(Parser):
 
   def getEmbededJson(self, j: dict, keyName: str) -> dict:
     """Get embeded JSON in key with keyName in name"""
-    jItem: dict = next((j[key] for key in j if keyName in key), None)
-    if not jItem:
+    matchingKeys: list = [key for key in j.keys() if keyName in key]
+    if not matchingKeys:
       log.error("Embed JSON: %s not found: %s", keyName, j)
       raise Exception(f"Embed JSON: {keyName} not found")
-    jString = self.jsonQuotesEscape(s=jItem)
-    log.debug("Embed JSON: %s",jString)
+    longestKey = max(matchingKeys, key=lambda k: len(j[k]))
+    jItem: dict = j[longestKey]
+    jString: str = self.jsonQuotesEscape(s=jItem)
+    log.debug("Embed JSON: %s", jString)
     j = json.loads(jString)
     return j

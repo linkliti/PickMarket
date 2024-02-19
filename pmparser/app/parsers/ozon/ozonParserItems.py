@@ -8,7 +8,7 @@ import json
 import html
 
 from app.parsers.ozon.ozonParser import OzonParser
-from app.parsers.baseItem import BaseItemDataClass
+from app.parsers.baseDataclass import BaseItemDataclass
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class OzonParserItems(OzonParser):
   def getItems(self,
                pageUrl: str,
                query: str = None,
-               numOfPages: int = None) -> Generator[BaseItemDataClass, None, None]:
+               numOfPages: int = None) -> Generator[BaseItemDataclass, None, None]:
     """ Get items from Ozon """
     log.debug('Getting items: %s', pageUrl)
     reqParams: dict[str, str] = {}
@@ -48,7 +48,7 @@ class OzonParserItems(OzonParser):
                        pageUrl: str,
                        page: int,
                        reqParams: dict[str, str],
-                       jString: str = None) -> Generator[BaseItemDataClass, None, None]:
+                       jString: str = None) -> Generator[BaseItemDataclass, None, None]:
     """ Get items from page """
     log.info('Getting items from page %d: %s', page, pageUrl)
     if jString is None:
@@ -62,18 +62,18 @@ class OzonParserItems(OzonParser):
     log.info('Parsing items: %s', pageUrl)
     for item in jItems["items"]:
       try:
-        data: BaseItemDataClass = self.getItem(itemJson=item)
+        data: BaseItemDataclass = self.getItem(itemJson=item)
       except KeyError as e:
         log.error("Failed to get item with error: %s %s: %s", type(e), e, item)
         continue
       log.debug("Item: %s", data)
       yield data
 
-  def getItem(self, itemJson: dict) -> BaseItemDataClass:
+  def getItem(self, itemJson: dict) -> BaseItemDataclass:
     """ Create an instance of BaseItemDataClass from JSON data """
-    stars = None
-    comments = None
-    oldPrice = None
+    stars: float | None = None
+    comments: int | None = None
+    oldPrice: int | None = None
     # MainState Varibles
     for item in itemJson["mainState"]:
       atom: dict = item["atom"]
@@ -98,7 +98,7 @@ class OzonParserItems(OzonParser):
     except KeyError:
       imageUrl: str = itemJson["tileImage"]["items"][0]["video"]["preview"]
     isAdult: bool = itemJson["isAdult"]
-    return BaseItemDataClass(name=name,
+    data = BaseItemDataclass(name=name,
                              url=url,
                              imageUrl=imageUrl,
                              price=price,
@@ -106,3 +106,4 @@ class OzonParserItems(OzonParser):
                              stars=stars,
                              comments=comments,
                              oldPrice=oldPrice)
+    return data

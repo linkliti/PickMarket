@@ -4,6 +4,7 @@ from typing import Generator
 import logging
 
 from app.parsers.ozon.ozonParser import OzonParser
+from app.parsers.baseDataclass import BaseCategoryDataclass
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +25,9 @@ class OzonParserCategories(OzonParser):
 
     log.info('Filtering JSON: root')
     for category in j["categories"]:
-      data: dict[str, str] = {"title": category["name"], "url": category["link"], "parent": ""}
+      title = category["name"]
+      url = category["link"]
+      data = BaseCategoryDataclass(title=title, url=url, parent="")
       yield data
 
   def getSubCategories(self, categoryUrl: str) -> Generator[dict[str, str], None, None]:
@@ -44,9 +47,8 @@ class OzonParserCategories(OzonParser):
 
     log.info('Filtering JSON: %s', categoryUrl)
     for category in j["categories"]:
-      data: dict[str, str] = {
-        "title": category["name"],
-        "url": category["link"],
-        "parent": categoryUrl
-      }
+      title: str = category["name"]
+      url: str = category["link"]
+      parent: str = categoryUrl
+      data = BaseCategoryDataclass(title=title, url=url, parent=parent)
       yield data
