@@ -15,8 +15,8 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
   canBeClosed = False
   # Init driver
   if driver is None:
-    ua = header.get('user-agent', None)
-    cookies = header.get('cookie', None)
+    ua = header.get('User-Agent', None)
+    cookies = header.get('Cookie', None)
     mobile = bool(ua)
     canBeClosed = True
     driver: undetected.Chrome = startSelenium(uc=True, mobile=mobile)
@@ -34,7 +34,7 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
   driver.default_get(url)
   if checkForBlock(data=driver.page_source):
     driver.get(url)
-
+    driver.sleep(5)
   # Check for block
   data: str = driver.page_source
   if canBeClosed:

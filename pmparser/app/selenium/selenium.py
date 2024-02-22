@@ -12,14 +12,13 @@ BADLIST: list[str] = [
 DEBUG = True
 
 
-def startSelenium(*args,
-                  uc: bool = False,
-                  mobile: bool = False,
-                  **kwargs) -> undetected.Chrome:
+def startSelenium(*args, uc: bool = False, mobile: bool = False, **kwargs) -> undetected.Chrome:
   """ Start Selenium """
   driver: undetected.Chrome = Driver(uc=uc,
                                      headless=not DEBUG,
                                      mobile=mobile,
+                                     block_images=True,
+                                     uc_subprocess=True,
                                      *args,
                                      **kwargs)
   return driver

@@ -22,8 +22,7 @@ class OzonParser(Parser):
       log.error("Embed JSON: %s not found: %s", keyName, j)
       raise Exception(f"Embed JSON: {keyName} not found")
     longestKey = max(matchingKeys, key=lambda k: len(j[k]))
-    jItem: dict = j[longestKey]
-    jString: str = self.jsonQuotesEscape(s=jItem)
-    log.debug("Embed JSON: %s", jString)
-    j = json.loads(jString)
-    return j
+    jString: str = j[longestKey]
+    # log.debug("Embed JSON: %s", jString)
+    jItem: dict = json.loads(jString)
+    return jItem

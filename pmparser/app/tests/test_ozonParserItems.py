@@ -18,7 +18,7 @@ def test_getItems(logger: None) -> None:
 def test_getItemsFewPages(logger: None) -> None:
   """Test getItems with few pages"""
   p = OzonParserItems()
-  for i in p.getItems(pageUrl='/category/energeticheskie-napitki-9473', numOfPages=2):
+  for i in p.getItems(pageUrl='/category/ingalyatory-i-aksessuary-35039', numOfPages=2):
     print(i)
 
 

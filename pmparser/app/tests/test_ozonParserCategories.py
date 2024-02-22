@@ -24,7 +24,7 @@ def test_getSubCategories(logger: None) -> None:
 def test_getFilters(logger: None) -> None:
   """Test getFilters"""
   p = OzonParserFilters()
-  url = '/category/videokarty-15721'
-  for i in p.getFilters(pageUrl=url):
+  # url = '/category/videokarty-15721'
+  url = '/category/bluzy-i-rubashki-zhenskie-7511'
+  for i in p.getRootFilters(pageUrl=url):
     print(i)
-  assert True

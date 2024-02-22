@@ -2,10 +2,8 @@
 from http import client
 import logging
 import urllib.parse
-
 from bs4 import BeautifulSoup, ResultSet, Tag
 from seleniumbase import undetected
-
 from app.selenium.seleniumFallback import getDataFallback
 from app.selenium.selenium import checkForBlock
 
@@ -22,19 +20,19 @@ class Parser():
   def getData(self,
               host: str,
               url: str,
-              header: dict[str, str] = None,
-              params: dict[str, str] = None,
+              header: dict[str, str] | None = None,
+              params: dict[str, str] | None = None,
               useMobile=False,
-              driver: undetected.Chrome = None) -> str:
+              driver: undetected.Chrome | None = None) -> str:
     """ Get any data from url """
     if header is None:
       header = {}
     if params is None:
       params = {}
     if useMobile:
-      header["user-agent"] = self.mobileUA
+      header["User-Agent"] = self.mobileUA
     if self.cookie:
-      header["cookie"] = self.cookie
+      header["Cookie"] = self.cookie
     conn = client.HTTPSConnection(host=host)
     url = url + '/?' + urllib.parse.urlencode(query=params) if params else url
     conn.request(method="GET", url=url, body='', headers=header)

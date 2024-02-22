@@ -35,20 +35,6 @@ urllist: list[dict[str, str]] = [
   "key": "categoryMenu",
   "mobile": True
 },
-# {
-#   "tag": "Prediction",
-#   "url": "/search/?text=TPCell",
-#   "type": "html",
-#   "key": "location.replace(...)",
-#   "mobile": False
-# },
-# {
-#   "tag": "FiltersCategory",
-#   "url": PAGEAPI + "/modal/allFilters/category/energeticheskie-napitki-9473",
-#   "type": "json",
-#   "key": "filtersDesktop",
-#   "mobile": False
-# },
 {
   "tag": "ItemParams",
   "url": PAGEAPI + "/product/monster-energy-nitro-super-dry-irlandiya-12-sht-h-500-ml-1181224292/features",
@@ -62,12 +48,10 @@ urllist: list[dict[str, str]] = [
   "type": "json",
   "key": "searchResultsV2",
   "mobile": True
-}]
-
-urllist = [
-  {
+},
+{
   "tag": "FiltersCategory",
-  "url": PAGEAPI + "/modal/filters/category/videokarty-15721",
+  "url": PAGEAPI + "/modal/filters/category/videokarty-15721/?all_filters=t",
   "type": "json",
   "key": "filters",
   "mobile": True
@@ -75,6 +59,14 @@ urllist = [
 {
   "tag": "FilterValues",
   "url": PAGEAPI + "/modal/filterValues?filter=gpuseries&search_uri=/category/videokarty-15721/",
+  "type": "json",
+  "key": "filterValues",
+  "mobile": True
+}]
+
+urllist = [{
+  "tag": "FilterBrands",
+  "url": PAGEAPI + "/modal/filterValues?filter=brand&search_uri=/category/videokarty-15721/",
   "type": "json",
   "key": "filterValues",
   "mobile": True
@@ -93,7 +85,7 @@ def test_getAllJsons(logger: None):
     print(item)
     encodedUrl: str = quote(item["url"], safe=':/?+=')
     # if item["mobile"]:
-    data: str = p.getData(host="www.ozon.ru", url=encodedUrl, driver=mobile)
+    data: str = p.getData(host="www.ozon.ru", url=encodedUrl, useMobile=True, driver=mobile)
     # else:
     #   data: str = p.getData(host="www.ozon.ru", url=encodedUrl, driver=driver)
     with open(file=f"./.temp/jsons/{item["tag"]}.{item["type"]}", mode="w", encoding="utf-8") as f:

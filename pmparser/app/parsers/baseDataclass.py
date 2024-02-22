@@ -38,24 +38,40 @@ class BaseItemCharsDataclass:
   name: str
   value: str | int | float | List[str]
 
+
 @dataclass
 class RangeFilter:
-  """ Range filter """
-  isRadio: bool
+  """Range filter"""
   min: int
   max: int
 
+
 @dataclass
-class CheckboxesFilterItem:
-  """ Checkboxes filter items """
-  key: str
-  title: str
+class SelectionFilterItem:
+  """Selection filter item"""
+  text: str
+  value: str
+
+
+@dataclass
+class SelectionFilter:
+  """Selection filter"""
+  isRadio: bool
+  items: List[SelectionFilterItem]
+
+
+@dataclass
+class BoolFilter:
+  """Boolean filter"""
+  value: str = 't'
+
 
 @dataclass_json
 @dataclass
 class BaseFiltersDataclass:
   """Dataclass for storing filters"""
-  key: str
   title: str
-  type: str
-  data: RangeFilter | List[CheckboxesFilterItem]
+  key: str
+  externalType: str
+  internalType: str
+  data: RangeFilter | SelectionFilter | BoolFilter
