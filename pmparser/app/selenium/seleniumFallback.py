@@ -2,7 +2,7 @@
 import logging
 import json
 from http.cookies import SimpleCookie
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, NavigableString, Tag
 from seleniumbase import undetected
 
 from app.selenium.selenium import checkForBlock, startSelenium
@@ -10,16 +10,16 @@ from app.selenium.selenium import checkForBlock, startSelenium
 log = logging.getLogger(__name__)
 
 
-def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = None) -> str:
+def getDataFallback(url: str, header: dict, driver: undetected.Chrome | None = None) -> str:
   """Fallback method for getting data"""
   canBeClosed = False
   # Init driver
   if driver is None:
-    ua = header.get('User-Agent', None)
-    cookies = header.get('Cookie', None)
+    ua = header.get('User-Agent', default=None) # type: ignore
+    cookies = header.get('Cookie', default=None) # type: ignore
     mobile = bool(ua)
     canBeClosed = True
-    driver: undetected.Chrome = startSelenium(uc=True, mobile=mobile)
+    driver = startSelenium(uc=True, mobile=mobile)
     if cookies:
       driver.default_get("https://www.ozon.ru")
       cookie = SimpleCookie()
@@ -46,7 +46,9 @@ def getDataFallback(url: str, header: dict[dict], driver: undetected.Chrome = No
   # Try to convert to JSON
   try:
     soup = BeautifulSoup(markup=data, features='html.parser')
-    preTag: Tag = soup.find(name='pre')
+    preTag: Tag | NavigableString | None = soup.find(name='pre')
+    if not preTag:
+      raise Exception("Failed to parse webpage")
     jsonData: dict = json.loads(s=preTag.text)
     return json.dumps(obj=jsonData, ensure_ascii=False)
   except:

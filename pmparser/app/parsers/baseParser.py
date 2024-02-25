@@ -1,11 +1,12 @@
 """ Base parser class for marketplaces """
-from http import client
 import logging
 import urllib.parse
+from http import client
+
+from app.selenium.selenium import checkForBlock
+from app.selenium.seleniumFallback import getDataFallback
 from bs4 import BeautifulSoup, ResultSet, Tag
 from seleniumbase import undetected
-from app.selenium.seleniumFallback import getDataFallback
-from app.selenium.selenium import checkForBlock
 
 log = logging.getLogger(__name__)
 

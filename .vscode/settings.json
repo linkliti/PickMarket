@@ -28,13 +28,16 @@
           "go.work",
           "**/go.mod",
           // parser
-          "parser/venv",
+          "pmparser/venv",
           "**/__pycache__",
           "parser/requirements.txt",
+          ".style.yapf",
+          ".pylintrc",
           // global
           ".gitignore",
           ".vscode/",
-          ".trunk"
+          ".pytest_cache",
+          "**/*.egg-info"
         ]
       }
     ]
@@ -44,17 +47,46 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "frontend/node_modules": true,
+    "frontend/.eslintrc.cjs": true,
+    "frontend/package*": true,
+    "frontend/*config.*": true,
+    "*/vite.config.ts": true,
+    "go.work": true,
+    "**/go.mod": true,
+    "pmparser/venv": true,
+    "**/__pycache__": true,
+    "parser/requirements.txt": true,
+    ".style.yapf": true,
+    ".pylintrc": true,
+    ".gitignore": true,
+    ".vscode/": true,
+    ".pytest_cache": true,
+    "**/*.egg-info": true
   },
-  "hidefiles.selectedProfile": "Show All Files",
-  "python.testing.pytestArgs": [
-    "pmparser",
-    "-s"
-  ],
+  "hidefiles.selectedProfile": "Hide Files",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.analysis.diagnosticSeverityOverrides": {
     "reportShadowedImports": "none"
   },
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+  "protoc": {
+    "options": [
+      "--proto_path=${workspaceRoot}/proto"
+    ],
+  },
+  "pylint.ignorePatterns": [
+    "**/site-packages/**/*.py",
+    ".vscode/*.py",
+    "**/proto/**"
+  ],
+  "python.analysis.extraPaths": [
+    "./pmparser/pmparser"
+  ],
+  "python.testing.pytestArgs": [
+    "pmparser/tests",
+    "-s"
+  ]
 }

@@ -1,14 +1,12 @@
 """ Ozon Parser Module for categories """
+import html
+import json
+import logging
 import re
 from typing import Generator
-import logging
 
-import json
-
-import html
-
-from app.parsers.ozon.ozonParser import OzonParser
 from app.parsers.baseDataclass import BaseItemDataclass
+from app.parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
 
@@ -18,8 +16,8 @@ class OzonParserItems(OzonParser):
 
   def getItems(self,
                pageUrl: str,
-               query: str = None,
-               numOfPages: int = None) -> Generator[BaseItemDataclass, None, None]:
+               query: str | None = None,
+               numOfPages: int | None = None) -> Generator[BaseItemDataclass, None, None]:
     """ Get items from Ozon """
     log.debug('Getting items: %s', pageUrl)
     reqParams: dict[str, str] = {}
@@ -48,13 +46,13 @@ class OzonParserItems(OzonParser):
                        pageUrl: str,
                        page: int,
                        reqParams: dict[str, str],
-                       jString: str = None) -> Generator[BaseItemDataclass, None, None]:
+                       jString: str | None = None) -> Generator[BaseItemDataclass, None, None]:
     """ Get items from page """
     log.info('Getting items from page %d: %s', page, pageUrl)
     if jString is None:
-      jString: str = self.getData(host=self.host,
-                                  url=self.api + pageUrl + "&page=" + str(page),
-                                  params=reqParams)
+      jString = self.getData(host=self.host,
+                             url=self.api + pageUrl + "&page=" + str(page),
+                             params=reqParams)
 
     log.info('Converting data to JSON: %s', pageUrl)
     j: dict = json.loads(jString)
@@ -74,11 +72,13 @@ class OzonParserItems(OzonParser):
     stars: float | None = None
     comments: int | None = None
     oldPrice: int | None = None
+    name: str = ""
+    price: int = 0
     # MainState Varibles
     for item in itemJson["mainState"]:
       atom: dict = item["atom"]
       if "textAtom" in atom:
-        name: str = atom["textAtom"]["text"]
+        name = atom["textAtom"]["text"]
         name = html.unescape(name)
       elif "priceV2" in atom:
         price = int(re.sub(r"\D", "", atom["priceV2"]["price"][0]["text"]))

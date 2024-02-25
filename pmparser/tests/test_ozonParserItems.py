@@ -1,8 +1,9 @@
 """ Test BaseParser Module """
 # pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument line-too-long
-from app.tests.test_base import logger
-from app.parsers.ozon.ozonParserItems import OzonParserItems
 from app.parsers.ozon.ozonParserChars import OzonParserChars
+from app.parsers.ozon.ozonParserItems import OzonParserItems
+
+from .test_base import logger
 
 
 def test_getItems(logger: None) -> None:

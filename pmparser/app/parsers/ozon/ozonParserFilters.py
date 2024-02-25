@@ -1,14 +1,13 @@
 """ Ozon Parser Module for categories """
-from itertools import islice
-import re
-from typing import Generator, List
-import logging
-
 import json
+import logging
+import re
+from itertools import islice
+from typing import Generator, List
 
-from app.parsers.ozon.ozonParser import OzonParser
 from app.parsers.baseDataclass import (BaseFiltersDataclass, BoolFilter, RangeFilter,
                                        SelectionFilter, SelectionFilterItem)
+from app.parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class OzonParserFilters(OzonParser):
   """ Ozon Parser Module for items """
 
   def __init__(self) -> None:
-    self.pageUrl: str = None
+    self.pageUrl: str = ""
     self.fKnownTypes: list[str] = [
       "cellWithSubtitleToggleCounter", "tagFilter", "rangeFilter", "multipleRangesFilter",
       "brandFilter", "colorFilter"
@@ -48,6 +47,9 @@ class OzonParserFilters(OzonParser):
   def getFilter(self, fJSON: dict) -> BaseFiltersDataclass | Generator | None:
     """ Get filter """
     fType: str = fJSON["type"]
+    fKey: str = ""
+    internalType: str = ""
+    fData: SelectionFilter | BoolFilter | RangeFilter | None = None
     # Unknown filter
     if fType not in self.fKnownTypes:
       log.warning('Unknown filter type: %s', fType)
@@ -64,12 +66,13 @@ class OzonParserFilters(OzonParser):
     link: str = ""
 
     if fType == "colorFilter":
+      fKey: str = ""
       isRadio = False
       items: List[SelectionFilterItem] = []
       log.debug(json.dumps(fJSON))
       # Key
       link = fJSON[fType]["colors"][0]["action"]["link"]
-      fKey: str = link.split("&")[1].split("=")[0]
+      fKey = link.split("&")[1].split("=")[0]
       # "All colors" button present
       # if "rightButton" in fJSON[fType]:
       for tag in self.getColorFilterValues(fKey=fKey):
@@ -88,7 +91,7 @@ class OzonParserFilters(OzonParser):
     elif fType == "cellWithSubtitleToggleCounter":
       # Key
       link = fJSON[fType]["action"]["link"]
-      fKey: str = link.split("&")[1].split("=")[0]
+      fKey = link.split("&")[1].split("=")[0]
       # Boolean value ('t')
       value: str = link.split("&")[-1].split("=")[-1]
       # Return
@@ -102,7 +105,7 @@ class OzonParserFilters(OzonParser):
       items: List[SelectionFilterItem] = []
       # Key
       link = fJSON[fType]["roundedCells"][0]["action"]["link"]
-      fKey: str = link.split("&")[1].split("=")[0]
+      fKey = link.split("&")[1].split("=")[0]
       # Popular brands
       for tag in fJSON[fType]["roundedCells"]:
         text: str = tag["title"]
@@ -124,11 +127,11 @@ class OzonParserFilters(OzonParser):
       items: List[SelectionFilterItem] = []
       # Key
       link = fJSON[fType]["tags"][0]["tag"]["action"]["link"]
-      fKey: str = link.split("&")[1].split("=")[0]
+      fKey = link.split("&")[1].split("=")[0]
       # "All tags" button present
       if "rightButton" in fJSON[fType] and not fTitle in self.tooLargeFilterTitles:
         for tag in self.getTagFilterValues(fKey=fKey):
-          items.append(SelectionFilterItem(text=tag.text, value=tag.value))
+          items.append(tag)
       # No "All tags" button present OR filter is too large
       else:
         for tag in fJSON[fType]["tags"]:
@@ -143,7 +146,7 @@ class OzonParserFilters(OzonParser):
     elif fType == "rangeFilter":
       # Key
       link = fJSON[fType]["action"]["link"]
-      fKey: str = link.split("&")[1].split("=")[0]
+      fKey = link.split("&")[1].split("=")[0]
       # Min-max values
       minValue: int = fJSON[fType]["minValue"]
       maxValue: int = fJSON[fType]["maxValue"]
@@ -152,6 +155,8 @@ class OzonParserFilters(OzonParser):
       fData = RangeFilter(min=minValue, max=maxValue)
 
     # BaseFilter Object
+    if not fData:
+      raise Exception("fData is None")
     baseFilter = BaseFiltersDataclass(title=fTitle,
                                       key=fKey,
                                       externalType=fType,
@@ -160,7 +165,7 @@ class OzonParserFilters(OzonParser):
     log.debug('Filter: %s', baseFilter)
     return baseFilter
 
-  def getTagFilterValues(self, fKey: str) -> Generator[BaseFiltersDataclass, None, None]:
+  def getTagFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
     """Get values for tag filter"""
     log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
     url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\
@@ -177,7 +182,7 @@ class OzonParserFilters(OzonParser):
         value: str = data["action"]["params"]["value"]
         yield SelectionFilterItem(text=text, value=value)
 
-  def getBrandFilterValues(self, fKey: str) -> Generator[BaseFiltersDataclass, None, None]:
+  def getBrandFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
     """Get values for brand filter"""
     log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
     url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\
@@ -195,7 +200,7 @@ class OzonParserFilters(OzonParser):
         value: str = data["action"]["params"]["value"]
         yield SelectionFilterItem(text=text, value=value)
 
-  def getColorFilterValues(self, fKey: str) -> Generator[BaseFiltersDataclass, None, None]:
+  def getColorFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
     """Get values for color filter"""
     log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
     url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\

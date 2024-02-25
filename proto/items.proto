@@ -1,0 +1,60 @@
+syntax = "proto3";
+package app.proto;
+
+import "types.proto";
+import "google/rpc/status.proto";
+
+
+service ItemParser {
+  rpc GetItems(ItemsRequest) returns (stream ItemResponse);
+  rpc GetItemCharacteristics(CharacteristicsRequest) returns (stream CharacteristicResponse);
+}
+
+message ItemsRequest {
+  Markets market = 1;
+  string pageUrl = 2;
+  optional string userQuery = 3;
+  optional string params = 4;
+  optional int32 numOfPages = 5;
+}
+
+message ItemResponse {
+  oneof message {
+    Item item = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message CharacteristicsRequest {
+  Markets market = 1;
+  string itemUrl = 2;
+}
+
+message CharacteristicResponse {
+  oneof message {
+    Characteristic characteristic = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message Item {
+  string name = 1;
+  string url = 2;
+  string imageUrl = 3;
+  bool isAdult = 4;
+  int32 price = 5;
+  optional int32 oldPrice = 6;
+  optional float rating = 7;
+  optional int32 comments = 8;
+}
+
+message Characteristic {
+  string key = 1;
+  string name = 2;
+  oneof value {
+    string strValue = 3;
+    int32 intValue = 4;
+    float floatValue = 5;
+    StringList listValue = 6;
+  }
+}

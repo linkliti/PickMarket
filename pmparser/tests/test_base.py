@@ -3,6 +3,7 @@
 import pytest
 from app.utilities.log import setupLogger
 
+
 @pytest.fixture
 def logger() -> None:
   """Logger"""

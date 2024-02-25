@@ -1,10 +1,10 @@
 """ Ozon Parser Module for item parameters """
 import json
-from typing import Generator, List
 import logging
+from typing import Generator, List
 
-from app.parsers.ozon.ozonParser import OzonParser
 from app.parsers.baseDataclass import BaseItemCharsDataclass
+from app.parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class OzonParserChars(OzonParser):
   """ Ozon Parser Module for item parameters """
 
-  def getItemChars(self, itemUrl: str) -> Generator[dict, None, None]:
+  def getItemChars(self, itemUrl: str) -> Generator[BaseItemCharsDataclass, None, None]:
     """Get item params from Ozon"""
     itemUrl = itemUrl + "/features"
     log.debug('Getting params: %s', itemUrl)
@@ -29,7 +29,7 @@ class OzonParserChars(OzonParser):
           for charObj in char[charData]:
             name: str = charObj["name"]
             key: str = charObj["key"]
-            value: str | int | float | List[str] = None
+            value: str | int | float | List[str] | None = None
             # List
             if len(charObj["values"]) > 1:
               value = [v["text"] for v in charObj["values"]]
@@ -37,7 +37,7 @@ class OzonParserChars(OzonParser):
               # String
               value = charObj["values"][0]["text"]
               # Try to Float/Int
-              value = tryConvertStrToNum(v=value)
+              value = tryConvertStrToNum(v=str(value))
             charObj = BaseItemCharsDataclass(key=key, name=name, value=value)
             log.debug("Char: %s", charObj)
             yield charObj
@@ -46,8 +46,8 @@ class OzonParserChars(OzonParser):
 def tryConvertStrToNum(v: str) -> int | float | str:
   """Try to convert str to number"""
   try:
-    v: float = float(v)
-    v: int | float = int(v) if v.is_integer() else v
+    vnum: int | float = float(v)
+    vnum = int(v) if vnum.is_integer() else vnum
+    return vnum
   except ValueError:
-    pass
-  return v
+    return v

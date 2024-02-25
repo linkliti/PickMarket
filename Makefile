@@ -36,8 +36,7 @@ py-freeze:
 
 # Clean
 clean:
-#	@git clean -Xdf
-	@git clean -Xd
+	@git clean -Xdf
 
 remove: clean
 	@$(RMDIR) "./frontend/node_modules"

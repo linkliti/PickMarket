@@ -1,10 +1,10 @@
 """ Ozon Parser Module for categories """
 import json
-from typing import Generator
 import logging
+from typing import Generator
 
-from app.parsers.ozon.ozonParser import OzonParser
 from app.parsers.baseDataclass import BaseCategoryDataclass
+from app.parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class OzonParserCategories(OzonParser):
   """ Ozon Parser Module for categories """
 
-  def getRootCategories(self) -> Generator[dict[str, str], None, None]:
+  def getRootCategories(self) -> Generator[BaseCategoryDataclass, None, None]:
     """ Return name, link and empty url of parent for root categories """
     log.info('Getting categories: root')
     jString: str = self.getData(host=self.host,
@@ -30,7 +30,7 @@ class OzonParserCategories(OzonParser):
       data = BaseCategoryDataclass(title=title, url=url, parent="")
       yield data
 
-  def getSubCategories(self, categoryUrl: str) -> Generator[dict[str, str], None, None]:
+  def getSubCategories(self, categoryUrl: str) -> Generator[BaseCategoryDataclass, None, None]:
     """ Return name, link and url of parent of subcategory """
     log.info('Getting categories: %s', categoryUrl)
     jString = self.getData(host=self.host,

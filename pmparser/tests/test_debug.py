@@ -1,19 +1,23 @@
 """ Debug """
 # pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument line-too-long
-import os
-
-from urllib.parse import quote
 import json
 import logging
-from seleniumbase import undetected
+import os
+from urllib.parse import quote
+
+from typing import overload
+
 from app.parsers.baseParser import Parser
-from app.tests.test_base import logger
-from app.selenium.selenium import startSelenium
 from app.parsers.ozon.ozonParser import OzonParser
+from app.selenium.selenium import startSelenium
+from seleniumbase import undetected
+
+from .test_base import logger
+
 log = logging.getLogger(__name__)
 
 PAGEAPI = "/api/entrypoint-api.bx/page/json/v2?url="
-urllist: list[dict[str, str]] = [
+urllist: list[dict[str, str | bool]] = [
 {
   "tag": "RootCategories",
   "url": PAGEAPI + "/modal/categoryMenuRoot",
@@ -83,7 +87,7 @@ def test_getAllJsons(logger: None):
   mobile: undetected.Chrome = startSelenium(uc=True, mobile=True)
   for item in urllist:
     print(item)
-    encodedUrl: str = quote(item["url"], safe=':/?+=')
+    encodedUrl: str = quote(string=str(item["url"]), safe=':/?+=')
     # if item["mobile"]:
     data: str = p.getData(host="www.ozon.ru", url=encodedUrl, useMobile=True, driver=mobile)
     # else:
@@ -102,6 +106,6 @@ def test_extractLocalJsons(logger: None):
       data: str = f.read()
       j: dict = json.loads(data)
       # Getting right JS key
-      js = p.getEmbededJson(j=j['widgetStates'], keyName=item['key'].rsplit(sep='.', maxsplit=1)[-1])
+      js = p.getEmbededJson(j=j['widgetStates'], keyName=str(item['key']).rsplit(sep='.', maxsplit=1)[-1])
       with open(file=f"./.temp/parsed/{item['tag']}.{item['type']}", mode="w", encoding="utf-8") as f:
         f.write(json.dumps(js, ensure_ascii=False))

@@ -1,7 +1,8 @@
 """ Ozon Parser Module """
 
-import logging
 import json
+import logging
+
 from app.parsers.baseParser import Parser
 
 log = logging.getLogger(__name__)

@@ -2,7 +2,6 @@
 import random
 import logging
 from typing import List
-from mypy.test.helpers import retry_on_error
 from seleniumbase import undetected
 
 from app.selenium.selenium import checkForBlock, startSelenium
@@ -17,12 +16,12 @@ def cookiesToHeader(cookies: List[dict]) -> str:
   return "; ".join(f"{cookie['name']}={cookie['value']}" for cookie in cookies)
 
 
-def getCookies(driver: undetected.Chrome = None) -> str:
+def getCookies(driver: undetected.Chrome | None = None) -> str:
   """ Complete age verification and return cookies """
   log.debug("Cookies: Running Chrome")
   # Init driver
   if driver is None:
-    driver: undetected.Chrome = startSelenium(uc=True, mobile=True)
+    driver = startSelenium(uc=True, mobile=True)
   driver.default_get(ADULT_PAGE)
   if checkForBlock(data=driver.page_source):
     driver.get(ADULT_PAGE)
