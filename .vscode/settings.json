@@ -83,10 +83,13 @@
     "**/proto/**"
   ],
   "python.analysis.extraPaths": [
-    "./pmparser/pmparser"
+    "./pmparser/app"
   ],
   "python.testing.pytestArgs": [
     "pmparser/tests",
-    "-s"
+    "-s",
+  ],
+  "python.analysis.ignore": [
+    "pmparser/app/protos"
   ]
 }

@@ -1,7 +1,7 @@
 syntax = "proto3";
-package app.proto;
+package app.protos;
 
-import "types.proto";
+import "app/protos/types.proto";
 import "google/rpc/status.proto";
 
 service CategoryParser {

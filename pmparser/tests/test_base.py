@@ -1,8 +1,11 @@
 """ Base Test File """
 # pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument line-too-long
+import logging
 import pytest
+
 from app.utilities.log import setupLogger
 
+log = logging.getLogger(__name__)
 
 @pytest.fixture
 def logger() -> None:

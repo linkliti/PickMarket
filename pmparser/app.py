@@ -1,7 +1,9 @@
 """ Server Module """
 import logging
+from app.parsers.ozon.ozonParserCategories import OzonParserCategories
+from app.protos.items_pb2_grpc import ItemParserServicer
 
-from parsers.ozon.ozonParser import OzonParser
+# from parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
 
@@ -11,11 +13,24 @@ log = logging.getLogger(__name__)
 #     req: items_pb2.ItemsRequest = request
 #     print(req.market)
 
+class PMItemParserServicer(ItemParserServicer):
+  def GetItems(self, request, context):
+    pass
+
 
 def serve() -> None:
   """ Server """
-  p = OzonParser()
-  print(p.api)
+  # p = OzonParser()
+  o = PMItemParserServicer()
+  try:
+    o.GetItemCharacteristics(None, None)
+  except AttributeError:
+    print("No such attribute")
+
+  # print(p.api)
+  p = OzonParserCategories()
+  for i in p.getRootCategories():
+    print(i)
 
 
 #   server: _Server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10))

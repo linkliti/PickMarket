@@ -1,5 +1,5 @@
 syntax = "proto3";
-package app.proto;
+package app.protos;
 
 enum Markets {
   OZON = 0;

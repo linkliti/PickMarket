@@ -5,11 +5,9 @@ import logging
 import os
 from urllib.parse import quote
 
-from typing import overload
-
 from app.parsers.baseParser import Parser
 from app.parsers.ozon.ozonParser import OzonParser
-from app.selenium.selenium import startSelenium
+from app.selen.selenium import startSelenium
 from seleniumbase import undetected
 
 from .test_base import logger

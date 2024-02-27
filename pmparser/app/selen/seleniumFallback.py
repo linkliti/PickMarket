@@ -5,7 +5,7 @@ from http.cookies import SimpleCookie
 from bs4 import BeautifulSoup, NavigableString, Tag
 from seleniumbase import undetected
 
-from app.selenium.selenium import checkForBlock, startSelenium
+from .selenium import checkForBlock, startSelenium
 
 log = logging.getLogger(__name__)
 
@@ -15,8 +15,8 @@ def getDataFallback(url: str, header: dict, driver: undetected.Chrome | None = N
   canBeClosed = False
   # Init driver
   if driver is None:
-    ua = header.get('User-Agent', default=None) # type: ignore
-    cookies = header.get('Cookie', default=None) # type: ignore
+    ua = header.get('User-Agent', None) # type: ignore
+    cookies = header.get('Cookie', None) # type: ignore
     mobile = bool(ua)
     canBeClosed = True
     driver = startSelenium(uc=True, mobile=mobile)

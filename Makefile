@@ -31,6 +31,9 @@ py-venv:
 py-dev:
 	@$(ENVSET)DEV="True"; $(PYENV) && python app.py
 
+py-run:
+	@$(PYENV) && python app.py
+
 py-freeze:
 	@$(PYENV) && pip freeze > "requirements.txt"
 
@@ -41,3 +44,7 @@ clean:
 remove: clean
 	@$(RMDIR) "./frontend/node_modules"
 	@conda env remove -p ./pmparser/venv -y
+
+#	@cd ./pmparser/app && python -m grpc_tools.protoc -I . -I ./protos/thirdParty --python_out=. --grpc_python_out=. --pyi_out=. ./protos/*.proto
+protos:
+	@python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto

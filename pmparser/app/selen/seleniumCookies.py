@@ -4,7 +4,7 @@ import logging
 from typing import List
 from seleniumbase import undetected
 
-from app.selenium.selenium import checkForBlock, startSelenium
+from .selenium import checkForBlock, startSelenium
 
 log = logging.getLogger(__name__)
 
