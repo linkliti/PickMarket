@@ -30,14 +30,15 @@
           // parser
           "pmparser/venv",
           "**/__pycache__",
+          "**/.pytest_cache",
+          "**/downloaded_files",
           "parser/requirements.txt",
           ".style.yapf",
           ".pylintrc",
+          "**/*.egg-info",
           // global
           ".gitignore",
           ".vscode/",
-          ".pytest_cache",
-          "**/*.egg-info"
         ]
       }
     ]
@@ -57,13 +58,14 @@
     "**/go.mod": true,
     "pmparser/venv": true,
     "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/downloaded_files": true,
     "parser/requirements.txt": true,
     ".style.yapf": true,
     ".pylintrc": true,
+    "**/*.egg-info": true,
     ".gitignore": true,
-    ".vscode/": true,
-    ".pytest_cache": true,
-    "**/*.egg-info": true
+    ".vscode/": true
   },
   "hidefiles.selectedProfile": "Hide Files",
   "python.testing.unittestEnabled": false,
@@ -80,7 +82,7 @@
   "pylint.ignorePatterns": [
     "**/site-packages/**/*.py",
     ".vscode/*.py",
-    "**/proto/**"
+    "**/protos/**"
   ],
   "python.analysis.extraPaths": [
     "./pmparser/app"

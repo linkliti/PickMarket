@@ -1,4 +1,4 @@
-""" Debug """
+""" Debug JSON files from OZON """
 # pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument line-too-long
 import json
 import logging

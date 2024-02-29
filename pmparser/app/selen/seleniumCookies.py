@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 ADULT_PAGE = 'https://www.ozon.ru/category/energeticheskie-napitki-9473/'
 
 
-def cookiesToHeader(cookies: List[dict]) -> str:
+def cookiesToHeader(cookies: list[dict]) -> str:
   """ Convert cookies to header """
   return "; ".join(f"{cookie['name']}={cookie['value']}" for cookie in cookies)
 
@@ -38,7 +38,7 @@ def getCookies(driver: undetected.Chrome | None = None) -> str:
   driver.sleep(2)
 
   # Exporting cookies
-  cookies: List[dict] = driver.get_cookies()
+  cookies: list[dict] = driver.get_cookies()
   # log.debug("Cookies: %s", cookies)
   cookiesHeader: str = cookiesToHeader(cookies=cookies)
   log.debug("Cookies: %s", cookiesHeader)

@@ -5,8 +5,8 @@ import logging
 import re
 from typing import Generator
 
-from app.parsers.baseDataclass import BaseItemDataclass
 from app.parsers.ozon.ozonParser import OzonParser
+from app.protos import items_pb2 as itemsPB
 
 log = logging.getLogger(__name__)
 
@@ -17,13 +17,16 @@ class OzonParserItems(OzonParser):
   def getItems(self,
                pageUrl: str,
                query: str | None = None,
-               numOfPages: int | None = None) -> Generator[BaseItemDataclass, None, None]:
+               numOfPages: int | None = None) -> Generator[itemsPB.Item, None, None]:
     """ Get items from Ozon """
     log.debug('Getting items: %s', pageUrl)
     reqParams: dict[str, str] = {}
     if query:
       reqParams = {"text": query}
-    jString: str = self.getData(host=self.host, url=self.api + pageUrl, params=reqParams)
+    jString: str = self.getData(host=self.host,
+                                url=self.api + pageUrl,
+                                params=reqParams,
+                                useMobile=True)
 
     log.info('Converting data to JSON: %s', pageUrl)
     j: dict = json.loads(jString)
@@ -38,7 +41,7 @@ class OzonParserItems(OzonParser):
     log.info('Item and page counts for %s: items %d, pages %d', pageUrl, totalItems, totalPages)
     for i in self.getItemsFromPage(pageUrl=pageUrl, page=1, reqParams=reqParams, jString=jString):
       yield i
-    for page in range(1, totalPages + 1):
+    for page in range(2, totalPages + 1):
       for i in self.getItemsFromPage(pageUrl=pageUrl, page=page, reqParams=reqParams):
         yield i
 
@@ -46,13 +49,14 @@ class OzonParserItems(OzonParser):
                        pageUrl: str,
                        page: int,
                        reqParams: dict[str, str],
-                       jString: str | None = None) -> Generator[BaseItemDataclass, None, None]:
+                       jString: str | None = None) -> Generator[itemsPB.Item, None, None]:
     """ Get items from page """
     log.info('Getting items from page %d: %s', page, pageUrl)
     if jString is None:
       jString = self.getData(host=self.host,
                              url=self.api + pageUrl + "&page=" + str(page),
-                             params=reqParams)
+                             params=reqParams,
+                             useMobile=True)
 
     log.info('Converting data to JSON: %s', pageUrl)
     j: dict = json.loads(jString)
@@ -60,14 +64,14 @@ class OzonParserItems(OzonParser):
     log.info('Parsing items: %s', pageUrl)
     for item in jItems["items"]:
       try:
-        data: BaseItemDataclass = self.getItem(itemJson=item)
+        data: itemsPB.Item = self.getItem(itemJson=item)
       except KeyError as e:
         log.error("Failed to get item with error: %s %s: %s", type(e), e, item)
         continue
       log.debug("Item: %s", data)
       yield data
 
-  def getItem(self, itemJson: dict) -> BaseItemDataclass:
+  def getItem(self, itemJson: dict) -> itemsPB.Item:
     """ Create an instance of BaseItemDataClass from JSON data """
     stars: float | None = None
     comments: int | None = None
@@ -98,12 +102,12 @@ class OzonParserItems(OzonParser):
     except KeyError:
       imageUrl: str = itemJson["tileImage"]["items"][0]["video"]["preview"]
     isAdult: bool = itemJson["isAdult"]
-    data = BaseItemDataclass(name=name,
-                             url=url,
-                             imageUrl=imageUrl,
-                             price=price,
-                             isAdult=isAdult,
-                             stars=stars,
-                             comments=comments,
-                             oldPrice=oldPrice)
+    data = itemsPB.Item(name=name,
+                        url=url,
+                        imageUrl=imageUrl,
+                        price=price,
+                        isAdult=isAdult,
+                        rating=stars,
+                        comments=comments,
+                        oldPrice=oldPrice)
     return data

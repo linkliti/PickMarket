@@ -58,7 +58,7 @@ class SelectionFilterItem:
 class SelectionFilter:
   """Selection filter"""
   isRadio: bool
-  items: List[SelectionFilterItem]
+  items: list[SelectionFilterItem]
 
 
 @dataclass

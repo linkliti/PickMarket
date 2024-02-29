@@ -3,8 +3,8 @@ import json
 import logging
 from typing import Generator
 
-from app.parsers.baseDataclass import BaseCategoryDataclass
 from app.parsers.ozon.ozonParser import OzonParser
+from app.protos import categories_pb2 as categPB
 
 log = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class OzonParserCategories(OzonParser):
   """ Ozon Parser Module for categories """
 
-  def getRootCategories(self) -> Generator[BaseCategoryDataclass, None, None]:
+  def getRootCategories(self) -> Generator[categPB.Category, None, None]:
     """ Return name, link and empty url of parent for root categories """
     log.info('Getting categories: root')
     jString: str = self.getData(host=self.host,
@@ -27,10 +27,10 @@ class OzonParserCategories(OzonParser):
     for category in j["categories"]:
       title = category["name"]
       url = category["link"]
-      data = BaseCategoryDataclass(title=title, url=url, parent="")
+      data = categPB.Category(title=title, url=url)
       yield data
 
-  def getSubCategories(self, categoryUrl: str) -> Generator[BaseCategoryDataclass, None, None]:
+  def getSubCategories(self, categoryUrl: str) -> Generator[categPB.Category, None, None]:
     """ Return name, link and url of parent of subcategory """
     log.info('Getting categories: %s', categoryUrl)
     jString = self.getData(host=self.host,
@@ -49,6 +49,6 @@ class OzonParserCategories(OzonParser):
     for category in j["categories"]:
       title: str = category["name"]
       url: str = category["link"]
-      parent: str = categoryUrl
-      data = BaseCategoryDataclass(title=title, url=url, parent=parent)
+      parentUrl: str = categoryUrl
+      data = categPB.Category(title=title, url=url, parentUrl=parentUrl)
       yield data

@@ -10,7 +10,8 @@
       "request": "launch",
       "program": "${workspaceFolder}/pmparser/app.py",
       "console": "integratedTerminal",
-      "justMyCode": true
+      "justMyCode": true,
+      "env": { "DEBUG": "TRUE"}
     },
     {
       "name": "Py: Remote Attach",

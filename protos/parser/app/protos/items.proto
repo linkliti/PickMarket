@@ -4,6 +4,7 @@ package app.protos;
 import "app/protos/types.proto";
 import "google/rpc/status.proto";
 
+option go_package = "itemsworker.protos";
 
 service ItemParser {
   rpc GetItems(ItemsRequest) returns (stream ItemResponse);

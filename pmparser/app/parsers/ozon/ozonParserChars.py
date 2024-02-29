@@ -3,7 +3,8 @@ import json
 import logging
 from typing import Generator, List
 
-from app.parsers.baseDataclass import BaseItemCharsDataclass
+from app.protos import items_pb2 as itemsPB
+from app.protos import types_pb2 as typesPB
 from app.parsers.ozon.ozonParser import OzonParser
 
 log = logging.getLogger(__name__)
@@ -12,11 +13,11 @@ log = logging.getLogger(__name__)
 class OzonParserChars(OzonParser):
   """ Ozon Parser Module for item parameters """
 
-  def getItemChars(self, itemUrl: str) -> Generator[BaseItemCharsDataclass, None, None]:
+  def getItemChars(self, itemUrl: str) -> Generator[itemsPB.Characteristic, None, None]:
     """Get item params from Ozon"""
     itemUrl = itemUrl + "/features"
     log.debug('Getting params: %s', itemUrl)
-    jString: str = self.getData(host=self.host, url=self.api + itemUrl)
+    jString: str = self.getData(host=self.host, url=self.api + itemUrl, useMobile=True)
 
     log.info('Converting data to JSON: %s', itemUrl)
     j: dict = json.loads(jString)
@@ -38,7 +39,18 @@ class OzonParserChars(OzonParser):
               value = charObj["values"][0]["text"]
               # Try to Float/Int
               value = tryConvertStrToNum(v=str(value))
-            charObj = BaseItemCharsDataclass(key=key, name=name, value=value)
+            # Determine value type
+            if isinstance(value, str):
+              charObj = itemsPB.Characteristic(key=key, name=name, strValue=value)
+            elif isinstance(value, int):
+              charObj = itemsPB.Characteristic(key=key, name=name, intValue=value)
+            elif isinstance(value, float):
+              charObj = itemsPB.Characteristic(key=key, name=name, floatValue=value)
+            elif isinstance(value, list):
+              listValue = typesPB.StringList(values=value)
+              charObj = itemsPB.Characteristic(key=key, name=name, listValue=listValue)
+            else:
+              raise ValueError("Invalid value type")
             log.debug("Char: %s", charObj)
             yield charObj
 

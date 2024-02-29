@@ -1,22 +1,24 @@
 """ Ozon Parser Module for categories """
+from itertools import islice
 import json
 import logging
 import re
-from itertools import islice
-from typing import Generator, List
+from typing import Generator
 
-from app.parsers.baseDataclass import (BaseFiltersDataclass, BoolFilter, RangeFilter,
-                                       SelectionFilter, SelectionFilterItem)
 from app.parsers.ozon.ozonParser import OzonParser
+from app.protos import types_pb2 as typesPB
+from app.protos import categories_pb2 as categPB
 
 log = logging.getLogger(__name__)
+
+TOOLARGEFILTERS: list[str] = ["Продавец"]
 
 
 class OzonParserFilters(OzonParser):
   """ Ozon Parser Module for items """
 
   def __init__(self) -> None:
-    self.pageUrl: str = ""
+    self.categoryUrl: str = ""
     self.fKnownTypes: list[str] = [
       "cellWithSubtitleToggleCounter", "tagFilter", "rangeFilter", "multipleRangesFilter",
       "brandFilter", "colorFilter"
@@ -24,196 +26,207 @@ class OzonParserFilters(OzonParser):
     self.tooLargeFilterTitles: list[str] = ["Продавец"]
     super().__init__()
 
-  def getRootFilters(self, pageUrl: str) -> Generator[BaseFiltersDataclass, None, None]:
+  def getRootFilters(self, categoryUrl: str) -> Generator[categPB.Filter, None, None]:
     """ Get filters for category """
-    self.pageUrl = pageUrl
-    log.info('Getting filters: %s', self.pageUrl)
+    self.categoryUrl = categoryUrl
+    log.info('Getting filters: %s', self.categoryUrl)
     jString: str = self.getData(host=self.host,
-                                url=self.api + "/modal/filters" + self.pageUrl + "/?all_filters=t",
+                                url=self.api + "/modal/filters" + self.categoryUrl +
+                                "/?all_filters=t",
                                 useMobile=True)
 
-    log.info('Converting to JSON: %s', self.pageUrl)
+    log.info('Converting to JSON: %s', self.categoryUrl)
     j: dict = json.loads(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filters")
 
-    log.info('Parsing filters: %s', self.pageUrl)
+    log.info('Parsing filters: %s', self.categoryUrl)
     for filt in j["sections"][1]["filters"]:
-      data: BaseFiltersDataclass | Generator | None = self.getFilter(filt)
-      if isinstance(data, BaseFiltersDataclass):
-        yield data
-      elif isinstance(data, Generator):
-        yield from data
+      fw = OzonFilterWorker(filterJson=filt, categoryUrl=self.categoryUrl)
+      fdata: categPB.Filter | None = fw.returnFilter()
+      if fdata:
+        yield fdata
 
-  def getFilter(self, fJSON: dict) -> BaseFiltersDataclass | Generator | None:
-    """ Get filter """
-    fType: str = fJSON["type"]
-    fKey: str = ""
-    internalType: str = ""
-    fData: SelectionFilter | BoolFilter | RangeFilter | None = None
-    # Unknown filter
-    if fType not in self.fKnownTypes:
-      log.warning('Unknown filter type: %s', fType)
+
+class OzonFilterWorker(OzonParser):
+  """Get filter values from OZON"""
+
+  def __init__(self, filterJson: dict, categoryUrl: str) -> None:
+    super().__init__()
+    self.j: dict = filterJson
+    self.categoryUrl: str = categoryUrl
+    # Defaults
+    self.title: str = ""
+    self.key: str = ""
+    self.externalType: str = self.j["type"]
+    self.internalType: typesPB.Filters | None = None
+    self.rangeFilter: typesPB.RangeFilter | None = None
+    self.selectionFilter: typesPB.SelectionFilter | None = None
+    self.boolFilter: typesPB.BoolFilter | None = None
+    self.getFilterValues()
+
+  def getFilterValues(self) -> None:
+    """ Get filter values """
+    if self.externalType == "multipleRangesFilter":
+      self.externalType = "rangeFilter"
+      self.j = self.j["multipleRangesFilter"]
+
+    self.title = self.j[self.externalType]["title"]
+    log.debug('Filter type: %s %s', self.externalType, self.title)
+
+    match self.externalType:
+      case "colorFilter":
+        self.selectionFilter = self.getColorFilterValues()
+        self.internalType = self.determineSelectionType(isRadio=self.selectionFilter.isRadio)
+        return
+      case "brandFilter":
+        self.selectionFilter = self.getBrandFilterValues()
+        self.internalType = self.determineSelectionType(isRadio=self.selectionFilter.isRadio)
+        return
+      case "tagFilter":
+        self.selectionFilter = self.getTagFilterValues()
+        self.internalType = self.determineSelectionType(isRadio=self.selectionFilter.isRadio)
+        return
+      case "rangeFilter":
+        self.rangeFilter = self.getRangeFilterValues()
+        self.internalType = typesPB.RANGE
+        return
+      case "cellWithSubtitleToggleCounter":
+        self.boolFilter = self.getBoolFilterValues()
+        self.internalType = typesPB.BOOL
+        return
+      case _:
+        log.warning('Unknown filter type: %s', self.externalType)
+        return
+
+  def returnFilter(self) -> categPB.Filter | None:
+    """Return filter"""
+    if not self.internalType:
       return None
+    filt: categPB.Filter | None = None
+    if self.rangeFilter:
+      filt = categPB.Filter(title=self.title,
+                            key=self.key,
+                            externalType=self.externalType,
+                            internalType=self.internalType,
+                            rangeFilter=self.rangeFilter)
+    elif self.selectionFilter:
+      filt = categPB.Filter(title=self.title,
+                            key=self.key,
+                            externalType=self.externalType,
+                            internalType=self.internalType,
+                            selectionFilter=self.selectionFilter)
+    elif self.boolFilter:
+      filt = categPB.Filter(title=self.title,
+                            key=self.key,
+                            externalType=self.externalType,
+                            internalType=self.internalType,
+                            boolFilter=self.boolFilter)
+    return filt
 
-    # MultiFilter fix for price: prefer rangeFilter
-    if fType == "multipleRangesFilter":
-      fType = "rangeFilter"
-      fJSON = fJSON["multipleRangesFilter"]
+  def determineSelectionType(self, isRadio) -> typesPB.Filters:
+    """Determine selection type"""
+    return typesPB.SELECTIONRADIO if isRadio else typesPB.Filters.SELECTION
 
-    # Title
-    fTitle: str = fJSON[fType]["title"]
-    log.debug('Filter type: %s %s', fType, fTitle)
-    link: str = ""
-
-    if fType == "colorFilter":
-      fKey: str = ""
-      isRadio = False
-      items: List[SelectionFilterItem] = []
-      log.debug(json.dumps(fJSON))
-      # Key
-      link = fJSON[fType]["colors"][0]["action"]["link"]
-      fKey = link.split("&")[1].split("=")[0]
-      # "All colors" button present
-      # if "rightButton" in fJSON[fType]:
-      for tag in self.getColorFilterValues(fKey=fKey):
-        items.append(SelectionFilterItem(text=tag.text, value=tag.value))
-      # No "All colors" button present
-      # else:
-      #   for tag in fJSON[fType]["colors"]:
-      #     text: str = tag["hex"]
-      #     link = tag["action"]["link"]
-      #     value: str = link.split("&")[-1].split("=")[-1]
-      #     items.append(SelectionFilterItem(text=text, value=value))
-      # Return
-      internalType: str = "selectionFilter"
-      fData = SelectionFilter(isRadio=isRadio, items=items)
-
-    elif fType == "cellWithSubtitleToggleCounter":
-      # Key
-      link = fJSON[fType]["action"]["link"]
-      fKey = link.split("&")[1].split("=")[0]
-      # Boolean value ('t')
-      value: str = link.split("&")[-1].split("=")[-1]
-      # Return
-      internalType: str = "boolFilter"
-      fData = BoolFilter(value=value)
-
-    elif fType == "brandFilter":
-      isRadio = bool(
-        re.search(pattern=r"-radio-filter$",
-                  string=fJSON[fType]["roundedCells"][0]["testInfo"]["automatizationId"]))
-      items: List[SelectionFilterItem] = []
-      # Key
-      link = fJSON[fType]["roundedCells"][0]["action"]["link"]
-      fKey = link.split("&")[1].split("=")[0]
-      # Popular brands
-      for tag in fJSON[fType]["roundedCells"]:
-        text: str = tag["title"]
-        link = tag["action"]["link"]
-        value: str = link.split("&")[-1].split("=")[-1]
-        items.append(SelectionFilterItem(text=text, value=value))
-      # Other brands
-      if "bottomCell" in fJSON[fType] and not fTitle in self.tooLargeFilterTitles:
-        for tag in self.getBrandFilterValues(fKey=fKey):
-          items.append(SelectionFilterItem(text=tag.text, value=tag.value))
-      # Return
-      internalType: str = "selectionFilter" + ("Radio" if isRadio else "Checkbox")
-      fData = SelectionFilter(isRadio=isRadio, items=items)
-
-    elif fType == "tagFilter":
-      isRadio = bool(
-        re.search(pattern=r"-radio-filter$",
-                  string=fJSON[fType]["tags"][0]["tag"]["testInfo"]["automatizationId"]))
-      items: List[SelectionFilterItem] = []
-      # Key
-      link = fJSON[fType]["tags"][0]["tag"]["action"]["link"]
-      fKey = link.split("&")[1].split("=")[0]
-      # "All tags" button present
-      if "rightButton" in fJSON[fType] and not fTitle in self.tooLargeFilterTitles:
-        for tag in self.getTagFilterValues(fKey=fKey):
-          items.append(tag)
-      # No "All tags" button present OR filter is too large
-      else:
-        for tag in fJSON[fType]["tags"]:
-          text: str = tag["tag"]["text"]
-          link = tag["tag"]["action"]["link"]
-          value: str = link.split("&")[-1].split("=")[-1]
-          items.append(SelectionFilterItem(text=text, value=value))
-      # Return
-      internalType: str = "selectionFilter" + ("Radio" if isRadio else "Checkbox")
-      fData = SelectionFilter(isRadio=isRadio, items=items)
-
-    elif fType == "rangeFilter":
-      # Key
-      link = fJSON[fType]["action"]["link"]
-      fKey = link.split("&")[1].split("=")[0]
-      # Min-max values
-      minValue: int = fJSON[fType]["minValue"]
-      maxValue: int = fJSON[fType]["maxValue"]
-      # Return
-      internalType = "rangeFilter"
-      fData = RangeFilter(min=minValue, max=maxValue)
-
-    # BaseFilter Object
-    if not fData:
-      raise Exception("fData is None")
-    baseFilter = BaseFiltersDataclass(title=fTitle,
-                                      key=fKey,
-                                      externalType=fType,
-                                      internalType=internalType,
-                                      data=fData)
-    log.debug('Filter: %s', baseFilter)
-    return baseFilter
-
-  def getTagFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
-    """Get values for tag filter"""
-    log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
-    url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\
-      "&search_uri=" + self.pageUrl
-    jString: str = self.getData(host=self.host, url=url, useMobile=True)
-
-    log.info('Converting to JSON: %s', url)
-    j: dict = json.loads(jString)
-    j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
+  def getColorFilterValues(self) -> typesPB.SelectionFilter:
+    """Get color values for filter"""
+    isRadio = False
+    link: str = self.j[self.externalType]["colors"][0]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[0]
+    items: list[typesPB.SelectionFilterItem] = []
+    # Colors
+    j: dict = self.getJsonWithMoreValues()
     for section in j["sections"]:
-      for item in section["values"]:
-        data: dict = item[item["type"]]
-        text: str = data["title"]
-        value: str = data["action"]["params"]["value"]
-        yield SelectionFilterItem(text=text, value=value)
-
-  def getBrandFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
-    """Get values for brand filter"""
-    log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
-    url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\
-      "&search_uri=" + self.pageUrl
-    jString: str = self.getData(host=self.host, url=url, useMobile=True)
-
-    log.info('Converting to JSON: %s', url)
-    j: dict = json.loads(jString)
-    j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
-    sections = islice(j["sections"], 1, None)
-    for section in sections:
-      for item in section["values"]:
-        data: dict = item["cellWithSubtitleCheckboxRadioCounter"]
-        text: str = data["title"]
-        value: str = data["action"]["params"]["value"]
-        yield SelectionFilterItem(text=text, value=value)
-
-  def getColorFilterValues(self, fKey: str) -> Generator[SelectionFilterItem, None, None]:
-    """Get values for color filter"""
-    log.info('Getting filter values for key: %s %s', self.pageUrl, fKey)
-    url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + fKey +\
-      "&search_uri=" + self.pageUrl
-    jString: str = self.getData(host=self.host, url=url, useMobile=True)
-
-    log.info('Converting to JSON: %s', url)
-    j: dict = json.loads(jString)
-    j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
-    sections: dict = j["sections"]
-    for section in sections:
       for item in section["values"]:
         data: dict = item["cellWithSubtitle24IconCheckboxRadioCounter"]
         text: str = data["title"]
         value: str = data["action"]["params"]["value"]
-        yield SelectionFilterItem(text=text, value=value)
+        o = typesPB.SelectionFilterItem(text=text, value=value)
+        items.append(o)
+    return typesPB.SelectionFilter(isRadio=isRadio, items=items)
+
+  def getBrandFilterValues(self) -> typesPB.SelectionFilter:
+    """Get brand values for filter"""
+    isRadio = bool(
+      re.search(
+        pattern=r"-radio-filter$",
+        string=self.j[self.externalType]["roundedCells"][0]["testInfo"]["automatizationId"]))
+    link: str = self.j[self.externalType]["roundedCells"][0]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[0]
+    items: list[typesPB.SelectionFilterItem] = []
+    # Popular brands
+    for tag in self.j[self.externalType]["roundedCells"]:
+      text: str = tag["title"]
+      link = tag["action"]["link"]
+      value: str = link.split("&")[-1].split("=")[-1]
+      o = typesPB.SelectionFilterItem(text=text, value=value)
+      items.append(o)
+    # Other Brands
+    if "bottomCell" in self.j[self.externalType]:
+      j: dict = self.getJsonWithMoreValues()
+      sections = islice(j["sections"], 1, None)
+      for section in sections:
+        for item in section["values"]:
+          data: dict = item["cellWithSubtitleCheckboxRadioCounter"]
+          text: str = data["title"]
+          value: str = data["action"]["params"]["value"]
+          o = typesPB.SelectionFilterItem(text=text, value=value)
+          items.append(o)
+    return typesPB.SelectionFilter(isRadio=isRadio, items=items)
+
+  def getTagFilterValues(self) -> typesPB.SelectionFilter:
+    """Get tag values for filter"""
+    isRadio = bool(
+      re.search(
+        pattern=r"-radio-filter$",
+        string=self.j[self.externalType]["tags"][0]["tag"]["testInfo"]["automatizationId"]))
+    link: str = self.j[self.externalType]["tags"][0]["tag"]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[0]
+    items: list[typesPB.SelectionFilterItem] = []
+    # "All tags" button present
+    if "rightButton" in self.j[self.externalType] and self.title not in TOOLARGEFILTERS:
+      j: dict = self.getJsonWithMoreValues()
+      for section in j["sections"]:
+        for item in section["values"]:
+          data: dict = item[item["type"]]
+          text: str = data["title"]
+          value: str = data["action"]["params"]["value"]
+          o = typesPB.SelectionFilterItem(text=text, value=value)
+          items.append(o)
+    # No "All tags" button present OR filter is too large
+    for tag in self.j[self.externalType]["tags"]:
+      text: str = tag["tag"]["text"]
+      link = tag["tag"]["action"]["link"]
+      value: str = link.split("&")[-1].split("=")[-1]
+      o = typesPB.SelectionFilterItem(text=text, value=value)
+      items.append(o)
+    return typesPB.SelectionFilter(isRadio=isRadio, items=items)
+
+  def getRangeFilterValues(self) -> typesPB.RangeFilter:
+    """Get range values for filter"""
+    link: str = self.j[self.externalType]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[0]
+    # Min-max values
+    minValue: int = self.j[self.externalType]["minValue"]
+    maxValue: int = self.j[self.externalType]["maxValue"]
+    return typesPB.RangeFilter(min=minValue, max=maxValue)
+
+  def getBoolFilterValues(self) -> typesPB.BoolFilter:
+    """Get bool values for filter"""
+    # Key
+    link: str = self.j[self.externalType]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[0]
+    # Boolean value ('t')
+    value: str = link.split("&")[-1].split("=")[-1]
+    # Return
+    return typesPB.BoolFilter(value=value)
+
+  def getJsonWithMoreValues(self) -> dict:
+    """Get values for filter from OZON"""
+    log.info('Getting more filter values for key: %s @ %s', self.key, self.categoryUrl)
+    url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + self.key +\
+      "&search_uri=" + self.categoryUrl
+    jString: str = self.getData(host=self.host, url=url, useMobile=True)
+    log.info('Converting to JSON: %s', url)
+    j: dict = json.loads(jString)
+    j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
+    return j

@@ -1,9 +1,36 @@
-""" Test BaseParser Module """
-# pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument line-too-long
+""" Test Ozon Parsing """
+# pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument, line-too-long
+from app.parsers.ozon.ozonParserCategories import OzonParserCategories
 from app.parsers.ozon.ozonParserChars import OzonParserChars
+from app.parsers.ozon.ozonParserFilters import OzonParserFilters
 from app.parsers.ozon.ozonParserItems import OzonParserItems
 
 from .test_base import logger
+
+
+def test_getRootCategories(logger: None) -> None:
+  """Test getRootCategories"""
+  p = OzonParserCategories()
+  for i in p.getRootCategories():
+    print(i)
+  assert True
+
+
+def test_getSubCategories(logger: None) -> None:
+  """Test getRootCategories"""
+  p = OzonParserCategories()
+  for i in p.getSubCategories(categoryUrl='/category/zhenskaya-odezhda-7501'):
+    print(i)
+  assert True
+
+
+def test_getFilters(logger: None) -> None:
+  """Test getFilters"""
+  p = OzonParserFilters()
+  # url = '/category/videokarty-15721'
+  url = '/category/bluzy-i-rubashki-zhenskie-7511'
+  for i in p.getRootFilters(categoryUrl=url):
+    print(i)
 
 
 def test_getItems(logger: None) -> None:

@@ -1,5 +1,5 @@
 go 1.21.6
 
 use ./backend/requestHandler
-use ./backend/productsWorker
+use ./backend/itemsWorker
 use ./backend/categoriesWorker
