@@ -2,8 +2,10 @@
 
 import json
 import logging
+from typing import override
 
 from app.parsers.baseParser import Parser
+from app.selen.seleniumPool import getBrowserToGetOzonJson
 
 log = logging.getLogger(__name__)
 
@@ -15,6 +17,11 @@ class OzonParser(Parser):
     self.host = "www.ozon.ru"
     self.api = "/api/entrypoint-api.bx/page/json/v2?url="
     super().__init__()
+
+  @override
+  def getDataViaSelenium(self, url: str) -> str:
+    data: str = getBrowserToGetOzonJson(url=url)
+    return data
 
   def getEmbededJson(self, j: dict, keyName: str) -> dict:
     """Get embeded JSON in key with keyName in name"""

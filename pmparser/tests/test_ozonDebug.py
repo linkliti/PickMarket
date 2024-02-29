@@ -7,7 +7,6 @@ from urllib.parse import quote
 
 from app.parsers.baseParser import Parser
 from app.parsers.ozon.ozonParser import OzonParser
-from app.selen.selenium import startSelenium
 from seleniumbase import undetected
 
 from .test_base import logger
@@ -81,14 +80,11 @@ def test_getAllJsons(logger: None):
   # log: logging.Logger = logging.getLogger(__name__)
   p = Parser()
   os.makedirs("./.temp/jsons", exist_ok=True)
-  # driver: undetected.Chrome = startSelenium(uc=True, mobile=False)
-  mobile: undetected.Chrome = startSelenium(uc=True, mobile=True)
   for item in urllist:
     print(item)
     encodedUrl: str = quote(string=str(item["url"]), safe=':/?+=')
     # if item["mobile"]:
-    data: str = p.getData(host="www.ozon.ru", url=encodedUrl, useMobile=True, driver=mobile)
-    # else:
+    data: str = p.getData(host="www.ozon.ru", url=encodedUrl, useMobile=True)
     #   data: str = p.getData(host="www.ozon.ru", url=encodedUrl, driver=driver)
     with open(file=f"./.temp/jsons/{item["tag"]}.{item["type"]}", mode="w", encoding="utf-8") as f:
       f.write(data)

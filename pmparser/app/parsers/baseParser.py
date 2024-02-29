@@ -3,8 +3,8 @@ import logging
 import urllib.parse
 from http import client
 
-from app.selen.selenium import checkForBlock
-from app.selen.seleniumFallback import getDataFallback
+from app.selen.seleniumHelpers import checkForBlock
+from app.selen.seleniumPool import getBrowserToGetPageSource
 from bs4 import BeautifulSoup, ResultSet, Tag
 from seleniumbase import undetected
 
@@ -23,8 +23,7 @@ class Parser():
               url: str,
               header: dict[str, str] | None = None,
               params: dict[str, str] | None = None,
-              useMobile=False,
-              driver: undetected.Chrome | None = None) -> str:
+              useMobile=False) -> str:
     """ Get any data from url """
     if header is None:
       header = {}
@@ -42,7 +41,12 @@ class Parser():
     data: str = result.decode(encoding="utf-8")
     if checkForBlock(data=data):
       log.warning("Triggered Cloudflare protection. Getting data via selenium")
-      data = getDataFallback(url="https://" + host + url, header=header, driver=driver)
+      data = self.getDataViaSelenium(url="https://" + host + url)
+    return data
+
+  def getDataViaSelenium(self, url: str) -> str:
+    """ Get data via selenium """
+    data = getBrowserToGetPageSource(url=url)
     return data
 
   def htmlStringToTags(self, html: str, selector: str) -> ResultSet[Tag]:

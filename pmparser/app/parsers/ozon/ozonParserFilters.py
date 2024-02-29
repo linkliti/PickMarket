@@ -3,7 +3,7 @@ from itertools import islice
 import json
 import logging
 import re
-from typing import Generator
+from typing import Any, Generator
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import types_pb2 as typesPB
@@ -88,11 +88,11 @@ class OzonFilterWorker(OzonParser):
         return
       case "rangeFilter":
         self.rangeFilter = self.getRangeFilterValues()
-        self.internalType = typesPB.RANGE
+        self.internalType = typesPB.Filters.RANGE
         return
       case "cellWithSubtitleToggleCounter":
         self.boolFilter = self.getBoolFilterValues()
-        self.internalType = typesPB.BOOL
+        self.internalType = typesPB.Filters.BOOL
         return
       case _:
         log.warning('Unknown filter type: %s', self.externalType)
@@ -103,29 +103,24 @@ class OzonFilterWorker(OzonParser):
     if not self.internalType:
       return None
     filt: categPB.Filter | None = None
+    kwargs: dict[str, Any] = {
+      'title': self.title,
+      'key': self.key,
+      'externalType': self.externalType,
+      'internalType': self.internalType
+    }
     if self.rangeFilter:
-      filt = categPB.Filter(title=self.title,
-                            key=self.key,
-                            externalType=self.externalType,
-                            internalType=self.internalType,
-                            rangeFilter=self.rangeFilter)
+      kwargs['rangeFilter'] = self.rangeFilter
     elif self.selectionFilter:
-      filt = categPB.Filter(title=self.title,
-                            key=self.key,
-                            externalType=self.externalType,
-                            internalType=self.internalType,
-                            selectionFilter=self.selectionFilter)
+      kwargs['selectionFilter'] = self.selectionFilter
     elif self.boolFilter:
-      filt = categPB.Filter(title=self.title,
-                            key=self.key,
-                            externalType=self.externalType,
-                            internalType=self.internalType,
-                            boolFilter=self.boolFilter)
+      kwargs['boolFilter'] = self.boolFilter
+    filt: categPB.Filter | None = categPB.Filter(**kwargs)
     return filt
 
   def determineSelectionType(self, isRadio) -> typesPB.Filters:
     """Determine selection type"""
-    return typesPB.SELECTIONRADIO if isRadio else typesPB.Filters.SELECTION
+    return typesPB.Filters.SELECTIONRADIO if isRadio else typesPB.Filters.SELECTION
 
   def getColorFilterValues(self) -> typesPB.SelectionFilter:
     """Get color values for filter"""
