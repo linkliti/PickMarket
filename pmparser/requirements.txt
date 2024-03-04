@@ -1,0 +1,6 @@
+beautifulsoup4
+pytest
+seleniumbase
+grpcio>=1.18.0
+grpcio-status>=1.18.0
+googleapis-common-protos>=1.5.5

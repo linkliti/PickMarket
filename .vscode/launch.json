@@ -5,8 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Remote Attach",
-      "type": "python",
+      "name": "Py: Launch app.py",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/pmparser/app.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": { "DEBUG": "TRUE"}
+    },
+    {
+      "name": "Py: Remote Attach",
+      "type": "debugpy",
       "request": "attach",
       "connect": { "host": "localhost", "port": 5678 },
       "pathMappings": [
@@ -17,7 +26,7 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome",
+      "name": "JS: Launch Chrome",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/frontend",
       "skipFiles": [
