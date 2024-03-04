@@ -1,5 +1,7 @@
-go 1.21.6
+go 1.22.0
 
 use ./backend/requestHandler
 use ./backend/itemsWorker
 use ./backend/categoriesWorker
+use ./backend/pmutils
+use ./backend/protos

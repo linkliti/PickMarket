@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Go: Launch ItemsWorker",
+      "type": "go",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/itemsWorker/main.go"
+    },
+    {
       "name": "Py: Launch app.py",
       "type": "debugpy",
       "request": "launch",

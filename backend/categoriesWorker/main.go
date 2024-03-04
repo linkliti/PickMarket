@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"log/slog"
+
+	"pmutils"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	pmutils.SetupLogging()
+	slog.Info("Hello, World!")
+
 }

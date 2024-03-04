@@ -1,11 +1,10 @@
-package main
+package serverTest
 
 import (
 	"categoriesWorker/parserGetters"
-	"fmt"
+	"testing"
 )
 
-func main() {
-	fmt.Println("Hello, World!")
+func TestGetRootCategories(t *testing.T) {
 	parserGetters.GetRootCategories()
 }
