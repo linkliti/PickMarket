@@ -1,7 +1,6 @@
 """ Selenium Worker Module """
 import logging
 import os
-
 from app.selen.seleniumHelpers import checkForBlock, cookiesToHeader
 from seleniumbase import Driver, undetected
 
@@ -10,17 +9,22 @@ log = logging.getLogger(__name__)
 DEBUG = bool(os.environ.get('DEBUG', False))
 
 
-class SeleniumWorker:
+class SeleniumWorker():
   """Base selenium worker"""
 
   def __init__(self, *args, **kwargs) -> None:
     presetArgs: dict[str, bool] = {
       'uc': True,
-      'headless': not DEBUG,
       'mobile': True,
       'block_images': True,
+      'do_not_track': True,
+      'dark_mode': True,
       'uc_subprocess': True,
     }
+    if DEBUG:
+      presetArgs['headed'] = True
+    else:
+      presetArgs['headless'] = True
     self.driver: undetected.Chrome = Driver(*args, **presetArgs, **kwargs)
 
   def getPageSource(self, url: str) -> str:

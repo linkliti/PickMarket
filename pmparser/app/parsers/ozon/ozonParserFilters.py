@@ -3,7 +3,9 @@ from itertools import islice
 import json
 import logging
 import re
-from typing import Any, Generator
+from typing import Any, Generator, Iterator
+
+from concurrent.futures import ThreadPoolExecutor
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import types_pb2 as typesPB
@@ -40,11 +42,18 @@ class OzonParserFilters(OzonParser):
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filters")
 
     log.info('Parsing filters: %s', self.categoryUrl)
-    for filt in j["sections"][1]["filters"]:
-      fw = OzonFilterWorker(filterJson=filt, categoryUrl=self.categoryUrl)
-      fdata: categPB.Filter | None = fw.returnFilter()
-      if fdata:
-        yield fdata
+    with ThreadPoolExecutor() as executor:
+      futures: Iterator[categPB.Filter | None] = executor.map(self.worker,
+                                                              j["sections"][1]["filters"])
+      for res in futures:
+        fdata: categPB.Filter | None = res
+        if fdata:
+          yield fdata
+
+  def worker(self, filt) -> categPB.Filter | None:
+    """Get filter values from OZON"""
+    fw = OzonFilterWorker(filterJson=filt, categoryUrl=self.categoryUrl)
+    return fw.returnFilter()
 
 
 class OzonFilterWorker(OzonParser):

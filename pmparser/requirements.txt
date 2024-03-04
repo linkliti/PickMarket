@@ -1,5 +1,4 @@
 beautifulsoup4
-dataclasses-json
 pytest
 seleniumbase
 grpcio>=1.18.0

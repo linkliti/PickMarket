@@ -1,12 +1,8 @@
 """ Base parser class for marketplaces """
 import logging
-import urllib.parse
-from http import client
 
-from app.selen.seleniumHelpers import checkForBlock
 from app.selen.seleniumPool import getBrowserToGetPageSource
 from bs4 import BeautifulSoup, ResultSet, Tag
-from seleniumbase import undetected
 
 log = logging.getLogger(__name__)
 
@@ -33,15 +29,15 @@ class Parser():
       header["User-Agent"] = self.mobileUA
     if self.cookie:
       header["Cookie"] = self.cookie
-    conn = client.HTTPSConnection(host=host)
-    url = url + '/?' + urllib.parse.urlencode(query=params) if params else url
-    conn.request(method="GET", url=url, body='', headers=header)
-    response: client.HTTPResponse = conn.getresponse()
-    result: bytes = response.read()
-    data: str = result.decode(encoding="utf-8")
-    if checkForBlock(data=data):
-      log.warning("Triggered Cloudflare protection. Getting data via selenium")
-      data = self.getDataViaSelenium(url="https://" + host + url)
+    # conn = client.HTTPSConnection(host=host)
+    # url = url + '/?' + urllib.parse.urlencode(query=params) if params else url
+    # conn.request(method="GET", url=url, body='', headers=header)
+    # response: client.HTTPResponse = conn.getresponse()
+    # result: bytes = response.read()
+    # data: str = result.decode(encoding="utf-8")
+    # if checkForBlock(data=data):
+    #   log.warning("Triggered Cloudflare protection. Getting data via selenium")
+    data = self.getDataViaSelenium(url="https://" + host + url)
     return data
 
   def getDataViaSelenium(self, url: str) -> str:

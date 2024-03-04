@@ -12,7 +12,8 @@ def setupLogger(name, debug, filename='parser.log') -> logging.Logger:
   else:
     log.setLevel(level=logging.INFO)
     logFile = logging.FileHandler(filename=filename)
-  logFormat = logging.Formatter(fmt='[%(asctime)s][%(levelname)s]: [%(name)s] %(message)s')
+  logFormat = logging.Formatter(
+    fmt='[%(asctime)s][%(levelname)s]: [PID %(process)d][%(name)s] %(message)s')
   logFile.setFormatter(fmt=logFormat)
   log.addHandler(hdlr=logFile)
   return log

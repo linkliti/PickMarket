@@ -9,7 +9,7 @@ from app.parsers.baseParser import Parser
 from app.parsers.ozon.ozonParser import OzonParser
 from seleniumbase import undetected
 
-from .test_base import logger
+from .test_base import logger, browserPool
 
 log = logging.getLogger(__name__)
 
@@ -74,11 +74,11 @@ urllist = [{
 }]
 # bottomCell rightButton
 
-def test_getAllJsons(logger: None):
+def test_getAllJsons(logger: None, browserPool: None):
   """ Get All JSON from urlList and save to files in .temp/jsons folder """
   # https://www.ozon.ru
   # log: logging.Logger = logging.getLogger(__name__)
-  p = Parser()
+  p = OzonParser()
   os.makedirs("./.temp/jsons", exist_ok=True)
   for item in urllist:
     print(item)
