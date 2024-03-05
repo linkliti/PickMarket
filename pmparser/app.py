@@ -23,7 +23,7 @@ def serve() -> None:
   itemsPBgrpc.add_ItemParserServicer_to_server(servicer=PMItemParserServicer(), server=server)
   categPBgrpc.add_CategoryParserServicer_to_server(servicer=PMCategoryParserServicer(),
                                                    server=server)
-  address = "localhost:50051"
+  address = os.environ.get('PARSER_ADDR', "localhost:1111")
   server.add_insecure_port(address=address)
   if DEBUG:
     log.info("Debug enabled")

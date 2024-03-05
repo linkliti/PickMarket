@@ -12,11 +12,29 @@ func GetEnv(key, fallback string) string {
 	return fallback
 }
 
+func StrToBool(s string) bool {
+	return s != ""
+}
+
 func SetupLogging() {
+	logCode := slog.LevelInfo
+	if StrToBool(GetEnv("DEBUG", "")) {
+		logCode = slog.LevelDebug
+	}
+
 	slogOpts := slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level: logCode,
 	}
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slogOpts))
 	slog.SetDefault(logger)
+}
+
+func ContainsEmptyString(ss ...string) bool {
+	for _, s := range ss {
+		if s == "" {
+			return true
+		}
+	}
+	return false
 }

@@ -94,16 +94,6 @@
   "python.analysis.ignore": [
     "pmparser/app/protos"
   ],
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5433,
-      "driver": "PostgreSQL",
-      "database": "pmdb",
-      "username": "pmworker",
-      "password": "securepass",
-      "name": "PMDB"
-    }
-  ]
+  "go.testEnvFile": "${workspaceFolder}/backend/.env",
+  "python.envFile": "${workspaceFolder}/pmparser/.env"
 }

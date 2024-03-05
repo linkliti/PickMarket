@@ -5,31 +5,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Go: Launch ItemsWorker",
+      "name": "Go: Launch categoriesWorker",
       "type": "go",
       "request": "launch",
       "console": "integratedTerminal",
       "mode": "debug",
-      "program": "${workspaceFolder}/backend/itemsWorker/main.go"
+      "program": "${workspaceFolder}/backend/categoriesWorker/main.go",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/categoriesWorker.log",
+      }
     },
     {
       "name": "Py: Launch app.py",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/pmparser/app.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "env": { "DEBUG": "TRUE"}
-    },
-    {
-      "name": "Py: Remote Attach",
-      "type": "debugpy",
-      "request": "attach",
-      "connect": { "host": "localhost", "port": 5678 },
-      "pathMappings": [
-        { "localRoot": "${workspaceFolder}", "remoteRoot": "." }
-      ],
-      "justMyCode": true
+      "program": "${workspaceFolder}/pmparser/app.py",
+      "envFile": "${workspaceFolder}/pmparser/.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/pmparser.log",
+      }
     },
     {
       "type": "chrome",
