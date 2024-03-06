@@ -25,7 +25,7 @@
           "frontend/*config.*",
           "*/vite.config.ts",
           // backend
-          "go.work",
+          "**/go.sum",
           "**/go.mod",
           // parser
           "pmparser/venv",
@@ -54,7 +54,7 @@
     "frontend/package*": true,
     "frontend/*config.*": true,
     "*/vite.config.ts": true,
-    "go.work": true,
+    "**/go.sum": true,
     "**/go.mod": true,
     "pmparser/venv": true,
     "**/__pycache__": true,
