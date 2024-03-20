@@ -1,30 +1,38 @@
 package handlerservice
 
 import (
-	"context"
-	"io"
+	"categoriesWorker/db"
+	"log/slog"
 	"protos/parser"
 )
 
 func (c *CategoryService) GetRootCategories(req *parser.RootCategoriesRequest, srv parser.CategoryParser_GetRootCategoriesServer) error {
-	client := c.connectToParser()
-	stream, err := client.GetRootCategories(context.Background(), req)
+	// Connections
+	d, err := db.NewDBConnection(req.Market)
 	if err != nil {
+		slog.Error("failed to connect to database", err)
 		return err
 	}
 
-	// Loop over the stream and forward the responses to the original caller
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
+	// Get root categories from the database
+	categories, err := d.DBGetRootCategories()
+	if err != nil {
+		slog.Error("failed to get root categories from database", err)
+		return err
+	}
+
+	// Iterate over the categories and send them to the caller
+	for _, category := range categories {
+		resp := &parser.CategoryResponse{
+			Message: &parser.CategoryResponse_Category{
+				Category: category,
+			},
 		}
-		if err != nil {
-			return err
-		}
-		if err := srv.Send(res); err != nil {
+		if err := srv.Send(resp); err != nil {
+			slog.Error("failed to send category to caller", err)
 			return err
 		}
 	}
+
 	return nil
 }

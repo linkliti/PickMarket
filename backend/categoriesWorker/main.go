@@ -17,10 +17,10 @@ func main() {
 	parser.RegisterCategoryParserServer(grpcServer, categoryService)
 	addr := pmutils.GetEnv("CATEGORIES_WORKER_ADDR", ":1111")
 	l, err := net.Listen("tcp", addr)
-	slog.Info("Starting categories worker", "addr", addr)
 	if err != nil {
 		panic(err)
 	}
+	slog.Info("Starting categories worker", "addr", addr)
 
 	grpcServer.Serve(l)
 }

@@ -37,7 +37,6 @@ CREATE INDEX ind_categoryURL ON Categories USING gist(categoryURL);
 CREATE TABLE Items (
   itemURL VARCHAR(255) PRIMARY KEY,
   Marketplaces_marketName VARCHAR(45) NOT NULL,
-  itemName VARCHAR(255) NOT NULL,
   itemChars JSONB NOT NULL,
   itemParseDate TIMESTAMP NOT NULL,
   FOREIGN KEY (Marketplaces_marketName) REFERENCES Marketplaces (marketName) ON DELETE NO ACTION ON UPDATE NO ACTION

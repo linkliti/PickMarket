@@ -6,9 +6,9 @@ import (
 	"protos/parser"
 )
 
-func (d *Database) DBGetFilters(categoryUrl string) ([]parser.Filter, error) {
+func (d *Database) DBGetFilters(categoryUrl string) ([]*parser.Filter, error) {
 	// Initialize a slice to hold the filters
-	var filters []parser.Filter
+	var filters []*parser.Filter
 
 	// Prepare the SQL query to retrieve filters
 	sqlStatement := `SELECT categoryFilters FROM Categories WHERE categoryURL=$1;`
@@ -35,9 +35,9 @@ func (d *Database) DBGetFilters(categoryUrl string) ([]parser.Filter, error) {
 	return filters, nil
 }
 
-func (d *Database) DBSaveFilters(filters []parser.Filter, categoryUrl string) error {
+func (d *Database) DBSaveFilters(filters []*parser.Filter, categoryUrl string) error {
 	// Marshal the filters into JSON format
-	filtersJSON, err := json.Marshal(filters)
+	filtersJSON, err := json.Marshal(&filters)
 	if err != nil {
 		return err
 	}
