@@ -30,6 +30,7 @@ CREATE TABLE Categories (
   FOREIGN KEY (Categories_parentURL) REFERENCES Categories (categoryURL) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 ALTER TABLE Categories OWNER TO pmworker;
+CREATE INDEX ind_categoryURL ON Categories USING gist(categoryURL);
 -- -----------------------------------------------------
 -- Table pmdb.Items
 -- -----------------------------------------------------
@@ -41,4 +42,5 @@ CREATE TABLE Items (
   itemParseDate TIMESTAMP NOT NULL,
   FOREIGN KEY (Marketplaces_marketName) REFERENCES Marketplaces (marketName) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
+CREATE INDEX ind_itemURL ON Items USING gist(itemURL);
 ALTER TABLE Items OWNER TO pmworker;

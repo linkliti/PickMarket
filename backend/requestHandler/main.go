@@ -11,21 +11,23 @@ import (
 	"time"
 
 	gohandlers "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
 	pmutils.SetupLogging()
 	bindAddress := pmutils.GetEnv("HANDLER_ADDR", "localhost:1111")
-	serveMux := http.NewServeMux()
-
-	serveMux.HandleFunc("GET /categories/", abc)
+	sm := mux.NewRouter()
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+
+	// getR := sm.Methods(http.MethodGet).Subrouter()
+	// getR.HandleFunc("/products", ph.ListAll)
 
 	// create a new server
 	s := http.Server{
 		Addr:         bindAddress,
-		Handler:      ch(serveMux),
+		Handler:      ch(sm),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
@@ -43,7 +45,6 @@ func main() {
 	// trap sigterm or interupt and gracefully shutdown the server
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, os.Kill)
 
 	// Block until a signal is received.
 	sig := <-c

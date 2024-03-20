@@ -1,5 +1,15 @@
 version: "3"
 services:
+  parser:
+    hostname: pmparser.ru
+    restart: always
+    build:
+      context: ./pmparser
+      dockerfile: app.dockerfile
+    env_file:
+      - ./pmparser/.env
+    ports:
+      - 5000:5000
   db:
     hostname: pmdb.ru
     restart: always
@@ -15,3 +25,4 @@ services:
     #   - 5001:5432
     ports:
       - 5001:5432
+
