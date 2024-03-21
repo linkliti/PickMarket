@@ -8,6 +8,8 @@ services:
       dockerfile: app.dockerfile
     env_file:
       - ./pmparser/.env
+    volumes:
+      - ./parser.log:/application/parser.log
     ports:
       - 5000:5000
   db:

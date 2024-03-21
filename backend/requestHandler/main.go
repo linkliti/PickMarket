@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"pickmarket/requestHandler/categories"
 	"pmutils"
 	"time"
 
@@ -19,10 +20,14 @@ func main() {
 	bindAddress := pmutils.GetEnv("HANDLER_ADDR", "localhost:1111")
 	sm := mux.NewRouter()
 
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	categClient := categories.NewCategoryClient()
 
-	// getR := sm.Methods(http.MethodGet).Subrouter()
-	// getR.HandleFunc("/products", ph.ListAll)
+	getR := sm.Methods(http.MethodGet).Subrouter()
+	getR.HandleFunc("/categories/root", categClient.GetRootCategories)
+	getR.HandleFunc("/categories/sub", categClient.GetSubCategories)
+	getR.HandleFunc("/categories/filter", categClient.GetFilterCategories)
+
+	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
 	// create a new server
 	s := http.Server{
@@ -33,7 +38,7 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 	go func() {
-		slog.Info("Starting server on port 9090")
+		slog.Info("Starting server on port " + bindAddress)
 
 		err := s.ListenAndServe()
 		if err != nil {
@@ -51,6 +56,7 @@ func main() {
 	log.Println("Got signal:", sig)
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
+	cancel()
 }

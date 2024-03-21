@@ -16,12 +16,12 @@ func NewCategoryService() *CategoryService {
 	return &CategoryService{}
 }
 
-func ConnectToParser() parser.CategoryParserClient {
+func ConnectToParser() (parser.CategoryParserClient, error) {
 	parserAddr := pmutils.GetEnv("PARSER_ADDR", "localhost:1111")
 	conn, err := grpc.Dial(parserAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	client := parser.NewCategoryParserClient(conn)
-	return client
+	return client, nil
 }

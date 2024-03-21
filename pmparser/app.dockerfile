@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 # System Dependencies
-RUN apk add --no-cache chromium
+RUN apk add --no-cache chromium-chromedriver
 # App Dependencies
 COPY ./requirements.txt ./application/requirements.txt
 WORKDIR /application

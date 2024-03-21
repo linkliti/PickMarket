@@ -5,16 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Go: Launch categoriesWorker",
+      "name": "Go: Launch requestHandler",
       "type": "go",
       "request": "launch",
       "console": "integratedTerminal",
       "mode": "debug",
-      "program": "${workspaceFolder}/backend/categoriesWorker/main.go",
+      "program": "${workspaceFolder}/backend/requestHandler/main.go",
       "envFile": "${workspaceFolder}/backend/.env",
       "env": {
         "DEBUG": "True",
-        "LOG_FILE": "${workspaceFolder}/categoriesWorker.log",
+        "LOG_FILE": "${workspaceFolder}/requestHandler.log",
       }
     },
     {

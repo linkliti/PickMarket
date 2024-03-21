@@ -12,7 +12,11 @@ import (
 
 func UpdateMarketRootCategories() error {
 	// Connections
-	client := handlerservice.ConnectToParser()
+	client, err := handlerservice.ConnectToParser()
+	if err != nil {
+		slog.Error("failed to connect to parser", err)
+		return err
+	}
 	d, err := db.NewDBConnectionManager()
 	if err != nil {
 		slog.Error("failed to connect to database", err)
@@ -58,10 +62,11 @@ func UpdateMarketRootCategories() error {
 			// Use a type assertion to get the Category from the CategoryResponse
 			if category, ok := categoryResponse.Message.(*parser.CategoryResponse_Category); ok {
 				// Insert new category from stream
-				if err := d.DBSaveRootCategory(market, category.Category); err != nil {
-					slog.Error("failed to save category to database", err)
-					return err
-				}
+				go func(mar parser.Markets, cat *parser.Category) {
+					if err := d.DBSaveRootCategory(mar, cat); err != nil {
+						slog.Error("failed to save category to database", err)
+					}
+				}(market, category.Category)
 			} else {
 				slog.Error("received a non-Category message")
 				return errors.New("received a non-Category message")

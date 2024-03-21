@@ -11,7 +11,11 @@ import (
 
 func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.CategoryParser_GetCategoryFiltersServer) error {
 	// Connections
-	client := ConnectToParser()
+	client, err := ConnectToParser()
+	if err != nil {
+		slog.Error("failed to connect to parser", err)
+		return err
+	}
 	d, err := db.NewDBConnection(req.Market)
 	if err != nil {
 		slog.Error("failed to connect to database", err)

@@ -12,24 +12,26 @@ import (
 
 func UpdateMarketCategories() error {
 	// Connections
-	client := handlerservice.ConnectToParser()
+	client, err := handlerservice.ConnectToParser()
+	if err != nil {
+		slog.Error("failed to connect to parser", err)
+		return err
+	}
 	d, err := db.NewDBConnectionManager()
 	if err != nil {
 		slog.Error("failed to connect to database", err)
 		return err
 	}
 
-	// Get categories with empty ParseDate
-	categories, err := d.DBGetCategoriesWithEmptyParseDate()
+	// Get reqs with empty ParseDate
+	reqs, err := d.DBGetCategoriesWithEmptyParseDate()
 	if err != nil {
 		slog.Error("failed to get categories from database", err)
 		return err
 	}
 
 	// Iterate over the categories
-	for _, req := range categories {
-		// Prepare the request
-
+	for _, req := range reqs {
 		// Send GetSubCategories to parser
 		stream, err := client.GetSubCategories(context.Background(), req)
 		if err != nil {
@@ -55,10 +57,11 @@ func UpdateMarketCategories() error {
 			// Use a type assertion to get the Category from the CategoryResponse
 			if subCategory, ok := categoryResponse.Message.(*parser.CategoryResponse_Category); ok {
 				// Insert new subcategory from stream
-				if err := d.DBSaveCategory(subCategory.Category, req.Market); err != nil {
-					slog.Error("failed to save subcategory to database", err)
-					return err
-				}
+				go func(cat *parser.Category, market parser.Markets) {
+					if err := d.DBSaveCategory(cat, market); err != nil {
+						slog.Error("failed to save subcategory to database", err)
+					}
+				}(subCategory.Category, req.Market)
 			} else {
 				slog.Error("received a non-Category message")
 				return errors.New("received a non-Category message")
