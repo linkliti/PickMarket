@@ -1,26 +1,17 @@
-package handlerservice
+package service
 
 import (
-	"categoriesWorker/db"
 	"log/slog"
 	"protos/parser"
 )
 
 func (c *CategoryService) GetRootCategories(req *parser.RootCategoriesRequest, srv parser.CategoryParser_GetRootCategoriesServer) error {
-	// Connections
-	d, err := db.NewDBConnection(req.Market)
-	if err != nil {
-		slog.Error("failed to connect to database", err)
-		return err
-	}
-
 	// Get root categories from the database
-	categories, err := d.DBGetRootCategories()
+	categories, err := c.db.DBGetRootCategoryChildren(req.Market)
 	if err != nil {
 		slog.Error("failed to get root categories from database", err)
 		return err
 	}
-
 	// Iterate over the categories and send them to the caller
 	for _, category := range categories {
 		resp := &parser.CategoryResponse{
@@ -33,6 +24,5 @@ func (c *CategoryService) GetRootCategories(req *parser.RootCategoriesRequest, s
 			return err
 		}
 	}
-
 	return nil
 }

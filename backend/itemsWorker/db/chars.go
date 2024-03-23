@@ -35,7 +35,7 @@ func (d *Database) DBGetChars(itemUrl string) ([]*parser.Characteristic, error) 
 	return characteristics, nil
 }
 
-func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string) error {
+func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string, market parser.Markets) error {
 	// Marshal the characteristics into JSON format
 	charsJSON, err := json.Marshal(chars)
 	if err != nil {
@@ -52,7 +52,7 @@ func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string) e
 	`
 
 	// Execute the SQL statement
-	_, err = d.conn.Exec(context.Background(), sqlStatement, itemUrl, d.market, charsJSON)
+	_, err = d.conn.Exec(context.Background(), sqlStatement, itemUrl, market, charsJSON)
 	if err != nil {
 		return err
 	}

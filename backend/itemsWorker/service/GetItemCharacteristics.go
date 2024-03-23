@@ -1,28 +1,19 @@
-package handlerservice
+package service
 
 import (
 	"context"
 	"errors"
 	"io"
-	"itemsWorker/db"
 	"log/slog"
 	"protos/parser"
 )
 
 func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest, srv parser.ItemParser_GetItemCharacteristicsServer) error {
-	// Connections
-	client := c.connectToParser()
-	d, err := db.NewDBConnection(req.Market)
-	if err != nil {
-		slog.Error("failed to connect to database", err)
-		return err
-	}
-
 	// Try to get characteristics from the database
-	chars, err := d.DBGetChars(req.ItemUrl)
+	chars, err := c.db.DBGetChars(req.ItemUrl)
 	if err != nil {
 		// If it fails, get them from the parser
-		stream, err := client.GetItemCharacteristics(context.Background(), req)
+		stream, err := c.parsClient.GetItemCharacteristics(context.Background(), req)
 		if err != nil {
 			slog.Error("failed to get characteristics from parser", err)
 			return err
@@ -37,7 +28,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 			if err == io.EOF {
 				// Save the characteristics to the database after receiving all characteristics from the stream
 				go func(charsToSave []*parser.Characteristic) {
-					if err := d.DBSaveChars(charsToSave, req.ItemUrl); err != nil {
+					if err := c.db.DBSaveChars(charsToSave, req.ItemUrl, req.Market); err != nil {
 						slog.Error("failed to save characteristics to database", err)
 					}
 				}(charsToSave)

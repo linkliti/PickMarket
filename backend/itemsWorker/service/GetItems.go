@@ -1,4 +1,4 @@
-package handlerservice
+package service
 
 import (
 	"context"
@@ -7,8 +7,7 @@ import (
 )
 
 func (c *ItemsService) GetItems(req *parser.ItemsRequest, srv parser.ItemParser_GetItemsServer) error {
-	client := c.connectToParser()
-	stream, err := client.GetItems(context.Background(), req)
+	stream, err := c.parsClient.GetItems(context.Background(), req)
 	if err != nil {
 		return err
 	}

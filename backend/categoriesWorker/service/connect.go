@@ -1,6 +1,7 @@
-package handlerservice
+package service
 
 import (
+	"categoriesWorker/db"
 	"pmutils"
 	"protos/parser"
 
@@ -9,11 +10,13 @@ import (
 )
 
 type CategoryService struct {
+	parsClient                               parser.CategoryParserClient
+	db                                       *db.Database
 	parser.UnimplementedCategoryParserServer // parser.UnsafeCategoryParserServer to require all methods implementation
 }
 
-func NewCategoryService() *CategoryService {
-	return &CategoryService{}
+func NewCategoryService(parsClient parser.CategoryParserClient, db *db.Database) *CategoryService {
+	return &CategoryService{parsClient: parsClient, db: db}
 }
 
 func ConnectToParser() (parser.CategoryParserClient, error) {

@@ -1,7 +1,8 @@
 package main
 
 import (
-	handlerservice "itemsWorker/handlerService"
+	"itemsWorker/db"
+	"itemsWorker/service"
 	"log/slog"
 	"net"
 	"pmutils"
@@ -12,15 +13,28 @@ import (
 
 func main() {
 	pmutils.SetupLogging()
+	// Connections
+	parsClient, err := service.ConnectToParser()
+	if err != nil {
+		slog.Error("failed to connect to parser", err)
+		return
+	}
+	database, err := db.NewDBConnection()
+	if err != nil {
+		slog.Error("failed to connect to database", err)
+		return
+	}
+
+	// Start server
 	grpcServer := grpc.NewServer()
-	itemsService := handlerservice.NewItemsService()
+	itemsService := service.NewItemsService(parsClient, database)
 	parser.RegisterItemParserServer(grpcServer, itemsService)
 	addr := pmutils.GetEnv("ITEMS_WORKER_ADDR", ":1111")
 	l, err := net.Listen("tcp", addr)
-	slog.Info("Starting items worker", "addr", addr)
 	if err != nil {
 		panic(err)
 	}
+	slog.Info("Starting items worker", "addr", addr)
 
 	grpcServer.Serve(l)
 }
