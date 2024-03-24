@@ -6,6 +6,29 @@ import (
 	"protos/parser"
 )
 
+func (d *Database) DBGetNonUpdatedMarkets() ([]parser.Markets, error) {
+	var markets []parser.Markets
+	sqlStatement := `SELECT DISTINCT Marketplaces_marketName FROM Categories WHERE categoryParseDate IS NULL;`
+	rows, err := d.conn.Query(context.Background(), sqlStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var marketStr string
+		if err := rows.Scan(&marketStr); err != nil {
+			return nil, err
+		}
+		// Convert the market string to a parser.Markets enum value
+		marketEnum, err := util.StringToMarket(marketStr)
+		if err != nil {
+			return nil, err
+		}
+		markets = append(markets, marketEnum)
+	}
+	return markets, nil
+}
+
 func (d *Database) DBGetMarketsWithoutParseDate() ([]parser.Markets, error) {
 	var markets []parser.Markets
 	sqlStatement := `SELECT marketName FROM Marketplaces WHERE marketParseDate IS NULL;`

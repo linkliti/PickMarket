@@ -32,7 +32,7 @@ func main() {
 		slog.Error("failed to update root categories", err)
 		return
 	}
-	if err := manager.UpdateSubCategories(); err != nil {
+	if err := manager.UpdateAllSubCategories(); err != nil {
 		slog.Error("failed to update sub categories", err)
 		return
 	}
