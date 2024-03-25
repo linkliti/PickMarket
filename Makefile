@@ -57,9 +57,16 @@ proto:
 	@$(PYENV) && python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
 
 compose-rm:
-	docker-compose stop \
+	@docker-compose stop \
 	&& docker-compose rm \
 	&& sudo rm -rf ./db/pgdata
 
 compose-up:
-	docker-compose -f docker-compose.yml up --force-recreate
+	@docker-compose -f docker-compose.yml up --force-recreate
+
+go-mod-tidy:
+	@cd ./backend/categoriesWorker && go mod tidy
+	@cd ./backend/itemsWorker && go mod tidy
+	@cd ./backend/pmutils && go mod tidy
+	@cd ./backend/protos && go mod tidy
+	@cd ./backend/requestHandler && go mod tidy

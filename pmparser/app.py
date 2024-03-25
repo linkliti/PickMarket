@@ -3,6 +3,7 @@ import atexit
 import logging
 import os
 import socket
+# import threading
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Process, cpu_count
@@ -15,7 +16,9 @@ from app.protos import items_pb2_grpc as itemsPBgrpc
 from app.selen.seleniumMarkets import SeleniumWorkerMarkets
 from app.selen.seleniumPool import browserQueue
 from app.utilities.log import setupLogger
+# from flask import Flask, Response
 from grpc._server import _Server
+# from waitress import serve as waitress_serve
 
 DEBUG = bool(os.environ.get('DEBUG', False))
 log: logging.Logger = setupLogger(name='root', debug=DEBUG)
@@ -83,6 +86,21 @@ def main() -> None:
     worker = Process(target=serve, args=(addrStr,))
     worker.start()
     workers.append(worker)
+  # Flask app for health check
+  # app = Flask(import_name=__name__)
+
+  # @app.route(rule='/health', methods=['GET'])
+  # def healthCheck() -> Response:
+  #   return Response(response="OK", status=200)
+
+  # # Run Flask app in a separate thread
+  # threading.Thread(target=waitress_serve,
+  #                  kwargs={
+  #                    'app': app,
+  #                    'host': addr[0],
+  #                    'port': 9999
+  #                  }).start()
+  # log.info("Health check server started")
   for worker in workers:
     worker.join()
 

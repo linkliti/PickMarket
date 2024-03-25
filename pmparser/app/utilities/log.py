@@ -6,15 +6,19 @@ import sys
 def setupLogger(name, debug, filename='parser.log') -> logging.Logger:
   """ Set up logger """
   log: logging.Logger = logging.getLogger(name=name)
-  if debug:
-    log.setLevel(level=logging.DEBUG)
-    logFile = logging.StreamHandler(stream=sys.stdout)
-  else:
-    log.setLevel(level=logging.INFO)
-    logFile = logging.FileHandler(filename=filename)
+  log.setLevel(level=logging.DEBUG if debug else logging.INFO)
+
   logFormat = logging.Formatter(
     fmt='time=%(asctime)s level=%(levelname)s pid=%(process)d name="%(name)s" msg="%(message)s"',
     datefmt="%Y-%m-%dT%H:%M:%S%z")
-  logFile.setFormatter(fmt=logFormat)
-  log.addHandler(hdlr=logFile)
+
+  if debug:
+    stdoutHandler = logging.StreamHandler(stream=sys.stdout)
+    stdoutHandler.setFormatter(fmt=logFormat)
+    log.addHandler(hdlr=stdoutHandler)
+
+  fileHandler = logging.FileHandler(filename=filename)
+  fileHandler.setFormatter(fmt=logFormat)
+  log.addHandler(hdlr=fileHandler)
+
   return log

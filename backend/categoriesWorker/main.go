@@ -32,11 +32,12 @@ func main() {
 		slog.Error("failed to update root categories", err)
 		return
 	}
+	slog.Info("all root categories updated")
 	if err := manager.UpdateAllSubCategories(); err != nil {
 		slog.Error("failed to update sub categories", err)
 		return
 	}
-	slog.Info("Categories verified")
+	slog.Info("all subcategories updated")
 
 	// Start server
 	grpcServer := grpc.NewServer()

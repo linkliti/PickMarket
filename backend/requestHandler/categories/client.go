@@ -1,6 +1,7 @@
 package categories
 
 import (
+	"net/http"
 	"pmutils"
 	"protos/parser"
 
@@ -21,4 +22,9 @@ func NewCategoryClient() *CategoryClient {
 	client := parser.NewCategoryParserClient(conn)
 	cc := CategoryClient{cl: client}
 	return &cc
+}
+
+func (c *CategoryClient) HealthCheck(rw http.ResponseWriter, r *http.Request) {
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte("OK"))
 }

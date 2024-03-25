@@ -21,10 +21,10 @@ class SeleniumWorker():
       'dark_mode': True,
       'uc_subprocess': True,
     }
-    if DEBUG:
-      presetArgs['headed'] = True
-    else:
-      presetArgs['headless'] = True
+    # if DEBUG:
+      # presetArgs['headed'] = True
+    # else:
+    presetArgs['headless'] = True
     self.driver: undetected.Chrome = Driver(*args, **presetArgs, **kwargs)
 
   def getPageSource(self, url: str) -> str:

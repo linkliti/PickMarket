@@ -1,7 +1,9 @@
 beautifulsoup4
+flask
+googleapis-common-protos
+grpcio
+grpcio-status
+grpcio-tools
 pytest
 seleniumbase
-grpcio
-grpcio-tools
-grpcio-status
-googleapis-common-protos
+waitress

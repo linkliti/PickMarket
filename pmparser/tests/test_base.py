@@ -24,7 +24,7 @@ def logger() -> None:
 @pytest.fixture
 def channel() -> grpc.Channel:
   """Connect to server via gRPC"""
-  channel: grpc.Channel = grpc.insecure_channel(target='localhost:5003')
+  channel: grpc.Channel = grpc.insecure_channel(target='localhost:5000')
   return channel
 
 

@@ -26,6 +26,7 @@ func main() {
 	getR.HandleFunc("/categories/root", categClient.GetRootCategories)
 	getR.HandleFunc("/categories/sub", categClient.GetSubCategories)
 	getR.HandleFunc("/categories/filter", categClient.GetFilterCategories)
+	getR.HandleFunc("/health", categClient.HealthCheck)
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 

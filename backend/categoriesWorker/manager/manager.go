@@ -26,6 +26,7 @@ func (m *Manager) UpdateAllSubCategories() error {
 	}
 	// Iterate over the markets
 	for _, market := range markets {
+		slog.Info("updating subcategories for market", "market", market)
 		// Continuously call UpdateSubCategories until there are no categories left without a parseDate
 		for {
 			// Call UpdateSubCategories for the market
@@ -33,6 +34,7 @@ func (m *Manager) UpdateAllSubCategories() error {
 			if err != nil {
 				return err
 			}
+			return nil
 			// Check if there are any categories left without a parseDate
 			categories, err := m.db.DBGetCategoriesWithoutParseDate(market)
 			if err != nil {
@@ -62,6 +64,7 @@ func (m *Manager) UpdateRootCategories() error {
 		go func() {
 			defer wg.Done()
 			for market := range marketChan {
+				slog.Info("updating root categories for market", "market", market)
 				// Call UpdateSubCategories for the market
 				if err := m.UpdateSubCategories(market); err != nil {
 					slog.Error("failed to update subcategories for market", err)
