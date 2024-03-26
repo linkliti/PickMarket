@@ -9,7 +9,7 @@ import (
 )
 
 type Database struct {
-	conn *pgxpool.Pool
+	Conn *pgxpool.Pool
 }
 
 func NewDBConnection() (*Database, error) {
@@ -23,10 +23,9 @@ func NewDBConnection() (*Database, error) {
 	}
 	url := "postgresql://" + DB_CATEGORIES_USER + ":" + DB_CATEGORIES_PASS + "@" + DB_ADDR + "/" + DB_NAME
 	d := &Database{}
-	d.conn, err = pgxpool.New(context.Background(), url)
+	d.Conn, err = pgxpool.New(context.Background(), url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer d.conn.Close()
 	return d, nil
 }

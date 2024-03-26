@@ -6,10 +6,10 @@ import (
 	"protos/parser"
 )
 
-func (d *Database) DBGetNonUpdatedMarkets() ([]parser.Markets, error) {
+func (d *Database) DBGetMarketsWithCategoriesWithoutParseDate() ([]parser.Markets, error) {
 	var markets []parser.Markets
 	sqlStatement := `SELECT DISTINCT Marketplaces_marketName FROM Categories WHERE categoryParseDate IS NULL;`
-	rows, err := d.conn.Query(context.Background(), sqlStatement)
+	rows, err := d.Conn.Query(context.Background(), sqlStatement)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (d *Database) DBGetNonUpdatedMarkets() ([]parser.Markets, error) {
 func (d *Database) DBGetMarketsWithoutParseDate() ([]parser.Markets, error) {
 	var markets []parser.Markets
 	sqlStatement := `SELECT marketName FROM Marketplaces WHERE marketParseDate IS NULL;`
-	rows, err := d.conn.Query(context.Background(), sqlStatement)
+	rows, err := d.Conn.Query(context.Background(), sqlStatement)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (d *Database) DBSetMarketParseDate(market parser.Markets) error {
 	// Prepare the SQL statement to update the market's parseDate
 	sqlStatement := `UPDATE Marketplaces SET marketParseDate=NOW() WHERE marketName=$1;`
 	// Execute the SQL statement
-	_, err := d.conn.Exec(context.Background(), sqlStatement, marketStr)
+	_, err := d.Conn.Exec(context.Background(), sqlStatement, marketStr)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (d *Database) DBSetMarketParseDate(market parser.Markets) error {
 func (d *Database) DBGetCategoriesWithoutParseDate(market parser.Markets) ([]string, error) {
 	var categories []string
 	sqlStatement := `SELECT categoryURL FROM Categories WHERE categoryParseDate IS NULL AND Marketplaces_marketName=$1;`
-	rows, err := d.conn.Query(context.Background(), sqlStatement, market.String())
+	rows, err := d.Conn.Query(context.Background(), sqlStatement, market.String())
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (d *Database) DBSetCategoryParseDate(categoryUrl string) error {
 	// Prepare the SQL statement to update the category's parseDate
 	sqlStatement := `UPDATE Categories SET categoryParseDate=NOW() WHERE categoryURL=$1;`
 	// Execute the SQL statement
-	_, err := d.conn.Exec(context.Background(), sqlStatement, categoryUrl)
+	_, err := d.Conn.Exec(context.Background(), sqlStatement, categoryUrl)
 	if err != nil {
 		return err
 	}

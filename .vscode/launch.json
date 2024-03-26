@@ -18,6 +18,19 @@
       }
     },
     {
+      "name": "Go: Launch categoriesWorker",
+      "type": "go",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/categoriesWorker/main.go",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/categoriesWorker.log",
+      }
+    },
+    {
       "name": "Py: Launch app.py",
       "type": "debugpy",
       "request": "launch",

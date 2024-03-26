@@ -12,7 +12,7 @@ func (d *Database) DBGetFilters(categoryUrl string) ([]*parser.Filter, error) {
 	// Prepare the SQL query to retrieve filters
 	sqlStatement := `SELECT categoryFilters FROM Categories WHERE categoryURL=$1;`
 	// Query the database
-	row := d.conn.QueryRow(context.Background(), sqlStatement, categoryUrl)
+	row := d.Conn.QueryRow(context.Background(), sqlStatement, categoryUrl)
 	// Variable to hold the filters JSONB data
 	var filtersJSONB []byte
 	// Scan the result into the filtersJSONB variable
@@ -38,7 +38,7 @@ func (d *Database) DBSaveFilters(filters []*parser.Filter, categoryUrl string) e
 	// Prepare the SQL statement to update the filters
 	sqlStatement := `UPDATE Categories SET categoryFilters=$1 WHERE categoryURL=$2;`
 	// Execute the SQL statement
-	_, err = d.conn.Exec(context.Background(), sqlStatement, filtersJSON, categoryUrl)
+	_, err = d.Conn.Exec(context.Background(), sqlStatement, filtersJSON, categoryUrl)
 	if err != nil {
 		return err
 	}

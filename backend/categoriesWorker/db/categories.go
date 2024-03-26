@@ -12,7 +12,7 @@ func (d *Database) DBGetCategoryChildren(categoryUrl string, market parser.Marke
 	// Prepare the SQL query to retrieve child categories
 	sqlStatement := `SELECT categoryName, categoryURL, Categories_parentURL FROM Categories WHERE Categories_parentURL=$1;`
 	// Query the database
-	rows, err := d.conn.Query(context.Background(), sqlStatement, categoryUrl)
+	rows, err := d.Conn.Query(context.Background(), sqlStatement, categoryUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (d *Database) DBGetRootCategoryChildren(market parser.Markets) ([]*parser.C
 	// Prepare the SQL query to retrieve root category children
 	sqlStatement := `SELECT categoryName, categoryURL FROM Categories WHERE Marketplaces_marketName=$1 AND Categories_parentURL IS NULL;`
 	// Query the database
-	rows, err := d.conn.Query(context.Background(), sqlStatement, market.String())
+	rows, err := d.Conn.Query(context.Background(), sqlStatement, market.String())
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (d *Database) DBSaveCategory(category *parser.Category, market parser.Marke
 			Categories_parentURL = EXCLUDED.Categories_parentURL
 	`
 	// Execute the SQL statement
-	_, err := d.conn.Exec(context.Background(), sqlStatement, &category.Title, &category.Url, &category.ParentUrl, market)
+	_, err := d.Conn.Exec(context.Background(), sqlStatement, &category.Title, &category.Url, &category.ParentUrl, market)
 	if err != nil {
 		return err
 	}

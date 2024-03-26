@@ -23,7 +23,7 @@ from grpc._server import _Server
 DEBUG = bool(os.environ.get('DEBUG', False))
 log: logging.Logger = setupLogger(name='root', debug=DEBUG)
 workerCount: int = cpu_count() // 4
-browserCount: int = 2
+browserCount: int = workerCount // 2
 
 
 def serve(bindAddress: str) -> None:

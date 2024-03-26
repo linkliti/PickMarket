@@ -25,6 +25,7 @@ func main() {
 		slog.Error("failed to connect to database", err)
 		return
 	}
+	defer database.Conn.Close()
 	slog.Info("Verifying categories...")
 	// Verify categories
 	manager := manager.NewManager(parsClient, database)
