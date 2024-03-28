@@ -39,11 +39,11 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 	go func() {
-		slog.Info("Starting server on port " + bindAddress)
+		slog.Info("Starting server", "bindAddress", bindAddress)
 
 		err := s.ListenAndServe()
 		if err != nil {
-			slog.Error("Error starting server", "error", err)
+			slog.Error("Error starting server", "err", err)
 			os.Exit(1)
 		}
 	}()

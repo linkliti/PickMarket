@@ -16,12 +16,12 @@ func main() {
 	// Connections
 	parsClient, err := service.ConnectToParser()
 	if err != nil {
-		slog.Error("failed to connect to parser", err)
+		slog.Error("failed to connect to parser", "err", err)
 		return
 	}
 	database, err := db.NewDBConnection()
 	if err != nil {
-		slog.Error("failed to connect to database", err)
+		slog.Error("failed to connect to database", "err", err)
 		return
 	}
 

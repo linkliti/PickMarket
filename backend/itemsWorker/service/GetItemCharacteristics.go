@@ -15,7 +15,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 		// If it fails, get them from the parser
 		stream, err := c.parsClient.GetItemCharacteristics(context.Background(), req)
 		if err != nil {
-			slog.Error("failed to get characteristics from parser", err)
+			slog.Error("failed to get characteristics from parser", "err", err)
 			return err
 		}
 
@@ -29,13 +29,13 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 				// Save the characteristics to the database after receiving all characteristics from the stream
 				go func(charsToSave []*parser.Characteristic) {
 					if err := c.db.DBSaveChars(charsToSave, req.ItemUrl, req.Market); err != nil {
-						slog.Error("failed to save characteristics to database", err)
+						slog.Error("failed to save characteristics to database", "err", err)
 					}
 				}(charsToSave)
 				break
 			}
 			if err != nil {
-				slog.Error("failed to receive characteristic from stream", err)
+				slog.Error("failed to receive characteristic from stream", "err", err)
 				return err
 			}
 
@@ -48,7 +48,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 
 				// Send the CharacteristicResponse to the caller
 				if err := srv.Send(resp); err != nil {
-					slog.Error("failed to send characteristic to caller", err)
+					slog.Error("failed to send characteristic to caller", "err", err)
 					return err
 				}
 
@@ -68,7 +68,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 				},
 			}
 			if err := srv.Send(resp); err != nil {
-				slog.Error("failed to send characteristic to caller", err)
+				slog.Error("failed to send characteristic to caller", "err", err)
 				return err
 			}
 		}

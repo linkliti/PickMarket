@@ -15,7 +15,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 		// If it fails, get them from the parser
 		stream, err := c.parsClient.GetCategoryFilters(context.Background(), req)
 		if err != nil {
-			slog.Error("failed to get filters from parser", err)
+			slog.Error("failed to get filters from parser", "err", err)
 			return err
 		}
 		// Slice to hold the pointers to filters for saving to the database
@@ -27,13 +27,13 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 				// Save the filters to the database after receiving all filters from the stream
 				go func(filtersToSave []*parser.Filter) {
 					if err := c.db.DBSaveFilters(filtersToSave, req.CategoryUrl); err != nil {
-						slog.Error("failed to save filters to database", err)
+						slog.Error("failed to save filters to database", "err", err)
 					}
 				}(filtersToSave)
 				break
 			}
 			if err != nil {
-				slog.Error("failed to receive filter from stream", err)
+				slog.Error("failed to receive filter from stream", "err", err)
 				return err
 			}
 			// Use a type assertion to get the Filter from the FilterResponse
@@ -44,7 +44,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 				}
 				// Send the FilterResponse to the caller
 				if err := srv.Send(resp); err != nil {
-					slog.Error("failed to send filter to caller", err)
+					slog.Error("failed to send filter to caller", "err", err)
 					return err
 				}
 				// Add the pointer to the filter to the slice
@@ -63,7 +63,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 				},
 			}
 			if err := srv.Send(resp); err != nil {
-				slog.Error("failed to send filter to caller", err)
+				slog.Error("failed to send filter to caller", "err", err)
 				return err
 			}
 		}

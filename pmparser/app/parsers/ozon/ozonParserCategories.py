@@ -1,11 +1,10 @@
 """ Ozon Parser Module for categories """
-import json
 import logging
 from typing import Generator
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import categories_pb2 as categPB
-from utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -15,16 +14,16 @@ class OzonParserCategories(OzonParser):
 
   def getRootCategories(self) -> Generator[categPB.Category, None, None]:
     """ Return name, link and empty url of parent for root categories """
-    log.info('Getting categories: root')
+    log.info('Getting categories', extra={"url": '/modal/categoryMenuRoot'})
     jString: str = self.getData(host=self.host,
                                 url=self.api + '/modal/categoryMenuRoot',
                                 useMobile=True)
 
-    log.info('Converting to JSON: root')
+    log.info('Converting to JSON', extra={"url": '/modal/categoryMenuRoot'})
     j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenuRoot")
 
-    log.info('Filtering JSON: root')
+    log.info('Filtering JSON', extra={"url": '/modal/categoryMenuRoot'})
     for category in j["categories"]:
       title = category["name"]
       url = category["link"]
@@ -33,24 +32,20 @@ class OzonParserCategories(OzonParser):
 
   def getSubCategories(self, categoryUrl: str) -> Generator[categPB.Category, None, None]:
     """ Return name, link and url of parent of subcategory """
-    log.info('Getting categories: %s', categoryUrl)
+    log.info('Getting categories', extra={"url": categoryUrl})
     jString = self.getData(host=self.host,
                            url=self.api + '/modal/categoryMenu' + categoryUrl,
                            useMobile=True)
 
-    log.info('Converting to JSON: %s', categoryUrl)
-    try:
-      j: dict = toJson(jString)
-    except json.decoder.JSONDecodeError as e:
-      log.error("Failed to load JSON", extra={"categoryUrl": categoryUrl, "error": e})
-      return
+    log.info('Converting to JSON', extra={"url": categoryUrl})
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenu")
 
-    log.info('Parsing JSON: %s', categoryUrl)
+    log.info('Parsing JSON', extra={"url": categoryUrl})
     while len(j["categories"]) == 1:
       j = j["categories"][0]
 
-    log.info('Filtering JSON: %s', categoryUrl)
+    log.info('Filtering JSON', extra={"url": categoryUrl})
     for category in j["categories"]:
       title: str = category["cellTrackingInfo"]["title"]
       url: str = category["link"]

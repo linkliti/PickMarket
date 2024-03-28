@@ -1,12 +1,11 @@
 """ Ozon Parser Module for item parameters """
-import json
 import logging
 from typing import Generator
 
 from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
 from app.parsers.ozon.ozonParser import OzonParser
-from utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -17,14 +16,14 @@ class OzonParserChars(OzonParser):
   def getItemChars(self, itemUrl: str) -> Generator[itemsPB.Characteristic, None, None]:
     """Get item params from Ozon"""
     itemUrl = itemUrl + "/features"
-    log.debug('Getting params: %s', itemUrl)
+    log.debug('Getting params', extra={"url": itemUrl})
     jString: str = self.getData(host=self.host, url=self.api + itemUrl, useMobile=True)
 
-    log.info('Converting data to JSON: %s', itemUrl)
+    log.info('Converting data to JSON', extra={"url": itemUrl})
     j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="webCharacteristics")
 
-    log.info('Parsing chars: %s', itemUrl)
+    log.info('Parsing chars', extra={"url": itemUrl})
     for char in j["characteristics"]:
       for charData in ["short", "long"]:
         if charData in char:
@@ -51,8 +50,9 @@ class OzonParserChars(OzonParser):
               listValue = typesPB.StringList(values=value)
               charObj = itemsPB.Characteristic(key=key, name=name, listValue=listValue)
             else:
-              raise ValueError("Invalid value type")
-            log.debug("Char: %s", charObj)
+              log.error("Invalid value type", extra={"value": value, "type": type(value)})
+              raise ValueError("Invalid value type " + str(type(value)))
+            log.debug("char data", extra={"char": charObj})
             yield charObj
 
 

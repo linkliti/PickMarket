@@ -57,7 +57,7 @@ func (c *CategoryClient) GetSubCategories(rw http.ResponseWriter, r *http.Reques
 			categories = append(categories, category)
 		} else if status := response.GetStatus(); status != nil {
 			// Handle the error status
-			slog.Warn("Received an error status: " + status.Message)
+			slog.Warn("Received an error status", "status", status.Message)
 		}
 	}
 

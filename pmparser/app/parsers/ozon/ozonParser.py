@@ -1,12 +1,10 @@
 """ Ozon Parser Module """
-
-import json
 import logging
 from typing import override
 
 from app.parsers.baseParser import Parser
 from app.selen.seleniumPool import getBrowserToGetOzonJson
-from utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 

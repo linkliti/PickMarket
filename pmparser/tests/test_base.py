@@ -34,7 +34,7 @@ def browserPool():
   worker = SeleniumWorkerMarkets()
   browserQueue.put(item=worker)
   setCookies(worker)
-  log.info("Browsers started. Worker count: %d", 1)
+  log.info("Browsers started", extra={"count": len(browserQueue.queue)})
 
 
 def setCookies(worker: SeleniumWorkerMarkets) -> None:

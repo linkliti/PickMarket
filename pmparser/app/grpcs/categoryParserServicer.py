@@ -30,7 +30,7 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           resp = categPB.CategoryResponse(category=category)
           yield resp
     except Exception as e: # pylint: disable=broad-except
-      log.error(traceback.format_exc())
+      # log.error(traceback.format_exc())
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
       return
@@ -51,7 +51,7 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           resp = categPB.CategoryResponse(category=category)
           yield resp
     except Exception as e: # pylint: disable=broad-except
-      log.error(traceback.format_exc())
+      # log.error(traceback.format_exc())
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
       return
@@ -72,7 +72,7 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           resp = categPB.FilterResponse(filter=filt)
           yield resp
     except Exception as e: # pylint: disable=broad-except
-      log.error(traceback.format_exc())
+      # log.error(traceback.format_exc())
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
       return

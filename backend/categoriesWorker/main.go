@@ -8,6 +8,7 @@ import (
 	"net"
 	"pmutils"
 	"protos/parser"
+	"runtime"
 
 	"google.golang.org/grpc"
 )
@@ -17,28 +18,29 @@ func main() {
 	// Connections
 	parsClient, err := service.ConnectToParser()
 	if err != nil {
-		slog.Error("failed to connect to parser", err)
+		slog.Error("failed to connect to parser", "err", err)
 		return
 	}
 	database, err := db.NewDBConnection()
 	if err != nil {
-		slog.Error("failed to connect to database", err)
+		slog.Error("failed to connect to database", "err", err)
 		return
 	}
 	defer database.Conn.Close()
 	slog.Info("Verifying categories...")
 	// Verify categories
-	manager := manager.NewManager(parsClient, database)
+	var workpoolSize int = runtime.NumCPU() / 3
+	manager := manager.NewManager(parsClient, database, workpoolSize)
 	if err := manager.UpdateRootCategories(); err != nil {
-		slog.Error("failed to update root categories", err)
+		slog.Error("failed to update root categories", "err", err)
 		return
 	}
-	slog.Info("all root categories updated")
+	slog.Info("All root categories updated")
 	if err := manager.UpdateAllSubCategories(); err != nil {
-		slog.Error("failed to update sub categories", err)
+		slog.Error("failed to update sub categories", "err", err)
 		return
 	}
-	slog.Info("all subcategories updated")
+	slog.Info("All subcategories updated")
 
 	// Start server
 	grpcServer := grpc.NewServer()

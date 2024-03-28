@@ -25,7 +25,8 @@ setupLogger(name='root', debug=DEBUG)
 
 log = logging.getLogger(__name__)
 workerCount: int = cpu_count() // 2
-browserCount: int = workerCount // 2
+# browserCount: int = workerCount // 2
+browserCount: int = 2
 
 
 def serve(bindAddress: str) -> None:
@@ -37,11 +38,8 @@ def serve(bindAddress: str) -> None:
   categPBgrpc.add_CategoryParserServicer_to_server(servicer=PMCategoryParserServicer(),
                                                    server=server)
   server.add_insecure_port(address=bindAddress)
-  if DEBUG:
-    log.info("Debug enabled")
-
   server.start()
-  log.info("Server started, listening on %s", bindAddress)
+  log.info("Server started, listening on %s", bindAddress, extra={"bindAddress": bindAddress})
   server.wait_for_termination()
 
 
@@ -80,10 +78,12 @@ def main() -> None:
     browserQueue.put(item=worker)
   with ThreadPoolExecutor() as executor:
     executor.map(setCookies, browserQueue.queue)
-  log.info("Browsers started. Browser count: %d", browserCount)
+  log.info("Browsers started", extra={'browserCount': browserCount})
   atexit.register(closeBrowsers)
   # Workers
-  log.info("Starting workers. Worker count: %d", workerCount)
+  log.info("Starting workers", extra={'workerCount': workerCount})
+  if DEBUG:
+    log.info("Debug enabled")
   for _ in range(workerCount):
     worker = Process(target=serve, args=(addrStr,))
     worker.start()

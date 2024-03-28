@@ -6,10 +6,11 @@ import (
 )
 
 type Manager struct {
-	parsClient parser.CategoryParserClient
-	db         *db.Database
+	parsClient   parser.CategoryParserClient
+	db           *db.Database
+	workpoolSize int
 }
 
-func NewManager(parsClient parser.CategoryParserClient, db *db.Database) *Manager {
-	return &Manager{parsClient: parsClient, db: db}
+func NewManager(parsClient parser.CategoryParserClient, db *db.Database, workpoolSize int) *Manager {
+	return &Manager{parsClient: parsClient, db: db, workpoolSize: workpoolSize}
 }

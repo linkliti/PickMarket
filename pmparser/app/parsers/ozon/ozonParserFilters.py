@@ -1,6 +1,5 @@
 """ Ozon Parser Module for categories """
 from itertools import islice
-import json
 import logging
 import re
 from typing import Any, Generator, Iterator
@@ -81,7 +80,7 @@ class OzonFilterWorker(OzonParser):
       self.j = self.j["multipleRangesFilter"]
 
     self.title = self.j[self.externalType]["title"]
-    log.debug('Filter type: %s %s', self.externalType, self.title)
+    log.debug('filter data', extra={"externalType": self.externalType, "title": self.title})
 
     match self.externalType:
       case "colorFilter":

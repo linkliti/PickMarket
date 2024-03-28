@@ -9,7 +9,7 @@ func (c *CategoryService) GetSubCategories(req *parser.SubCategoriesRequest, srv
 	// Get subcategories from the database
 	categories, err := c.db.DBGetCategoryChildren(req.CategoryUrl, req.Market)
 	if err != nil {
-		slog.Error("failed to get subcategories from database", err)
+		slog.Error("failed to get subcategories from database", "err", err)
 		return err
 	}
 	// Iterate over the categories and send them to the caller
@@ -20,7 +20,7 @@ func (c *CategoryService) GetSubCategories(req *parser.SubCategoriesRequest, srv
 			},
 		}
 		if err := srv.Send(resp); err != nil {
-			slog.Error("failed to send category to caller", err)
+			slog.Error("failed to send category to caller", "err", err)
 			return err
 		}
 	}
