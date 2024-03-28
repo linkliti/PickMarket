@@ -5,6 +5,7 @@ from typing import Generator
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import categories_pb2 as categPB
+from utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class OzonParserCategories(OzonParser):
                                 useMobile=True)
 
     log.info('Converting to JSON: root')
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenuRoot")
 
     log.info('Filtering JSON: root')
@@ -38,7 +39,11 @@ class OzonParserCategories(OzonParser):
                            useMobile=True)
 
     log.info('Converting to JSON: %s', categoryUrl)
-    j: dict = json.loads(jString)
+    try:
+      j: dict = toJson(jString)
+    except json.decoder.JSONDecodeError as e:
+      log.error("Failed to load JSON", extra={"categoryUrl": categoryUrl, "error": e})
+      return
     j = self.getEmbededJson(j=j["widgetStates"], keyName="categoryMenu")
 
     log.info('Parsing JSON: %s', categoryUrl)
@@ -47,7 +52,7 @@ class OzonParserCategories(OzonParser):
 
     log.info('Filtering JSON: %s', categoryUrl)
     for category in j["categories"]:
-      title: str = category["name"]
+      title: str = category["cellTrackingInfo"]["title"]
       url: str = category["link"]
       parentUrl: str = categoryUrl
       data = categPB.Category(title=title, url=url, parentUrl=parentUrl)

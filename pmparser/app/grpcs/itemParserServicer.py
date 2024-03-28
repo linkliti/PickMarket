@@ -1,4 +1,6 @@
 """ Item Parser GRPC servicer """
+import logging
+import traceback
 from typing import Generator
 
 import grpc
@@ -7,6 +9,8 @@ from app.parsers.ozon.ozonParserItems import OzonParserItems
 from app.protos import items_pb2 as itemsPB
 from app.protos import items_pb2_grpc as itemsPBgrpc
 from app.protos import types_pb2 as typesPB
+
+log = logging.getLogger(__name__)
 
 
 class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
@@ -21,14 +25,20 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
     userQuery: str | None = request.userQuery if request.HasField('userQuery') else None
     # params: str | None = request.params if request.HasField('params') else None
     numOfPages: int | None = request.numOfPages if request.HasField('numOfPages') else None
-    match market:
-      case typesPB.Markets.OZON:
-        p = OzonParserItems()
-        gen = p.getItems(pageUrl=pageUrl, query=userQuery, numOfPages=numOfPages)
-    if gen:
-      for item in gen:
-        resp = itemsPB.ItemResponse(item=item)
-        yield resp
+    try:
+      match market:
+        case typesPB.Markets.OZON:
+          p = OzonParserItems()
+          gen = p.getItems(pageUrl=pageUrl, query=userQuery, numOfPages=numOfPages)
+      if gen:
+        for item in gen:
+          resp = itemsPB.ItemResponse(item=item)
+          yield resp
+    except Exception as e:  # pylint: disable=broad-except
+      log.error(traceback.format_exc())
+      context.set_code(grpc.StatusCode.INTERNAL)
+      context.set_details(str(e))
+      return
 
   def GetItemCharacteristics(
       self, request: itemsPB.CharacteristicsRequest,
@@ -37,11 +47,17 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
     gen: Generator[itemsPB.Characteristic, None, None] | None = None
     market: typesPB.Markets = request.market
     itemUrl: str = request.itemUrl
-    match market:
-      case typesPB.Markets.OZON:
-        p = OzonParserChars()
-        gen = p.getItemChars(itemUrl=itemUrl)
-    if gen:
-      for char in gen:
-        resp = itemsPB.CharacteristicResponse(characteristic=char)
-        yield resp
+    try:
+      match market:
+        case typesPB.Markets.OZON:
+          p = OzonParserChars()
+          gen = p.getItemChars(itemUrl=itemUrl)
+      if gen:
+        for char in gen:
+          resp = itemsPB.CharacteristicResponse(characteristic=char)
+          yield resp
+    except Exception as e:  # pylint: disable=broad-except
+      log.error(traceback.format_exc())
+      context.set_code(grpc.StatusCode.INTERNAL)
+      context.set_details(str(e))
+      return

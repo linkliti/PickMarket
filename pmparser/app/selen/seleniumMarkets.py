@@ -5,6 +5,7 @@ import logging
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 from app.selen.seleniumWorker import SeleniumWorker
+from utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class SeleniumWorkerMarkets(SeleniumWorker):
       preTag: Tag | NavigableString | None = soup.find(name='pre')
       if not preTag:
         raise Exception("Failed to parse webpage")
-      jsonData: dict = json.loads(s=preTag.text)
+      jsonData: dict = toJson(s=preTag.text)
       return json.dumps(obj=jsonData, ensure_ascii=False)
     except:
       return data

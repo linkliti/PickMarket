@@ -1,11 +1,12 @@
 """ Ozon Parser Module for item parameters """
 import json
 import logging
-from typing import Generator, List
+from typing import Generator
 
 from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
 from app.parsers.ozon.ozonParser import OzonParser
+from utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class OzonParserChars(OzonParser):
     jString: str = self.getData(host=self.host, url=self.api + itemUrl, useMobile=True)
 
     log.info('Converting data to JSON: %s', itemUrl)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="webCharacteristics")
 
     log.info('Parsing chars: %s', itemUrl)
@@ -30,7 +31,7 @@ class OzonParserChars(OzonParser):
           for charObj in char[charData]:
             name: str = charObj["name"]
             key: str = charObj["key"]
-            value: str | int | float | List[str] | None = None
+            value: str | int | float | list[str] | None = None
             # List
             if len(charObj["values"]) > 1:
               value = [v["text"] for v in charObj["values"]]

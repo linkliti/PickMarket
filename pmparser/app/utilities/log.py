@@ -1,24 +1,25 @@
 """ Set up logger """
 import logging
 import sys
+from pythonjsonlogger import jsonlogger
 
 
-def setupLogger(name, debug, filename='parser.log') -> logging.Logger:
-  """ Set up logger """
-  log: logging.Logger = logging.getLogger(name=name)
-  log.setLevel(level=logging.DEBUG if debug else logging.INFO)
+def setupLogger(name, debug, filename='parser.log') -> None:
+  """ Setup logger """
+  logger = logging.getLogger(name)
+  logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
-  logFormat = logging.Formatter(
-    fmt='time=%(asctime)s level=%(levelname)s pid=%(process)d name="%(name)s" msg="%(message)s"',
-    datefmt="%Y-%m-%dT%H:%M:%S%z")
+  # Create formatter
+  formatter = jsonlogger.JsonFormatter(
+    fmt='%(asctime)s %(levelname)s %(process)s %(name)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 
+  # Create a file handler and add it to logger
+  fileHandler = logging.FileHandler(filename)
+  fileHandler.setFormatter(formatter)
+  logger.addHandler(fileHandler)
+
+  # If debug is True, add a stream handler to logger
   if debug:
-    stdoutHandler = logging.StreamHandler(stream=sys.stdout)
-    stdoutHandler.setFormatter(fmt=logFormat)
-    log.addHandler(hdlr=stdoutHandler)
-
-  fileHandler = logging.FileHandler(filename=filename)
-  fileHandler.setFormatter(fmt=logFormat)
-  log.addHandler(hdlr=fileHandler)
-
-  return log
+    streamHandler = logging.StreamHandler(sys.stdout)
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)

@@ -9,9 +9,10 @@
       "type": "go",
       "request": "launch",
       "console": "integratedTerminal",
+      "hideSystemGoroutines": true,
       "mode": "debug",
       "program": "${workspaceFolder}/backend/requestHandler/main.go",
-      "envFile": "${workspaceFolder}/backend/.env",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
       "env": {
         "DEBUG": "True",
         "LOG_FILE": "${workspaceFolder}/requestHandler.log",
@@ -24,7 +25,7 @@
       "console": "integratedTerminal",
       "mode": "debug",
       "program": "${workspaceFolder}/backend/categoriesWorker/main.go",
-      "envFile": "${workspaceFolder}/backend/.env",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
       "env": {
         "DEBUG": "True",
         "LOG_FILE": "${workspaceFolder}/categoriesWorker.log",
@@ -37,7 +38,7 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "program": "${workspaceFolder}/pmparser/app.py",
-      "envFile": "${workspaceFolder}/pmparser/.env",
+      "envFile": "${workspaceFolder}/pmparser/vscode.env",
       "env": {
         "DEBUG": "True",
         "LOG_FILE": "${workspaceFolder}/pmparser.log",

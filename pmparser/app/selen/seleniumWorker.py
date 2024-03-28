@@ -37,7 +37,7 @@ class SeleniumWorker():
     # Check for block
     data: str = self.driver.page_source
     if checkForBlock(data=data):
-      log.error("Failed to bypass block: %s", data)
+      log.error("Failed to bypass block", extra={"data": data})
       raise Exception("Failed to bypass block")
     return data
 

@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import types_pb2 as typesPB
 from app.protos import categories_pb2 as categPB
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class OzonParserFilters(OzonParser):
                                 useMobile=True)
 
     log.info('Converting to JSON: %s', self.categoryUrl)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filters")
 
     log.info('Parsing filters: %s', self.categoryUrl)
@@ -231,6 +232,6 @@ class OzonFilterWorker(OzonParser):
       "&search_uri=" + self.categoryUrl
     jString: str = self.getData(host=self.host, url=url, useMobile=True)
     log.info('Converting to JSON: %s', url)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
     return j

@@ -21,8 +21,10 @@ from grpc._server import _Server
 # from waitress import serve as waitress_serve
 
 DEBUG = bool(os.environ.get('DEBUG', False))
-log: logging.Logger = setupLogger(name='root', debug=DEBUG)
-workerCount: int = cpu_count() // 4
+setupLogger(name='root', debug=DEBUG)
+
+log = logging.getLogger(__name__)
+workerCount: int = cpu_count() // 2
 browserCount: int = workerCount // 2
 
 

@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	pmutils.SetupLogging()
+	pmutils.SetupLogging("categoriesWorker")
 	// Connections
 	parsClient, err := service.ConnectToParser()
 	if err != nil {

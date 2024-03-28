@@ -7,6 +7,7 @@ from typing import Generator
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
+from utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class OzonParserItems(OzonParser):
                                 useMobile=True)
 
     log.info('Converting data to JSON: %s', pageUrl)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
 
     log.info('Getting page info for items: %s', pageUrl)
     jPage = self.getEmbededJson(j=j, keyName="shared")
@@ -59,14 +60,14 @@ class OzonParserItems(OzonParser):
                              useMobile=True)
 
     log.info('Converting data to JSON: %s', pageUrl)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     jItems: dict = self.getEmbededJson(j=j["widgetStates"], keyName="searchResultsV2")
     log.info('Parsing items: %s', pageUrl)
     for item in jItems["items"]:
       try:
         data: itemsPB.Item = self.getItem(itemJson=item)
       except KeyError as e:
-        log.error("Failed to get item with error: %s %s: %s", type(e), e, item)
+        log.error("Failed to get item with error", extra={"error": e})
         continue
       log.debug("Item: %s", data)
       yield data

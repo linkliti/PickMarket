@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	pmutils.SetupLogging()
+	pmutils.SetupLogging("requestHandler")
 	bindAddress := pmutils.GetEnv("HANDLER_ADDR", "localhost:1111")
 	sm := mux.NewRouter()
 

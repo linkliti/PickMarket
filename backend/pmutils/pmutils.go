@@ -1,6 +1,8 @@
 package pmutils
 
 import (
+	"fmt"
+	"io"
 	"log/slog"
 	"os"
 )
@@ -16,17 +18,25 @@ func StrToBool(s string) bool {
 	return s != ""
 }
 
-func SetupLogging() {
+func SetupLogging(module string) {
+	debug := StrToBool(GetEnv("DEBUG", ""))
 	logCode := slog.LevelInfo
-	if StrToBool(GetEnv("DEBUG", "")) {
+	if debug {
 		logCode = slog.LevelDebug
 	}
-
 	slogOpts := slog.HandlerOptions{
 		Level: logCode,
 	}
-
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slogOpts))
+	logFile, err := os.OpenFile(module+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Printf("Failed to open log file %s for output: %s", module+".log", err)
+		panic(err)
+	}
+	handler := slog.NewJSONHandler(logFile, &slogOpts)
+	if debug {
+		handler = slog.NewJSONHandler(io.MultiWriter(os.Stdout, logFile), &slogOpts)
+	}
+	logger := slog.New(handler)
 	slog.SetDefault(logger)
 }
 
