@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"protos/parser"
@@ -56,7 +56,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 				charsToSave = append(charsToSave, char.Characteristic)
 			} else {
 				slog.Error("received a non-Characteristic message")
-				return errors.New("received a non-Characteristic message")
+				return fmt.Errorf("received a non-Characteristic message")
 			}
 		}
 	} else {

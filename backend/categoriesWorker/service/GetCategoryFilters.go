@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"protos/parser"
@@ -10,7 +10,7 @@ import (
 
 func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.CategoryParser_GetCategoryFiltersServer) error {
 	// Try to get filters from the database
-	filters, err := c.db.DBGetFilters(req.CategoryUrl)
+	filters, err := c.db.DBGetFilters(req.CategoryUrl, req.Market)
 	if err != nil {
 		// If it fails, get them from the parser
 		stream, err := c.parsClient.GetCategoryFilters(context.Background(), req)
@@ -26,7 +26,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 			if err == io.EOF {
 				// Save the filters to the database after receiving all filters from the stream
 				go func(filtersToSave []*parser.Filter) {
-					if err := c.db.DBSaveFilters(filtersToSave, req.CategoryUrl); err != nil {
+					if err := c.db.DBSaveFilters(filtersToSave, req.CategoryUrl, req.Market); err != nil {
 						slog.Error("failed to save filters to database", "err", err)
 					}
 				}(filtersToSave)
@@ -51,7 +51,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 				filtersToSave = append(filtersToSave, filter.Filter)
 			} else {
 				slog.Error("received a non-Filter message")
-				return errors.New("received a non-Filter message")
+				return fmt.Errorf("received a non-Filter message")
 			}
 		}
 	} else {

@@ -6,42 +6,43 @@ import (
 	"protos/parser"
 )
 
-func (d *Database) DBGetFilters(categoryUrl string) ([]*parser.Filter, error) {
-	// Initialize a slice to hold the filters
+func (d *Database) DBGetFilters(categoryUrl string, market parser.Markets) ([]*parser.Filter, error) {
+	// SQL
 	var filters []*parser.Filter
-	// Prepare the SQL query to retrieve filters
-	sqlStatement := `SELECT categoryFilters FROM Categories WHERE categoryURL=$1;`
-	// Query the database
-	row := d.Conn.QueryRow(context.Background(), sqlStatement, categoryUrl)
-	// Variable to hold the filters JSONB data
-	var filtersJSONB []byte
-	// Scan the result into the filtersJSONB variable
-	err := row.Scan(&filtersJSONB)
+	longURL, err := d.MakeFullURL(categoryUrl, market)
 	if err != nil {
 		return nil, err
 	}
-	// Unmarshal the JSONB data into a slice of parser.Filter
+	sqlStatement := `SELECT categoryFilters FROM Categories WHERE categoryURL=$1;`
+	row := d.Conn.QueryRow(context.Background(), sqlStatement, longURL)
+	// Unmarshalling JSON
+	var filtersJSONB []byte
+	err = row.Scan(&filtersJSONB)
+	if err != nil {
+		return nil, err
+	}
 	err = json.Unmarshal(filtersJSONB, &filters)
 	if err != nil {
 		return nil, err
 	}
-	// Return the slice of filters
 	return filters, nil
 }
 
-func (d *Database) DBSaveFilters(filters []*parser.Filter, categoryUrl string) error {
-	// Marshal the filters into JSON format
+func (d *Database) DBSaveFilters(filters []*parser.Filter, categoryUrl string, market parser.Markets) error {
+	// Marhalling JSON
 	filtersJSON, err := json.Marshal(&filters)
 	if err != nil {
 		return err
 	}
-	// Prepare the SQL statement to update the filters
-	sqlStatement := `UPDATE Categories SET categoryFilters=$1 WHERE categoryURL=$2;`
-	// Execute the SQL statement
-	_, err = d.Conn.Exec(context.Background(), sqlStatement, filtersJSON, categoryUrl)
+	// SQL
+	longURL, err := d.MakeFullURL(categoryUrl, market)
 	if err != nil {
 		return err
 	}
-	// Return nil if no errors occurred
+	sqlStatement := `UPDATE Categories SET categoryFilters=$1 WHERE categoryURL=$2;`
+	_, err = d.Conn.Exec(context.Background(), sqlStatement, filtersJSON, longURL)
+	if err != nil {
+		return err
+	}
 	return nil
 }

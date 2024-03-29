@@ -27,6 +27,7 @@ func main() {
 		return
 	}
 	defer database.Conn.Close()
+
 	slog.Info("Verifying categories...")
 	// Verify categories
 	var workpoolSize int = runtime.NumCPU() / 3

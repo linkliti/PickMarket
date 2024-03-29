@@ -1,7 +1,7 @@
 """ Ozon Parser Module for categories """
 import logging
 from typing import Generator
-
+import urllib.parse as parse
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import categories_pb2 as categPB
 from app.utilities.jsonUtil import toJson
@@ -26,7 +26,10 @@ class OzonParserCategories(OzonParser):
     log.info('Filtering JSON', extra={"url": '/modal/categoryMenuRoot'})
     for category in j["categories"]:
       title = category["name"]
-      url = category["link"]
+      # Remove the query parameters
+      tempUrl: parse.ParseResult = parse.urlparse(category["link"])
+      tempUrl = tempUrl._replace(query="")
+      url: str =  parse.urlunparse(components=tempUrl)
       data = categPB.Category(title=title, url=url)
       yield data
 
@@ -48,7 +51,10 @@ class OzonParserCategories(OzonParser):
     log.info('Filtering JSON', extra={"url": categoryUrl})
     for category in j["categories"]:
       title: str = category["cellTrackingInfo"]["title"]
-      url: str = category["link"]
+      # Remove the query parameters
+      tempUrl: parse.ParseResult = parse.urlparse(category["link"])
+      tempUrl = tempUrl._replace(query="")
+      url: str =  parse.urlunparse(components=tempUrl)
       parentUrl: str = categoryUrl
       data = categPB.Category(title=title, url=url, parentUrl=parentUrl)
       yield data

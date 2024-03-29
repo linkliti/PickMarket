@@ -2,7 +2,7 @@ package manager
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"protos/parser"
@@ -75,7 +75,7 @@ func (m *Manager) UpdateSubCategories(market parser.Markets) error {
 					categoryResponse, err := stream.Recv()
 					if err == io.EOF {
 						// Set parseDate to NOW() for the category after receiving all subcategories from the stream
-						if err := m.db.DBSetCategoryParseDate(categoryUrl); err != nil {
+						if err := m.db.DBSetCategoryParseDate(categoryUrl, market); err != nil {
 							slog.Error("failed to set parseDate for category", "err", err)
 							errChan <- err
 						}
@@ -99,7 +99,7 @@ func (m *Manager) UpdateSubCategories(market parser.Markets) error {
 						slog.Error("received a non-Category message")
 						if status, ok := categoryResponse.Message.(*parser.CategoryResponse_Status); ok {
 							slog.Error("status", "status", status.Status)
-							errChan <- errors.New(status.Status.String())
+							errChan <- fmt.Errorf(status.Status.String())
 							return
 						}
 					}

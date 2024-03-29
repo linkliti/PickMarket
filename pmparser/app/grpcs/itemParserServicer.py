@@ -1,6 +1,5 @@
 """ Item Parser GRPC servicer """
 import logging
-import traceback
 from typing import Generator
 
 import grpc
