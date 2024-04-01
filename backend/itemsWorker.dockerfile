@@ -1,6 +1,7 @@
 # Builder
 FROM golang:alpine AS builder
 ENV GOPATH=/build
+ARG SERVICE_NAME
 
 # Dependencies
 COPY ./pmutils /build/pmutils
@@ -12,7 +13,7 @@ WORKDIR /build/protos
 RUN go mod download
 
 # Compilation
-COPY ./requestHandler /build/src
+COPY ./$SERVICE_NAME /build/src
 WORKDIR /build/src
 RUN go mod download
 RUN go build -o /build/app /build/src/main.go
@@ -21,5 +22,5 @@ RUN go build -o /build/app /build/src/main.go
 FROM alpine
 WORKDIR /application
 COPY --from=builder /build/app /application/app
-RUN touch ./requestHandler.log
+RUN touch ./$SERVICE_NAME.log
 CMD ["/application/app"]

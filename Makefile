@@ -60,7 +60,7 @@ compose-rm:
 	&& docker-compose rm \
 	&& sudo rm -rf ./db/pgdata
 
-compose-up:
+compose-up: logs
 	@docker-compose -f docker-compose.yml up --force-recreate
 
 go-mod-tidy:
@@ -69,3 +69,6 @@ go-mod-tidy:
 	@cd ./backend/pmutils && go mod tidy
 	@cd ./backend/protos && go mod tidy
 	@cd ./backend/requestHandler && go mod tidy
+
+logs:
+	@touch categoriesWorker.log itemsWorker.log requestHandler.log pmparser.log

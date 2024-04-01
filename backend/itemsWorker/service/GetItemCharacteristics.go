@@ -2,65 +2,68 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"log/slog"
 	"protos/parser"
+
+	"google.golang.org/grpc/codes"
+
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
 
 func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest, srv parser.ItemParser_GetItemCharacteristicsServer) error {
-	// Try to get characteristics from the database
+	// Get Chars from DB
 	chars, err := c.db.DBGetChars(req.ItemUrl)
 	if err != nil {
-		// If it fails, get them from the parser
+		errText := "failed to get characteristics from database"
+		slog.Error(errText, "err", err)
+		return sendErrorStatus_GetItemCharacteristics(srv, errText)
+	}
+	// Get from parser
+	if len(chars) == 0 {
 		stream, err := c.parsClient.GetItemCharacteristics(context.Background(), req)
 		if err != nil {
-			slog.Error("failed to get characteristics from parser", "err", err)
-			return err
+			errText := "failed to get characteristics from parser"
+			slog.Error(errText, "err", err)
+			return sendErrorStatus_GetItemCharacteristics(srv, errText)
 		}
-
-		// Slice to hold the pointers to characteristics for saving to the database
 		var charsToSave []*parser.Characteristic
-
-		// Iterate over the stream
 		for {
 			charResponse, err := stream.Recv()
+			// Save final array to DB
 			if err == io.EOF {
-				// Save the characteristics to the database after receiving all characteristics from the stream
-				go func(charsToSave []*parser.Characteristic) {
+				go func() {
 					if err := c.db.DBSaveChars(charsToSave, req.ItemUrl, req.Market); err != nil {
 						slog.Error("failed to save characteristics to database", "err", err)
+						return
 					}
-				}(charsToSave)
+				}()
 				break
 			}
+			// Failed message
 			if err != nil {
-				slog.Error("failed to receive characteristic from stream", "err", err)
-				return err
+				errText := "failed to receive characteristic from stream"
+				slog.Error(errText, "err", err)
+				return sendErrorStatus_GetItemCharacteristics(srv, errText)
 			}
-
-			// Use a type assertion to get the Characteristic from the CharacteristicResponse
+			// Message
 			if char, ok := charResponse.Message.(*parser.CharacteristicResponse_Characteristic); ok {
-				// Create a new CharacteristicResponse to send to the caller
 				resp := &parser.CharacteristicResponse{
 					Message: char,
 				}
-
-				// Send the CharacteristicResponse to the caller
 				if err := srv.Send(resp); err != nil {
 					slog.Error("failed to send characteristic to caller", "err", err)
 					return err
 				}
-
-				// Add the pointer to the characteristic to the slice
 				charsToSave = append(charsToSave, char.Characteristic)
 			} else {
-				slog.Error("received a non-Characteristic message")
-				return fmt.Errorf("received a non-Characteristic message")
+				errText := "received a non-characteristic message"
+				slog.Error(errText, "message", charResponse)
+				return sendErrorStatus_GetItemCharacteristics(srv, errText)
 			}
 		}
 	} else {
-		// If getting characteristics from the database succeeds, send them to the caller
+		// Send chars from DB
 		for _, char := range chars {
 			resp := &parser.CharacteristicResponse{
 				Message: &parser.CharacteristicResponse_Characteristic{
@@ -73,6 +76,17 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 			}
 		}
 	}
-
 	return nil
+}
+
+func sendErrorStatus_GetItemCharacteristics(srv parser.ItemParser_GetItemCharacteristicsServer, errText string) error {
+	resp := &parser.CharacteristicResponse{
+		Message: &parser.CharacteristicResponse_Status{
+			Status: &statuspb.Status{
+				Code:    int32(codes.Internal),
+				Message: errText,
+			},
+		},
+	}
+	return srv.Send(resp)
 }

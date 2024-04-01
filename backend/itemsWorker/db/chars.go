@@ -4,45 +4,57 @@ import (
 	"context"
 	"encoding/json"
 	"protos/parser"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (d *Database) DBGetChars(itemUrl string) ([]*parser.Characteristic, error) {
-	// Initialize a slice to hold the characteristics
-	var characteristics []*parser.Characteristic
-
-	// Prepare the SQL query to retrieve characteristics
+	// SQL
 	sqlStatement := `SELECT itemChars FROM Items WHERE itemURL=$1;`
-
-	// Query the database
 	row := d.conn.QueryRow(context.Background(), sqlStatement, itemUrl)
-
-	// Variable to hold the itemChars JSONB data
 	var charsJSONB []byte
-
-	// Scan the result into the charsJSONB variable
 	err := row.Scan(&charsJSONB)
 	if err != nil {
 		return nil, err
 	}
-
-	// Unmarshal the JSONB data into a slice of parser.Characteristic
-	err = json.Unmarshal(charsJSONB, &characteristics)
+	if len(charsJSONB) == 0 {
+		return []*parser.Characteristic{}, nil
+	}
+	// JSONB to json.RawMessage
+	var charsRaw []json.RawMessage
+	err = json.Unmarshal(charsJSONB, &charsRaw)
 	if err != nil {
 		return nil, err
 	}
-
-	// Return the slice of characteristics
-	return characteristics, nil
+	// json.RawMessage to parser.Characteristic
+	chars := make([]*parser.Characteristic, len(charsRaw))
+	for i, v := range charsRaw {
+		char := &parser.Characteristic{}
+		err = protojson.Unmarshal(v, char)
+		if err != nil {
+			return nil, err
+		}
+		chars[i] = char
+	}
+	return chars, nil
 }
 
 func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string, market parser.Markets) error {
-	// Marshal the characteristics into JSON format
-	charsJSON, err := json.Marshal(chars)
+	// parser.Characteristic to json.RawMessage
+	charsRaw := make([]json.RawMessage, len(chars))
+	for i, char := range chars {
+		charJSON, err := protojson.Marshal(char)
+		if err != nil {
+			return err
+		}
+		charsRaw[i] = json.RawMessage(charJSON)
+	}
+	// json.RawMessage to JSONB
+	charsJSON, err := json.Marshal(charsRaw)
 	if err != nil {
 		return err
 	}
-
-	// Prepare the SQL statement to insert or update the item
+	// SQL
 	sqlStatement := `
 	INSERT INTO Items (itemURL, Marketplaces_marketName, itemChars, itemParseDate)
 	VALUES ($1, $2, $3, NOW())
@@ -50,13 +62,9 @@ func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string, m
 	SET itemChars = EXCLUDED.itemChars,
 			itemParseDate = NOW();
 	`
-
-	// Execute the SQL statement
 	_, err = d.conn.Exec(context.Background(), sqlStatement, itemUrl, market, charsJSON)
 	if err != nil {
 		return err
 	}
-
-	// Return nil if no errors occurred
 	return nil
 }

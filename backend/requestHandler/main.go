@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"pickmarket/requestHandler/categories"
+	"pickmarket/requestHandler/misc"
 	"pmutils"
 	"time"
 
@@ -21,12 +22,18 @@ func main() {
 	sm := mux.NewRouter()
 
 	categClient := categories.NewCategoryClient()
+	// itemClient := items.NewItemsClient()
 
-	getR := sm.Methods(http.MethodGet).Subrouter()
-	getR.HandleFunc("/categories/root", categClient.GetRootCategories)
-	getR.HandleFunc("/categories/sub", categClient.GetSubCategories)
-	getR.HandleFunc("/categories/filter", categClient.GetFilterCategories)
-	getR.HandleFunc("/health", categClient.HealthCheck)
+	mainR := sm.Methods(http.MethodGet).Subrouter()
+	mainR.HandleFunc("/health", misc.HealthCheck)
+
+	catR := sm.Methods(http.MethodGet).PathPrefix("/categories").Subrouter()
+	catR.HandleFunc("/root", categClient.GetRootCategories)
+	catR.HandleFunc("/sub", categClient.GetSubCategories)
+	catR.HandleFunc("/filter", categClient.GetCategoryFilters)
+
+	// itemR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
+	// itemR.HandleFunc("/todo", itemClient.GetItems)
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
@@ -35,7 +42,7 @@ func main() {
 		Addr:         bindAddress,
 		Handler:      ch(sm),
 		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
 	go func() {

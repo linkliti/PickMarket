@@ -41,6 +41,7 @@
       "envFile": "${workspaceFolder}/pmparser/vscode.env",
       "env": {
         "DEBUG": "True",
+        "SELENIUM_HEAD" : "True",
         "LOG_FILE": "${workspaceFolder}/pmparser.log",
       }
     },

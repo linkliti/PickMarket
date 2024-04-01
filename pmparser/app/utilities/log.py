@@ -4,7 +4,7 @@ import sys
 from pythonjsonlogger import jsonlogger
 
 
-def setupLogger(name, debug, filename='parser.log') -> None:
+def setupLogger(name, debug, filename='pmparser.log') -> None:
   """ Setup logger """
   logger = logging.getLogger(name)
   logger.setLevel(logging.DEBUG if debug else logging.INFO)

@@ -25,8 +25,8 @@ setupLogger(name='root', debug=DEBUG)
 
 log = logging.getLogger(__name__)
 workerCount: int = cpu_count() // 2
-# browserCount: int = workerCount // 2
-browserCount: int = 2
+browserCount: int = workerCount // 2
+# browserCount: int = 2
 
 
 def serve(bindAddress: str) -> None:

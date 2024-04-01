@@ -28,6 +28,7 @@
           "**/go.sum",
           "**/go.mod",
           "**/__debug*",
+          "go.work.sum",
           // parser
           "pmparser/venv",
           "**/__pycache__",
@@ -37,9 +38,6 @@
           ".style.yapf",
           ".pylintrc",
           "**/*.egg-info",
-          // global
-          ".gitignore",
-          ".vscode/",
         ]
       }
     ]
@@ -58,6 +56,7 @@
     "**/go.sum": true,
     "**/go.mod": true,
     "**/__debug*": true,
+    "go.work.sum": true,
     "pmparser/venv": true,
     "**/__pycache__": true,
     "**/.pytest_cache": true,
@@ -65,9 +64,7 @@
     "parser/requirements.txt": true,
     ".style.yapf": true,
     ".pylintrc": true,
-    "**/*.egg-info": true,
-    ".gitignore": true,
-    ".vscode/": true
+    "**/*.egg-info": true
   },
   "hidefiles.selectedProfile": "Hide Files",
   "python.testing.unittestEnabled": false,

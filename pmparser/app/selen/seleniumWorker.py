@@ -6,7 +6,7 @@ from seleniumbase import Driver, undetected
 
 log = logging.getLogger(__name__)
 
-DEBUG = bool(os.environ.get('DEBUG', False))
+SELENIUM_HEAD = bool(os.environ.get('SELENIUM_HEAD', False))
 
 
 class SeleniumWorker():
@@ -23,7 +23,7 @@ class SeleniumWorker():
       'headless': True,
       'headed': False,
     }
-    if DEBUG:
+    if SELENIUM_HEAD:
       presetArgs['headed'] = True
       presetArgs['headless'] = False
     self.driver: undetected.Chrome = Driver(*args, **presetArgs, **kwargs)

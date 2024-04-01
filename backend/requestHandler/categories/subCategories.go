@@ -11,56 +11,55 @@ import (
 )
 
 func (c *CategoryClient) GetSubCategories(rw http.ResponseWriter, r *http.Request) {
-	// Get the variables from the request
+	// Market
 	market, err := getMarketFromVars(r)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// Parent category URL
 	categoryUrl := r.URL.Query().Get("categoryUrl")
 	if categoryUrl == "" {
 		http.Error(rw, "categoryUrl not provided", http.StatusInternalServerError)
 		return
 	}
-	// Create a request for sub categories
 	req := &parser.SubCategoriesRequest{
 		Market:      market,
 		CategoryUrl: categoryUrl,
 	}
-	// Use the client to send the request
+	// gRPC call
 	stream, err := c.cl.GetSubCategories(context.Background(), req)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Prepare a slice to hold the categories
 	var categories []*parser.Category
-	// Receive the categories from the stream
 	for {
 		response, err := stream.Recv()
+		// End of stream
 		if err == io.EOF {
 			break
 		}
+		// Failed message
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// Check if the response contains a Category
+		// Message
 		if category := response.GetCategory(); category != nil {
-			// Add the category to the slice
 			categories = append(categories, category)
 		} else if status := response.GetStatus(); status != nil {
-			// Handle the error status
 			slog.Warn("Received an error status", "status", status.Message)
+			http.Error(rw, status.Message, http.StatusInternalServerError)
 		}
 	}
-	// Convert the categories to JSON
+	// All to JSON
 	jsonData, err := json.Marshal(categories)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Write the JSON data to the response
+	// Return
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(jsonData)
 }

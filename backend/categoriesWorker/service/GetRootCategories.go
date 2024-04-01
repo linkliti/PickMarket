@@ -3,14 +3,18 @@ package service
 import (
 	"log/slog"
 	"protos/parser"
+
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 )
 
 func (c *CategoryService) GetRootCategories(req *parser.RootCategoriesRequest, srv parser.CategoryParser_GetRootCategoriesServer) error {
 	// Get root categories from the database
 	categories, err := c.db.DBGetRootCategoryChildren(req.Market)
 	if err != nil {
-		slog.Error("failed to get root categories from database", "err", err)
-		return err
+		errText := "failed to get root categories from database"
+		slog.Error(errText, "err", err)
+		return sendErrorStatus_GetRootCategories(srv, errText)
 	}
 	// Iterate over the categories and send them to the caller
 	for _, category := range categories {
@@ -25,4 +29,16 @@ func (c *CategoryService) GetRootCategories(req *parser.RootCategoriesRequest, s
 		}
 	}
 	return nil
+}
+
+func sendErrorStatus_GetRootCategories(srv parser.CategoryParser_GetRootCategoriesServer, errText string) error {
+	resp := &parser.CategoryResponse{
+		Message: &parser.CategoryResponse_Status{
+			Status: &statuspb.Status{
+				Code:    int32(codes.Internal),
+				Message: errText,
+			},
+		},
+	}
+	return srv.Send(resp)
 }

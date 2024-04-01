@@ -84,7 +84,8 @@ func (d *Database) DBSaveCategory(category *parser.Category, market parser.Marke
 	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (categoryURL) DO UPDATE
 	SET categoryName = EXCLUDED.categoryName,
-			Categories_parentURL = EXCLUDED.Categories_parentURL
+			Categories_parentURL = EXCLUDED.Categories_parentURL,
+			categoryParseDate = NULL;
 	`
 	_, err = d.Conn.Exec(context.Background(), sqlStatement, &category.Title, longURL, longURLParent, market)
 	if err != nil {

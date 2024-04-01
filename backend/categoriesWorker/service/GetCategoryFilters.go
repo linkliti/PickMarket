@@ -6,25 +6,31 @@ import (
 	"io"
 	"log/slog"
 	"protos/parser"
+
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 )
 
 func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.CategoryParser_GetCategoryFiltersServer) error {
-	// Try to get filters from the database
+	// Get filters from DB
 	filters, err := c.db.DBGetFilters(req.CategoryUrl, req.Market)
 	if err != nil {
-		// If it fails, get them from the parser
+		errText := "failed to get filters from database"
+		slog.Error(errText, "err", err)
+		return sendErrorStatus_GetCategoryFilters(srv, errText)
+	}
+	// Get from parser
+	if len(filters) == 0 {
 		stream, err := c.parsClient.GetCategoryFilters(context.Background(), req)
 		if err != nil {
 			slog.Error("failed to get filters from parser", "err", err)
 			return err
 		}
-		// Slice to hold the pointers to filters for saving to the database
 		var filtersToSave []*parser.Filter
-		// Iterate over the stream
 		for {
 			filterResponse, err := stream.Recv()
+			// Save final array to DB
 			if err == io.EOF {
-				// Save the filters to the database after receiving all filters from the stream
 				go func(filtersToSave []*parser.Filter) {
 					if err := c.db.DBSaveFilters(filtersToSave, req.CategoryUrl, req.Market); err != nil {
 						slog.Error("failed to save filters to database", "err", err)
@@ -32,22 +38,20 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 				}(filtersToSave)
 				break
 			}
+			// Failed message
 			if err != nil {
 				slog.Error("failed to receive filter from stream", "err", err)
 				return err
 			}
-			// Use a type assertion to get the Filter from the FilterResponse
+			// Message
 			if filter, ok := filterResponse.Message.(*parser.FilterResponse_Filter); ok {
-				// Create a new FilterResponse to send to the caller
 				resp := &parser.FilterResponse{
 					Message: filter,
 				}
-				// Send the FilterResponse to the caller
 				if err := srv.Send(resp); err != nil {
 					slog.Error("failed to send filter to caller", "err", err)
 					return err
 				}
-				// Add the pointer to the filter to the slice
 				filtersToSave = append(filtersToSave, filter.Filter)
 			} else {
 				slog.Error("received a non-Filter message")
@@ -55,7 +59,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 			}
 		}
 	} else {
-		// If getting filters from the database succeeds, send them to the caller
+		// Send filters from DB
 		for _, filter := range filters {
 			resp := &parser.FilterResponse{
 				Message: &parser.FilterResponse_Filter{
@@ -69,4 +73,16 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 		}
 	}
 	return nil
+}
+
+func sendErrorStatus_GetCategoryFilters(srv parser.CategoryParser_GetCategoryFiltersServer, errText string) error {
+	resp := &parser.FilterResponse{
+		Message: &parser.FilterResponse_Status{
+			Status: &statuspb.Status{
+				Code:    int32(codes.Internal),
+				Message: errText,
+			},
+		},
+	}
+	return srv.Send(resp)
 }

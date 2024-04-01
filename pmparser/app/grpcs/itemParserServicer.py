@@ -34,7 +34,7 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
           resp = itemsPB.ItemResponse(item=item)
           yield resp
     except Exception as e:  # pylint: disable=broad-except
-      # log.error(traceback.format_exc())
+      log.error("GetItems exception", extra={"error": str(e)})
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
       return
@@ -56,7 +56,7 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
           resp = itemsPB.CharacteristicResponse(characteristic=char)
           yield resp
     except Exception as e:  # pylint: disable=broad-except
-      # log.error(traceback.format_exc())
+      log.error("GetItemCharacteristics exception", extra={"error": str(e)})
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
       return
