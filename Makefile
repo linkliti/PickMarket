@@ -18,23 +18,10 @@ JSENV := cd frontend
 # $(ENVSET)FOO="bar"; echo $(ENVGET)FOO
 # $(JSENV) && npm run dev
 
-# Frontend
-js-install:
-	@$(JSENV) && npm install
-
-js-dev:
-	@$(ENVSET) DEV="True"; $(JSENV) && npm run dev
-
 # Parser
 py-venv:
 	@conda create --prefix ./pmparser/venv python=3.12 -y
 	@$(PYENV) && cd pmparser && python -m pip install -r "requirements.txt"
-
-py-run-dev:
-	$(ENVSET) DEV="True"; $(PYENV) && cd pmparser && python app.py
-
-py-run:
-	@$(PYENV) && cd pmparser && python app.py
 
 py-freeze:
 	@$(PYENV) && cd pmparser && python -m pip freeze > "requirements_freeze.txt"
@@ -70,5 +57,13 @@ go-mod-tidy:
 	@cd ./backend/protos && go mod tidy
 	@cd ./backend/requestHandler && go mod tidy
 
+# Frontend
+js-install:
+	@$(JSENV) && npm install
+
+js-build:
+	@$(JSENV) && npm run build
+
 logs:
 	@touch categoriesWorker.log itemsWorker.log requestHandler.log pmparser.log
+

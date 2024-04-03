@@ -18,18 +18,15 @@
         "detail": "",
         "description": "Hides configuration/cache files",
         "hidden": [
-          // frontend
           "frontend/node_modules",
           "frontend/.eslintrc.cjs",
           "frontend/package*",
           "frontend/*config.*",
           "*/vite.config.ts",
-          // backend
           "**/go.sum",
           "**/go.mod",
           "**/__debug*",
           "go.work.sum",
-          // parser
           "pmparser/venv",
           "**/__pycache__",
           "**/.pytest_cache",
@@ -37,7 +34,7 @@
           "parser/requirements.txt",
           ".style.yapf",
           ".pylintrc",
-          "**/*.egg-info",
+          "**/*.egg-info"
         ]
       }
     ]

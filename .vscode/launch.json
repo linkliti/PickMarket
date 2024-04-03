@@ -54,7 +54,7 @@
       "envFile": "${workspaceFolder}/pmparser/vscode.env",
       "env": {
         "DEBUG": "True",
-        "SELENIUM_HEAD" : "True",
+        "SELENIUM_HEAD": "True",
         "LOG_FILE": "${workspaceFolder}/pmparser.log",
       }
     },
@@ -62,12 +62,12 @@
       "type": "chrome",
       "request": "launch",
       "name": "JS: Launch Chrome",
-      "url": "http://localhost:5173",
+      "url": "http://localhost:5005",
       "webRoot": "${workspaceFolder}/frontend",
       "skipFiles": [
         "<node_internals>/**",
         "${workspaceFolder}/node_modules/**/*.js"
       ]
     }
-  ]
+  ],
 }
