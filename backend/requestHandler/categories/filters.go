@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
@@ -26,6 +27,7 @@ func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Requ
 		Market:      market,
 		CategoryUrl: url,
 	}
+	slog.Debug("GetCategoryFilters", "request", req)
 	// gRPC call
 	stream, err := c.cl.GetCategoryFilters(context.Background(), req)
 	if err != nil {

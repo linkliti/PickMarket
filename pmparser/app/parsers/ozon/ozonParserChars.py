@@ -15,9 +15,9 @@ class OzonParserChars(OzonParser):
 
   def getItemChars(self, itemUrl: str) -> Generator[itemsPB.Characteristic, None, None]:
     """Get item params from Ozon"""
-    itemUrl = itemUrl + "/features"
+    itemUrl = itemUrl + "features"
     log.debug('Getting params', extra={"url": itemUrl})
-    jString: str = self.getData(host=self.host, url=self.api + itemUrl, useMobile=True)
+    jString: str = self.getData(host=self.host, url=self.api + itemUrl)
 
     log.info('Converting data to JSON', extra={"url": itemUrl})
     j: dict = toJson(jString)

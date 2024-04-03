@@ -15,9 +15,7 @@ class OzonParserCategories(OzonParser):
   def getRootCategories(self) -> Generator[categPB.Category, None, None]:
     """ Return name, link and empty url of parent for root categories """
     log.info('Getting categories', extra={"url": '/modal/categoryMenuRoot'})
-    jString: str = self.getData(host=self.host,
-                                url=self.api + '/modal/categoryMenuRoot',
-                                useMobile=True)
+    jString: str = self.getData(host=self.host, url=self.api + '/modal/categoryMenuRoot')
 
     log.info('Converting to JSON', extra={"url": '/modal/categoryMenuRoot'})
     j: dict = toJson(jString)
@@ -29,16 +27,14 @@ class OzonParserCategories(OzonParser):
       # Remove the query parameters
       tempUrl: parse.ParseResult = parse.urlparse(category["link"])
       tempUrl = tempUrl._replace(query="")
-      url: str =  parse.urlunparse(components=tempUrl)
+      url: str = parse.urlunparse(components=tempUrl)
       data = categPB.Category(title=title, url=url)
       yield data
 
   def getSubCategories(self, categoryUrl: str) -> Generator[categPB.Category, None, None]:
     """ Return name, link and url of parent of subcategory """
     log.info('Getting categories', extra={"url": categoryUrl})
-    jString = self.getData(host=self.host,
-                           url=self.api + '/modal/categoryMenu' + categoryUrl,
-                           useMobile=True)
+    jString = self.getData(host=self.host, url=self.api + '/modal/categoryMenu' + categoryUrl)
 
     log.info('Converting to JSON', extra={"url": categoryUrl})
     j: dict = toJson(jString)
@@ -54,7 +50,7 @@ class OzonParserCategories(OzonParser):
       # Remove the query parameters
       tempUrl: parse.ParseResult = parse.urlparse(category["link"])
       tempUrl = tempUrl._replace(query="")
-      url: str =  parse.urlunparse(components=tempUrl)
+      url: str = parse.urlunparse(components=tempUrl)
       parentUrl: str = categoryUrl
       data = categPB.Category(title=title, url=url, parentUrl=parentUrl)
       yield data

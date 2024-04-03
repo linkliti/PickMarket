@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"pmutils"
+	"protos/parser"
+	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Database struct {
-	conn *pgxpool.Pool
+	Conn        *pgxpool.Pool
+	MarketLinks map[string]string
 }
 
 func NewDBConnection() (*Database, error) {
@@ -23,10 +26,29 @@ func NewDBConnection() (*Database, error) {
 	}
 	url := "postgresql://" + DB_ITEMS_USER + ":" + DB_ITEMS_PASS + "@" + DB_ADDR + "/" + DB_NAME
 	d := &Database{}
-	d.conn, err = pgxpool.New(context.Background(), url)
+	d.Conn, err = pgxpool.New(context.Background(), url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer d.conn.Close()
+	d.MarketLinks, err = d.DBGetMarketURLs()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get market URLs: %w", err)
+	}
 	return d, nil
+}
+
+func (d *Database) MakeFullURL(url string, market parser.Markets) (string, error) {
+	marketURL, ok := d.MarketLinks[market.String()]
+	if !ok {
+		return "", fmt.Errorf("market not found in MarketLinks")
+	}
+	return marketURL + url, nil
+}
+
+func (d *Database) MakeShortURL(url string, market parser.Markets) (string, error) {
+	marketURL, ok := d.MarketLinks[market.String()]
+	if !ok {
+		return "", fmt.Errorf("market not found in MarketLinks")
+	}
+	return strings.TrimPrefix(url, marketURL), nil
 }

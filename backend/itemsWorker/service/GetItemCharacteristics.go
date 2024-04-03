@@ -13,7 +13,7 @@ import (
 
 func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest, srv parser.ItemParser_GetItemCharacteristicsServer) error {
 	// Get Chars from DB
-	chars, err := c.db.DBGetChars(req.ItemUrl)
+	chars, err := c.db.DBGetChars(req.ItemUrl, req.Market)
 	if err != nil {
 		errText := "failed to get characteristics from database"
 		slog.Error(errText, "err", err)

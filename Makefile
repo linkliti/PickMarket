@@ -51,7 +51,7 @@ remove: clean
 # export PATH=${PATH}:`go env GOPATH`/bin
 proto:
 # Py: parser server
-	@$(PYENV) && python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty \ --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser \ ./protos/parser/app/protos/*.proto
+	@$(PYENV) && python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto
 # Go: parser client
 	@$(PYENV) && python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
 

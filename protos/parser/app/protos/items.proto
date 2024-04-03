@@ -31,8 +31,8 @@ message Item {
   string url = 2;
   string imageUrl = 3;
   bool isAdult = 4;
-  int32 price = 5;
-  optional int32 oldPrice = 6;
+  double price = 5;
+  optional double oldPrice = 6;
   optional float rating = 7;
   optional int32 comments = 8;
 }

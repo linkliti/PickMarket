@@ -31,6 +31,7 @@ func (c *ItemsClient) GetItems(rw http.ResponseWriter, r *http.Request) {
 		Params:     &params,
 		NumOfPages: &numOfPages,
 	}
+	slog.Debug("GetItems", "request", req)
 	// gRPC call
 	stream, err := c.cl.GetItems(context.Background(), req)
 	if err != nil {

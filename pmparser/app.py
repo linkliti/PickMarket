@@ -24,9 +24,8 @@ DEBUG = bool(os.environ.get('DEBUG', False))
 setupLogger(name='root', debug=DEBUG)
 
 log = logging.getLogger(__name__)
-workerCount: int = cpu_count() // 2
+workerCount: int = cpu_count() // 4
 browserCount: int = workerCount // 2
-# browserCount: int = 2
 
 
 def serve(bindAddress: str) -> None:
@@ -39,7 +38,7 @@ def serve(bindAddress: str) -> None:
                                                    server=server)
   server.add_insecure_port(address=bindAddress)
   server.start()
-  log.info("Server started, listening on %s", bindAddress, extra={"bindAddress": bindAddress})
+  log.info("Server started", extra={"bindAddress": bindAddress})
   server.wait_for_termination()
 
 

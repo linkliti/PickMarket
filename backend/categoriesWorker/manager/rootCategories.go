@@ -18,7 +18,7 @@ func (m *Manager) UpdateRootCategories() error {
 	for _, market := range markets {
 		marketStrings = append(marketStrings, market.String())
 	}
-	slog.Debug("received markets from db", "markets", marketStrings)
+	slog.Debug("empty markets from db", "markets", marketStrings)
 	// Create a buffered channel for markets
 	marketChan := make(chan parser.Markets, len(markets))
 	// Create a worker pool

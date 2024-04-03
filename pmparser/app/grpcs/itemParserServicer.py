@@ -21,10 +21,10 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
     gen: Generator[itemsPB.Item, None, None] | None = None
     market: typesPB.Markets = request.market
     pageUrl: str = request.pageUrl
-    userQuery: str | None = request.userQuery if request.HasField(field_name='userQuery') else None
-    params: str | None = request.params if request.HasField(field_name='params') else None
+    userQuery: str | None = request.userQuery if request.HasField('userQuery') else None
+    params: str | None = request.params if request.HasField('params') else None
     numOfPages: int | None = request.numOfPages if request.HasField(
-      field_name='numOfPages') else None
+      'numOfPages') else None
     try:
       match market:
         case typesPB.Markets.OZON:

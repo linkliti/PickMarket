@@ -28,6 +28,7 @@ func (c *CategoryClient) GetSubCategories(rw http.ResponseWriter, r *http.Reques
 		Market:      market,
 		CategoryUrl: url,
 	}
+	slog.Debug("GetSubCategories", "req", req)
 	// gRPC call
 	stream, err := c.cl.GetSubCategories(context.Background(), req)
 	if err != nil {

@@ -45,7 +45,7 @@
       }
     },
     {
-      "name": "Py: Launch app.py",
+      "name": "Py: Launch pmparser",
       "type": "debugpy",
       "request": "launch",
       "console": "integratedTerminal",

@@ -21,6 +21,7 @@ func (c *CategoryClient) GetRootCategories(rw http.ResponseWriter, r *http.Reque
 		Market: market,
 	}
 	// gRPC call
+	slog.Debug("GetRootCategories", "request", req)
 	stream, err := c.cl.GetRootCategories(context.Background(), req)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)

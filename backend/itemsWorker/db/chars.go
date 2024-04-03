@@ -5,20 +5,26 @@ import (
 	"encoding/json"
 	"protos/parser"
 
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func (d *Database) DBGetChars(itemUrl string) ([]*parser.Characteristic, error) {
+func (d *Database) DBGetChars(longItemURL string, market parser.Markets) ([]*parser.Characteristic, error) {
 	// SQL
-	sqlStatement := `SELECT itemChars FROM Items WHERE itemURL=$1;`
-	row := d.conn.QueryRow(context.Background(), sqlStatement, itemUrl)
-	var charsJSONB []byte
-	err := row.Scan(&charsJSONB)
+	longURL, err := d.MakeFullURL(longItemURL, market)
 	if err != nil {
 		return nil, err
 	}
-	if len(charsJSONB) == 0 {
-		return []*parser.Characteristic{}, nil
+	sqlStatement := `SELECT itemChars FROM Items WHERE itemURL=$1;`
+	row := d.Conn.QueryRow(context.Background(), sqlStatement, longURL)
+	var charsJSONB []byte
+	err = row.Scan(&charsJSONB)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return []*parser.Characteristic{}, nil
+		} else {
+			return nil, err
+		}
 	}
 	// JSONB to json.RawMessage
 	var charsRaw []json.RawMessage
@@ -55,6 +61,10 @@ func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string, m
 		return err
 	}
 	// SQL
+	longItemURL, err := d.MakeFullURL(itemUrl, market)
+	if err != nil {
+		return err
+	}
 	sqlStatement := `
 	INSERT INTO Items (itemURL, Marketplaces_marketName, itemChars, itemParseDate)
 	VALUES ($1, $2, $3, NOW())
@@ -62,7 +72,7 @@ func (d *Database) DBSaveChars(chars []*parser.Characteristic, itemUrl string, m
 	SET itemChars = EXCLUDED.itemChars,
 			itemParseDate = NOW();
 	`
-	_, err = d.conn.Exec(context.Background(), sqlStatement, itemUrl, market, charsJSON)
+	_, err = d.Conn.Exec(context.Background(), sqlStatement, longItemURL, market, charsJSON)
 	if err != nil {
 		return err
 	}

@@ -24,12 +24,13 @@ func main() {
 		slog.Error("failed to connect to database", "err", err)
 		return
 	}
+	defer database.Conn.Close()
 
 	// Start server
 	grpcServer := grpc.NewServer()
 	itemsService := service.NewItemsService(parsClient, database)
 	parser.RegisterItemParserServer(grpcServer, itemsService)
-	addr := pmutils.GetEnv("ITEMS_WORKER_ADDR", ":1111")
+	addr := pmutils.GetEnv("ITEM_WORKER_ADDR", ":1111")
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		panic(err)

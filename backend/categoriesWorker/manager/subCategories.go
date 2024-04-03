@@ -20,7 +20,7 @@ func (m *Manager) UpdateAllSubCategories() error {
 	for _, market := range markets {
 		marketStrings = append(marketStrings, market.String())
 	}
-	slog.Debug("received markets from db", "markets", marketStrings)
+	slog.Debug("empty markets from db", "markets", marketStrings)
 	for _, market := range markets {
 		slog.Info("updating subcategories", "market", market.String())
 		// Continuously call UpdateSubCategories until there are no categories left without a parseDate

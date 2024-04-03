@@ -25,6 +25,7 @@ func (c *ItemsClient) GetItemCharacteristics(rw http.ResponseWriter, r *http.Req
 		Market:  market,
 		ItemUrl: url,
 	}
+	slog.Debug("GetItemCharacteristics", "request", req)
 	// gRPC call
 	stream, err := c.cl.GetItemCharacteristics(context.Background(), req)
 	if err != nil {
