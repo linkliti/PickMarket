@@ -1,16 +1,16 @@
-package categories
+package items
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
 )
 
-func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request) {
+func (c *ItemsClient) GetItemCharacteristics(rw http.ResponseWriter, r *http.Request) {
 	// Request
 	market, err := misc.GetMarketFromVars(r)
 	if err != nil {
@@ -20,19 +20,18 @@ func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Requ
 	url := r.URL.Query().Get("url")
 	if url == "" {
 		http.Error(rw, "url is required", http.StatusBadRequest)
-		return
 	}
-	req := &parser.FiltersRequest{
-		Market:      market,
-		CategoryUrl: url,
+	req := &parser.CharacteristicsRequest{
+		Market:  market,
+		ItemUrl: url,
 	}
 	// gRPC call
-	stream, err := c.cl.GetCategoryFilters(context.Background(), req)
+	stream, err := c.cl.GetItemCharacteristics(context.Background(), req)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
-	var filters []*parser.Filter
+	var chars []*parser.Characteristic
 	for {
 		response, err := stream.Recv()
 		// End of stream
@@ -45,15 +44,15 @@ func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Requ
 			return
 		}
 		// Message
-		if filter := response.GetFilter(); filter != nil {
-			filters = append(filters, filter)
+		if char := response.GetCharacteristic(); char != nil {
+			chars = append(chars, char)
 		} else if status := response.GetStatus(); status != nil {
-			fmt.Printf("Received an error status: %v\n", status)
+			slog.Warn("Received an error status", "status", status.Message)
 			http.Error(rw, status.Message, http.StatusInternalServerError)
 		}
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(filters)
+	jsonData, err := json.Marshal(chars)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return

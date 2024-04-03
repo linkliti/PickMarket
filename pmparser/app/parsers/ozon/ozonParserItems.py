@@ -3,6 +3,7 @@ import html
 import logging
 import re
 from typing import Generator
+import json
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
@@ -17,17 +18,19 @@ class OzonParserItems(OzonParser):
   def getItems(self,
                pageUrl: str,
                query: str | None = None,
+               params: str | None = None,
                numOfPages: int | None = None) -> Generator[itemsPB.Item, None, None]:
     """ Get items from Ozon """
     log.debug('Getting items', extra={"pageUrl": pageUrl})
     reqParams: dict[str, str] = {}
+    if params:
+      paramsDict: dict[str, str] = json.loads(params)
+      reqParams = dict(paramsDict.items())
     if query:
-      reqParams = {"text": query}
+      reqParams["text"] = query
     jString: str = self.getData(host=self.host,
                                 url=self.api + pageUrl,
-                                params=reqParams,
-                                useMobile=True)
-
+                                params=reqParams)
     log.info('Converting data to JSON', extra={"pageUrl": pageUrl})
     j: dict = toJson(jString)
 
@@ -55,8 +58,7 @@ class OzonParserItems(OzonParser):
     if jString is None:
       jString = self.getData(host=self.host,
                              url=self.api + pageUrl + "&page=" + str(page),
-                             params=reqParams,
-                             useMobile=True)
+                             params=reqParams)
 
     log.info('Converting data to JSON', extra={"pageUrl": pageUrl, "page": page})
     j: dict = toJson(jString)

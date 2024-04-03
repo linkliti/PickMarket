@@ -1,16 +1,16 @@
-package categories
+package items
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
 )
 
-func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request) {
+func (c *ItemsClient) GetItems(rw http.ResponseWriter, r *http.Request) {
 	// Request
 	market, err := misc.GetMarketFromVars(r)
 	if err != nil {
@@ -20,19 +20,24 @@ func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Requ
 	url := r.URL.Query().Get("url")
 	if url == "" {
 		http.Error(rw, "url is required", http.StatusBadRequest)
-		return
 	}
-	req := &parser.FiltersRequest{
-		Market:      market,
-		CategoryUrl: url,
+	userQuery := r.URL.Query().Get("userQuery")
+	params := r.URL.Query().Get("params")
+	var numOfPages int32 = 1
+	req := &parser.ItemsRequest{
+		Market:     market,
+		PageUrl:    url,
+		UserQuery:  &userQuery,
+		Params:     &params,
+		NumOfPages: &numOfPages,
 	}
 	// gRPC call
-	stream, err := c.cl.GetCategoryFilters(context.Background(), req)
+	stream, err := c.cl.GetItems(context.Background(), req)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
-	var filters []*parser.Filter
+	var items []*parser.Item
 	for {
 		response, err := stream.Recv()
 		// End of stream
@@ -45,15 +50,15 @@ func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Requ
 			return
 		}
 		// Message
-		if filter := response.GetFilter(); filter != nil {
-			filters = append(filters, filter)
+		if item := response.GetItem(); item != nil {
+			items = append(items, item)
 		} else if status := response.GetStatus(); status != nil {
-			fmt.Printf("Received an error status: %v\n", status)
+			slog.Warn("Received an error status", "status", status.Message)
 			http.Error(rw, status.Message, http.StatusInternalServerError)
 		}
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(filters)
+	jsonData, err := json.Marshal(items)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return

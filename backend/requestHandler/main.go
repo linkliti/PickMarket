@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"pickmarket/requestHandler/categories"
+	"pickmarket/requestHandler/items"
 	"pickmarket/requestHandler/misc"
 	"pmutils"
 	"time"
@@ -22,18 +23,19 @@ func main() {
 	sm := mux.NewRouter()
 
 	categClient := categories.NewCategoryClient()
-	// itemClient := items.NewItemsClient()
+	itemClient := items.NewItemsClient()
 
 	mainR := sm.Methods(http.MethodGet).Subrouter()
 	mainR.HandleFunc("/health", misc.HealthCheck)
 
 	catR := sm.Methods(http.MethodGet).PathPrefix("/categories").Subrouter()
-	catR.HandleFunc("/root", categClient.GetRootCategories)
-	catR.HandleFunc("/sub", categClient.GetSubCategories)
-	catR.HandleFunc("/filter", categClient.GetCategoryFilters)
+	catR.HandleFunc("/{market}/root", categClient.GetRootCategories)
+	catR.HandleFunc("/{market}/sub", categClient.GetSubCategories)
+	catR.HandleFunc("/{market}/filter", categClient.GetCategoryFilters)
 
-	// itemR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
-	// itemR.HandleFunc("/todo", itemClient.GetItems)
+	itR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
+	itR.HandleFunc("/{market}/list", itemClient.GetItems)
+	itR.HandleFunc("/{market}/chars", itemClient.GetItemCharacteristics)
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 

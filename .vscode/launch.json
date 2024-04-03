@@ -32,6 +32,19 @@
       }
     },
     {
+      "name": "Go: Launch itemsWorker",
+      "type": "go",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/itemsWorker/main.go",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/itemsWorker.log",
+      }
+    },
+    {
       "name": "Py: Launch app.py",
       "type": "debugpy",
       "request": "launch",

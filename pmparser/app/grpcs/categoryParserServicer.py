@@ -30,8 +30,8 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           yield resp
     except Exception as e: # pylint: disable=broad-except
       log.error("GetRootCategories exception", extra={"error": str(e)})
-      context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details(str(e))
+      context.set_code(code=grpc.StatusCode.INTERNAL)
+      context.set_details(details=str(e))
       return
 
   def GetSubCategories(
@@ -51,8 +51,8 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           yield resp
     except Exception as e: # pylint: disable=broad-except
       log.error("GetSubCategories exception", extra={"error": str(e)})
-      context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details(str(e))
+      context.set_code(code=grpc.StatusCode.INTERNAL)
+      context.set_details(details=str(e))
       return
 
   def GetCategoryFilters(
@@ -72,6 +72,6 @@ class PMCategoryParserServicer(categPBgrpc.CategoryParserServicer):
           yield resp
     except Exception as e: # pylint: disable=broad-except
       log.error("GetCategoryFilters exception", extra={"error": str(e)})
-      context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details(str(e))
+      context.set_code(code=grpc.StatusCode.INTERNAL)
+      context.set_details(details=str(e))
       return

@@ -21,22 +21,23 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
     gen: Generator[itemsPB.Item, None, None] | None = None
     market: typesPB.Markets = request.market
     pageUrl: str = request.pageUrl
-    userQuery: str | None = request.userQuery if request.HasField('userQuery') else None
-    # params: str | None = request.params if request.HasField('params') else None
-    numOfPages: int | None = request.numOfPages if request.HasField('numOfPages') else None
+    userQuery: str | None = request.userQuery if request.HasField(field_name='userQuery') else None
+    params: str | None = request.params if request.HasField(field_name='params') else None
+    numOfPages: int | None = request.numOfPages if request.HasField(
+      field_name='numOfPages') else None
     try:
       match market:
         case typesPB.Markets.OZON:
           p = OzonParserItems()
-          gen = p.getItems(pageUrl=pageUrl, query=userQuery, numOfPages=numOfPages)
+          gen = p.getItems(pageUrl=pageUrl, query=userQuery, params=params, numOfPages=numOfPages)
       if gen:
         for item in gen:
           resp = itemsPB.ItemResponse(item=item)
           yield resp
     except Exception as e:  # pylint: disable=broad-except
       log.error("GetItems exception", extra={"error": str(e)})
-      context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details(str(e))
+      context.set_code(code=grpc.StatusCode.INTERNAL)
+      context.set_details(details=str(e))
       return
 
   def GetItemCharacteristics(
@@ -57,6 +58,6 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
           yield resp
     except Exception as e:  # pylint: disable=broad-except
       log.error("GetItemCharacteristics exception", extra={"error": str(e)})
-      context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details(str(e))
+      context.set_code(code=grpc.StatusCode.INTERNAL)
+      context.set_details(details=str(e))
       return

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"pickmarket/requestHandler/misc"
 	"protos/parser"
 
 	"log/slog"
@@ -12,20 +13,20 @@ import (
 
 func (c *CategoryClient) GetSubCategories(rw http.ResponseWriter, r *http.Request) {
 	// Market
-	market, err := getMarketFromVars(r)
+	market, err := misc.GetMarketFromVars(r)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Parent category URL
-	categoryUrl := r.URL.Query().Get("categoryUrl")
-	if categoryUrl == "" {
-		http.Error(rw, "categoryUrl not provided", http.StatusInternalServerError)
+	url := r.URL.Query().Get("url")
+	if url == "" {
+		http.Error(rw, "url is required", http.StatusInternalServerError)
 		return
 	}
 	req := &parser.SubCategoriesRequest{
 		Market:      market,
-		CategoryUrl: categoryUrl,
+		CategoryUrl: url,
 	}
 	// gRPC call
 	stream, err := c.cl.GetSubCategories(context.Background(), req)

@@ -4,17 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"net/http"
-	"protos/parser"
-
 	"log/slog"
+	"net/http"
+	"pickmarket/requestHandler/misc"
+	"protos/parser"
 )
 
 func (c *CategoryClient) GetRootCategories(rw http.ResponseWriter, r *http.Request) {
-	// Market
-	market, err := getMarketFromVars(r)
+	// Request
+	market, err := misc.GetMarketFromVars(r)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 	req := &parser.RootCategoriesRequest{
