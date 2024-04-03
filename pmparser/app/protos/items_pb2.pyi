@@ -28,6 +28,26 @@ class ItemResponse(_message.Message):
     status: _status_pb2.Status
     def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
+class Item(_message.Message):
+    __slots__ = ("name", "url", "imageUrl", "isAdult", "price", "oldPrice", "rating", "comments")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    IMAGEURL_FIELD_NUMBER: _ClassVar[int]
+    ISADULT_FIELD_NUMBER: _ClassVar[int]
+    PRICE_FIELD_NUMBER: _ClassVar[int]
+    OLDPRICE_FIELD_NUMBER: _ClassVar[int]
+    RATING_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    url: str
+    imageUrl: str
+    isAdult: bool
+    price: float
+    oldPrice: float
+    rating: float
+    comments: int
+    def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[float] = ..., oldPrice: _Optional[float] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ...) -> None: ...
+
 class CharacteristicsRequest(_message.Message):
     __slots__ = ("market", "itemUrl")
     MARKET_FIELD_NUMBER: _ClassVar[int]
@@ -43,26 +63,6 @@ class CharacteristicResponse(_message.Message):
     characteristic: Characteristic
     status: _status_pb2.Status
     def __init__(self, characteristic: _Optional[_Union[Characteristic, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
-
-class Item(_message.Message):
-    __slots__ = ("name", "url", "imageUrl", "isAdult", "price", "oldPrice", "rating", "comments")
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    URL_FIELD_NUMBER: _ClassVar[int]
-    IMAGEURL_FIELD_NUMBER: _ClassVar[int]
-    ISADULT_FIELD_NUMBER: _ClassVar[int]
-    PRICE_FIELD_NUMBER: _ClassVar[int]
-    OLDPRICE_FIELD_NUMBER: _ClassVar[int]
-    RATING_FIELD_NUMBER: _ClassVar[int]
-    COMMENTS_FIELD_NUMBER: _ClassVar[int]
-    name: str
-    url: str
-    imageUrl: str
-    isAdult: bool
-    price: int
-    oldPrice: int
-    rating: float
-    comments: int
-    def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[int] = ..., oldPrice: _Optional[int] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ...) -> None: ...
 
 class Characteristic(_message.Message):
     __slots__ = ("key", "name", "strValue", "intValue", "floatValue", "listValue")

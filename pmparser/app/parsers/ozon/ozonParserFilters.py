@@ -1,6 +1,5 @@
 """ Ozon Parser Module for categories """
 from itertools import islice
-import json
 import logging
 import re
 from typing import Any, Generator, Iterator
@@ -10,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import types_pb2 as typesPB
 from app.protos import categories_pb2 as categPB
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -32,13 +32,13 @@ class OzonParserFilters(OzonParser):
     """ Get filters for category """
     self.categoryUrl = categoryUrl
     log.info('Getting filters: %s', self.categoryUrl)
+    reqParams: dict[str, str] = {"all_filters": "t"}
     jString: str = self.getData(host=self.host,
-                                url=self.api + "/modal/filters" + self.categoryUrl +
-                                "/?all_filters=t",
-                                useMobile=True)
+                                url=self.api + "/modal/filters" + self.categoryUrl,
+                                params=reqParams)
 
     log.info('Converting to JSON: %s', self.categoryUrl)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filters")
 
     log.info('Parsing filters: %s', self.categoryUrl)
@@ -79,8 +79,8 @@ class OzonFilterWorker(OzonParser):
       self.externalType = "rangeFilter"
       self.j = self.j["multipleRangesFilter"]
 
-    self.title = self.j[self.externalType]["title"]
-    log.debug('Filter type: %s %s', self.externalType, self.title)
+    self.title: str = self.j[self.externalType]["title"]
+    log.debug('filter data', extra={"externalType": self.externalType, "title": self.title})
 
     match self.externalType:
       case "colorFilter":
@@ -109,7 +109,7 @@ class OzonFilterWorker(OzonParser):
 
   def returnFilter(self) -> categPB.Filter | None:
     """Return filter"""
-    if not self.internalType:
+    if self.internalType is None:
       return None
     filt: categPB.Filter | None = None
     kwargs: dict[str, Any] = {
@@ -229,8 +229,8 @@ class OzonFilterWorker(OzonParser):
     log.info('Getting more filter values for key: %s @ %s', self.key, self.categoryUrl)
     url: str = self.api + "/modal/filterValues?all_filters=t&filter=" + self.key +\
       "&search_uri=" + self.categoryUrl
-    jString: str = self.getData(host=self.host, url=url, useMobile=True)
+    jString: str = self.getData(host=self.host, url=url)
     log.info('Converting to JSON: %s', url)
-    j: dict = json.loads(jString)
+    j: dict = toJson(jString)
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filterValues")
     return j

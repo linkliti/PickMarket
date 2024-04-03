@@ -5,23 +5,58 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Py: Launch app.py",
-      "type": "debugpy",
+      "name": "Go: Launch requestHandler",
+      "type": "go",
       "request": "launch",
-      "program": "${workspaceFolder}/pmparser/app.py",
       "console": "integratedTerminal",
-      "justMyCode": true,
-      "env": { "DEBUG": "TRUE"}
+      "hideSystemGoroutines": true,
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/requestHandler/main.go",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/requestHandler.log",
+      }
     },
     {
-      "name": "Py: Remote Attach",
+      "name": "Go: Launch categoriesWorker",
+      "type": "go",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/categoriesWorker/main.go",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/categoriesWorker.log",
+      }
+    },
+    {
+      "name": "Go: Launch itemsWorker",
+      "type": "go",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/itemsWorker/main.go",
+      "envFile": "${workspaceFolder}/backend/vscode.env",
+      "env": {
+        "DEBUG": "True",
+        "LOG_FILE": "${workspaceFolder}/itemsWorker.log",
+      }
+    },
+    {
+      "name": "Py: Launch pmparser",
       "type": "debugpy",
-      "request": "attach",
-      "connect": { "host": "localhost", "port": 5678 },
-      "pathMappings": [
-        { "localRoot": "${workspaceFolder}", "remoteRoot": "." }
-      ],
-      "justMyCode": true
+      "request": "launch",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "program": "${workspaceFolder}/pmparser/app.py",
+      "envFile": "${workspaceFolder}/pmparser/vscode.env",
+      "env": {
+        "DEBUG": "True",
+        "SELENIUM_HEAD" : "True",
+        "LOG_FILE": "${workspaceFolder}/pmparser.log",
+      }
     },
     {
       "type": "chrome",

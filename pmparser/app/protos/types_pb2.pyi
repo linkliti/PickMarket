@@ -26,9 +26,9 @@ class RangeFilter(_message.Message):
     __slots__ = ("min", "max")
     MIN_FIELD_NUMBER: _ClassVar[int]
     MAX_FIELD_NUMBER: _ClassVar[int]
-    min: int
-    max: int
-    def __init__(self, min: _Optional[int] = ..., max: _Optional[int] = ...) -> None: ...
+    min: float
+    max: float
+    def __init__(self, min: _Optional[float] = ..., max: _Optional[float] = ...) -> None: ...
 
 class SelectionFilterItem(_message.Message):
     __slots__ = ("text", "value")

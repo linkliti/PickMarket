@@ -1,0 +1,117 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "PickMarket",
+  "dateExported": "2024-04-03T11:40:11.366Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "9d1116ce-a0ef-4ff0-ac0c-c5ae75608608",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "PM RootCategories",
+      "url": "localhost:5004/categories/ozon/root",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2024-03-22T15:39:40.377Z",
+      "modified": "2024-04-03T11:34:52.195Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "f8d2660c-cae8-4aa7-8b80-b247d9adced8",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "PM SubCategories",
+      "url": "localhost:5004/categories/ozon/sub?url=/category/tehnika-dlya-kuhni-10523/",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2024-03-22T15:39:48.582Z",
+      "modified": "2024-04-03T11:38:06.871Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "url",
+          "value": "/category/tehnika-dlya-kuhni-10523/",
+          "isPath": false
+        }
+      ],
+      "tests": []
+    },
+    {
+      "_id": "8f0c5474-547e-4a09-9067-06b1ac6cdafe",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "PM Filters",
+      "url": "localhost:5004/categories/ozon/filter?url=/category/tehnika-dlya-kuhni-10523/",
+      "method": "GET",
+      "sortNum": 21250,
+      "created": "2024-04-01T14:39:08.085Z",
+      "modified": "2024-04-03T11:38:11.995Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "url",
+          "value": "/category/tehnika-dlya-kuhni-10523/",
+          "isPath": false
+        }
+      ],
+      "tests": []
+    },
+    {
+      "_id": "9e65e8d2-1c0a-4933-a589-43894edd9d00",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "[TEMP]PM Items",
+      "url": "localhost:5004/items/ozon/list?url=/category/dom-i-sad-14500/",
+      "method": "GET",
+      "sortNum": 22500,
+      "created": "2024-04-03T11:29:53.818Z",
+      "modified": "2024-04-03T11:38:35.418Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "url",
+          "value": "/category/dom-i-sad-14500/",
+          "isPath": false
+        }
+      ],
+      "tests": []
+    },
+    {
+      "_id": "c7a25b0b-005e-44bf-8fc8-a800fbfe375a",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "[TEMP]PM Chars",
+      "url": "localhost:5004/items/ozon/chars?url=/product/maska-na-hellouin-golovnoy-ubor-dinozavra-podvizhnyy-rot-veselaya-vecherinka-1510098234/",
+      "method": "GET",
+      "sortNum": 23750,
+      "created": "2024-04-03T11:29:55.859Z",
+      "modified": "2024-04-03T11:38:37.467Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "url",
+          "value": "/product/maska-na-hellouin-golovnoy-ubor-dinozavra-podvizhnyy-rot-veselaya-vecherinka-1510098234/",
+          "isPath": false
+        }
+      ],
+      "tests": []
+    },
+    {
+      "_id": "6c939e80-aa45-4d8b-8198-9fccdb5f8f83",
+      "colId": "da208021-2787-4552-b1e9-94a412a74d09",
+      "containerId": "",
+      "name": "PM Health",
+      "url": "localhost:5004/health",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2024-03-25T13:34:44.810Z",
+      "modified": "2024-03-25T13:34:51.562Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    }
+  ]
+}

@@ -1,12 +1,13 @@
 """ Ozon Parser Module for categories """
 import html
-import json
 import logging
 import re
 from typing import Generator
+import json
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
+from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
 
@@ -17,28 +18,30 @@ class OzonParserItems(OzonParser):
   def getItems(self,
                pageUrl: str,
                query: str | None = None,
+               params: str | None = None,
                numOfPages: int | None = None) -> Generator[itemsPB.Item, None, None]:
     """ Get items from Ozon """
-    log.debug('Getting items: %s', pageUrl)
+    log.debug('Getting items', extra={"pageUrl": pageUrl})
     reqParams: dict[str, str] = {}
+    if params:
+      paramsDict: dict[str, str] = json.loads(params)
+      reqParams = dict(paramsDict.items())
     if query:
-      reqParams = {"text": query}
+      reqParams["text"] = query
     jString: str = self.getData(host=self.host,
                                 url=self.api + pageUrl,
-                                params=reqParams,
-                                useMobile=True)
+                                params=reqParams)
+    log.info('Converting data to JSON', extra={"pageUrl": pageUrl})
+    j: dict = toJson(jString)
 
-    log.info('Converting data to JSON: %s', pageUrl)
-    j: dict = json.loads(jString)
-
-    log.info('Getting page info for items: %s', pageUrl)
+    log.info('Getting page info for items', extra={"pageUrl": pageUrl})
     jPage = self.getEmbededJson(j=j, keyName="shared")
     totalItems: int = jPage["catalog"]["totalFound"]
     totalPages = jPage["catalog"]["totalPages"]
     if numOfPages:
       totalPages: int = min(totalPages, numOfPages)
-
-    log.info('Item and page counts for %s: items %d, pages %d', pageUrl, totalItems, totalPages)
+    log.info("Items page info", extra=\
+      {"pageUrl": pageUrl, "totalItems": totalItems, "totalPages": totalPages})
     for i in self.getItemsFromPage(pageUrl=pageUrl, page=1, reqParams=reqParams, jString=jString):
       yield i
     for page in range(2, totalPages + 1):
@@ -51,24 +54,23 @@ class OzonParserItems(OzonParser):
                        reqParams: dict[str, str],
                        jString: str | None = None) -> Generator[itemsPB.Item, None, None]:
     """ Get items from page """
-    log.info('Getting items from page %d: %s', page, pageUrl)
+    log.info('Getting items from page', extra={"pageUrl": pageUrl, "page": page})
     if jString is None:
       jString = self.getData(host=self.host,
                              url=self.api + pageUrl + "&page=" + str(page),
-                             params=reqParams,
-                             useMobile=True)
+                             params=reqParams)
 
-    log.info('Converting data to JSON: %s', pageUrl)
-    j: dict = json.loads(jString)
+    log.info('Converting data to JSON', extra={"pageUrl": pageUrl, "page": page})
+    j: dict = toJson(jString)
     jItems: dict = self.getEmbededJson(j=j["widgetStates"], keyName="searchResultsV2")
-    log.info('Parsing items: %s', pageUrl)
+    log.info('Parsing items', extra={"pageUrl": pageUrl, "page": page})
     for item in jItems["items"]:
       try:
         data: itemsPB.Item = self.getItem(itemJson=item)
       except KeyError as e:
-        log.error("Failed to get item with error: %s %s: %s", type(e), e, item)
+        log.error("Failed to get item with error", extra={"error": e})
         continue
-      log.debug("Item: %s", data)
+      log.debug("Item data", extra={"data": data})
       yield data
 
   def getItem(self, itemJson: dict) -> itemsPB.Item:

@@ -1,6 +1,6 @@
 """ Test GRPC interaction with ozon """
 #pylint: disable = unused-import, invalid-name, import-error, redefined-outer-name, unused-argument
-#pylint: disable=no-member
+#pylint: disable = no-member, line-too-long
 
 import grpc
 from app.protos import categories_pb2 as categPB
@@ -14,52 +14,60 @@ from .test_base import channel, logger
 
 def test_grpcGetItems(logger: None, channel: grpc.Channel) -> None:
   """Test getItems via gRPC"""
+  categoryUrl = "/category/ingalyatory-i-aksessuary-35039/"
+  market: typesPB.Markets = typesPB.Markets.OZON
+
   stub = itemsPBgrpc.ItemParserStub(channel=channel)
   response: itemsPB.ItemResponse = stub.GetItems(
-    itemsPB.ItemsRequest(market=typesPB.Markets.OZON,
-                         pageUrl='/category/ingalyatory-i-aksessuary-35039',
-                         numOfPages=2))
+    itemsPB.ItemsRequest(market=market, pageUrl=categoryUrl, numOfPages=2))
   for item in response:  # type: ignore
     print(item)
 
 
 def test_getItemChars(logger: None, channel: grpc.Channel) -> None:
   """Test getItemChars via gRPC"""
+  itemUrl: str = \
+    '/product/gigabyte-videokarta-geforce-rtx-3080-10-gb-gv-n3080gaming-oc-10gd-2-0-lhr-306060738'
+  market: typesPB.Markets = typesPB.Markets.OZON
+
   stub = itemsPBgrpc.ItemParserStub(channel=channel)
   response: itemsPB.CharacteristicResponse = stub.GetItemCharacteristics(
-    itemsPB.CharacteristicsRequest(
-      market=typesPB.Markets.OZON,
-      itemUrl=
-      '/product/gigabyte-videokarta-geforce-rtx-3080-10-gb-gv-n3080gaming-oc-10gd-2-0-lhr-306060738'
-    ))
+    itemsPB.CharacteristicsRequest(market=market, itemUrl=itemUrl))
   for char in response:  # type: ignore
     print(char)
 
 
 def test_grpcGetRootCategories(logger: None, channel: grpc.Channel) -> None:
   """Test getRootCategories via gRPC"""
+  market: typesPB.Markets = typesPB.Markets.OZON
+
   stub = categPBgrpc.CategoryParserStub(channel=channel)
   response: categPB.CategoryResponse = stub.GetRootCategories(
-    categPB.RootCategoriesRequest(market=typesPB.Markets.OZON))
+    categPB.RootCategoriesRequest(market=market))
   for category in response:  # type: ignore
     print(category)
 
 
 def test_grpcGetSubCategories(logger: None, channel: grpc.Channel) -> None:
   """Test getSubCategories via gRPC"""
+  categoryUrl: str = "/category/kvadrokoptery-i-aksessuary-7159/"
+  market: typesPB.Markets = typesPB.Markets.OZON
+
   stub = categPBgrpc.CategoryParserStub(channel=channel)
   response: categPB.CategoryResponse = stub.GetSubCategories(
-    categPB.SubCategoriesRequest(market=typesPB.Markets.OZON,
-                                 categoryUrl='/category/zhenskaya-odezhda-7501'))
+    categPB.SubCategoriesRequest(market=market, categoryUrl=categoryUrl))
+  print("Categories:")
   for category in response:  # type: ignore
     print(category)
 
 
 def test_grpcGetFilters(logger: None, channel: grpc.Channel) -> None:
   """Test getFilters via gRPC"""
+  categoryUrl: str = "/category/bluzy-i-rubashki-zhenskie-7511/"
+  market: typesPB.Markets = typesPB.Markets.OZON
+
   stub = categPBgrpc.CategoryParserStub(channel=channel)
   response: categPB.FilterResponse = stub.GetCategoryFilters(
-    categPB.FiltersRequest(market=typesPB.Markets.OZON,
-                           categoryUrl='/category/bluzy-i-rubashki-zhenskie-7511'))
+    categPB.FiltersRequest(market=market, categoryUrl=categoryUrl))
   for filt in response:  # type: ignore
     print(filt)

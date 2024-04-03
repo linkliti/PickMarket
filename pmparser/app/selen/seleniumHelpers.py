@@ -5,9 +5,11 @@ log = logging.getLogger(__name__)
 
 BADLIST: list[str] = [
   'Just a moment', 'We need to make sure that you are not a robot.', 'Checking your browser',
-  'Один момент'
+  'Один момент', 'Доступ ограничен'
 ]
 
+class BlockedError(Exception):
+  """Custom exception for block"""
 
 def cookiesToHeader(cookies: list[dict]) -> str:
   """ Convert cookies to header """

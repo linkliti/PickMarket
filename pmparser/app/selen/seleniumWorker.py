@@ -1,12 +1,12 @@
 """ Selenium Worker Module """
 import logging
 import os
-from app.selen.seleniumHelpers import checkForBlock, cookiesToHeader
+from app.selen.seleniumHelpers import BlockedError, checkForBlock, cookiesToHeader
 from seleniumbase import Driver, undetected
 
 log = logging.getLogger(__name__)
 
-DEBUG = bool(os.environ.get('DEBUG', False))
+SELENIUM_HEAD = bool(os.environ.get('SELENIUM_HEAD', False))
 
 
 class SeleniumWorker():
@@ -20,16 +20,17 @@ class SeleniumWorker():
       'do_not_track': True,
       'dark_mode': True,
       'uc_subprocess': True,
+      'headless': True,
+      'headed': False,
     }
-    if DEBUG:
+    if SELENIUM_HEAD:
       presetArgs['headed'] = True
-    else:
-      presetArgs['headless'] = True
+      presetArgs['headless'] = False
     self.driver: undetected.Chrome = Driver(*args, **presetArgs, **kwargs)
 
   def getPageSource(self, url: str) -> str:
     """GET page source from url using browser"""
-    log.debug("Getting page source: %s", url)
+    log.debug("Getting page source", extra={"url": url})
     # Get Page
     self.driver.default_get(url)
     if checkForBlock(data=self.driver.page_source):
@@ -37,14 +38,14 @@ class SeleniumWorker():
     # Check for block
     data: str = self.driver.page_source
     if checkForBlock(data=data):
-      log.error("Failed to bypass block: %s", data)
-      raise Exception("Failed to bypass block")
+      log.error("Failed to bypass block", extra={"data": data})
+      raise BlockedError("Failed to bypass block")
     return data
 
   def exportCookiesToStr(self) -> str:
     """ Export cookies as string """
     cookies: list[dict] = self.driver.get_cookies()
-    # log.debug("Cookies: %s", cookies)
+    # log.debug("Cookies", extra={"cookies": cookies})
     cookiesHeader: str = cookiesToHeader(cookies=cookies)
-    log.debug("Cookies: %s", cookiesHeader)
+    log.debug("Cookies", extra={"cookies": cookiesHeader})
     return cookiesHeader

@@ -4,7 +4,7 @@ package app.protos;
 import "app/protos/types.proto";
 import "google/rpc/status.proto";
 
-option go_package = "categoriesworker.protos";
+option go_package = "protos/parser";
 
 service CategoryParser {
   rpc GetRootCategories(RootCategoriesRequest) returns (stream CategoryResponse);
@@ -28,6 +28,12 @@ message CategoryResponse {
   }
 }
 
+message Category {
+  string title = 1;
+  string url = 2;
+  optional string parentUrl = 3;
+}
+
 message FiltersRequest {
   Markets market = 1;
   string categoryUrl = 2;
@@ -38,12 +44,6 @@ message FilterResponse {
     Filter filter = 1;
     google.rpc.Status status = 2;
   }
-}
-
-message Category {
-  string title = 1;
-  string url = 2;
-  optional string parentUrl = 3;
 }
 
 message Filter {

@@ -25,8 +25,10 @@
           "frontend/*config.*",
           "*/vite.config.ts",
           // backend
-          "go.work",
+          "**/go.sum",
           "**/go.mod",
+          "**/__debug*",
+          "go.work.sum",
           // parser
           "pmparser/venv",
           "**/__pycache__",
@@ -36,9 +38,6 @@
           ".style.yapf",
           ".pylintrc",
           "**/*.egg-info",
-          // global
-          ".gitignore",
-          ".vscode/",
         ]
       }
     ]
@@ -54,8 +53,10 @@
     "frontend/package*": true,
     "frontend/*config.*": true,
     "*/vite.config.ts": true,
-    "go.work": true,
+    "**/go.sum": true,
     "**/go.mod": true,
+    "**/__debug*": true,
+    "go.work.sum": true,
     "pmparser/venv": true,
     "**/__pycache__": true,
     "**/.pytest_cache": true,
@@ -63,9 +64,7 @@
     "parser/requirements.txt": true,
     ".style.yapf": true,
     ".pylintrc": true,
-    "**/*.egg-info": true,
-    ".gitignore": true,
-    ".vscode/": true
+    "**/*.egg-info": true
   },
   "hidefiles.selectedProfile": "Hide Files",
   "python.testing.unittestEnabled": false,
@@ -94,16 +93,6 @@
   "python.analysis.ignore": [
     "pmparser/app/protos"
   ],
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5433,
-      "driver": "PostgreSQL",
-      "database": "pmdb",
-      "username": "pmworker",
-      "password": "securepass",
-      "name": "PMDB"
-    }
-  ]
+  "go.testEnvFile": "${workspaceFolder}/backend/.env",
+  "python.envFile": "${workspaceFolder}/pmparser/.env"
 }

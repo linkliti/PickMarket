@@ -7,9 +7,10 @@ from urllib.parse import quote
 
 from app.parsers.baseParser import Parser
 from app.parsers.ozon.ozonParser import OzonParser
+from app.utilities.jsonUtil import toJson
 from seleniumbase import undetected
 
-from .test_base import logger, browserPool
+from .test_base import browserPool, logger
 
 log = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ def test_extractLocalJsons(logger: None):
       continue
     with open(file=f"./.temp/jsons/{item['tag']}.{item['type']}", mode="r", encoding="utf-8") as f:
       data: str = f.read()
-      j: dict = json.loads(data)
+      j: dict = toJson(data)
       # Getting right JS key
       js = p.getEmbededJson(j=j['widgetStates'], keyName=str(item['key']).rsplit(sep='.', maxsplit=1)[-1])
       with open(file=f"./.temp/parsed/{item['tag']}.{item['type']}", mode="w", encoding="utf-8") as f:

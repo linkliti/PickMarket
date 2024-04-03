@@ -20,14 +20,6 @@ class SubCategoriesRequest(_message.Message):
     categoryUrl: str
     def __init__(self, market: _Optional[_Union[_types_pb2.Markets, str]] = ..., categoryUrl: _Optional[str] = ...) -> None: ...
 
-class FiltersRequest(_message.Message):
-    __slots__ = ("market", "categoryUrl")
-    MARKET_FIELD_NUMBER: _ClassVar[int]
-    CATEGORYURL_FIELD_NUMBER: _ClassVar[int]
-    market: _types_pb2.Markets
-    categoryUrl: str
-    def __init__(self, market: _Optional[_Union[_types_pb2.Markets, str]] = ..., categoryUrl: _Optional[str] = ...) -> None: ...
-
 class CategoryResponse(_message.Message):
     __slots__ = ("category", "status")
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
@@ -35,14 +27,6 @@ class CategoryResponse(_message.Message):
     category: Category
     status: _status_pb2.Status
     def __init__(self, category: _Optional[_Union[Category, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
-
-class FilterResponse(_message.Message):
-    __slots__ = ("filter", "status")
-    FILTER_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
-    filter: Filter
-    status: _status_pb2.Status
-    def __init__(self, filter: _Optional[_Union[Filter, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Category(_message.Message):
     __slots__ = ("title", "url", "parentUrl")
@@ -53,6 +37,22 @@ class Category(_message.Message):
     url: str
     parentUrl: str
     def __init__(self, title: _Optional[str] = ..., url: _Optional[str] = ..., parentUrl: _Optional[str] = ...) -> None: ...
+
+class FiltersRequest(_message.Message):
+    __slots__ = ("market", "categoryUrl")
+    MARKET_FIELD_NUMBER: _ClassVar[int]
+    CATEGORYURL_FIELD_NUMBER: _ClassVar[int]
+    market: _types_pb2.Markets
+    categoryUrl: str
+    def __init__(self, market: _Optional[_Union[_types_pb2.Markets, str]] = ..., categoryUrl: _Optional[str] = ...) -> None: ...
+
+class FilterResponse(_message.Message):
+    __slots__ = ("filter", "status")
+    FILTER_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    filter: Filter
+    status: _status_pb2.Status
+    def __init__(self, filter: _Optional[_Union[Filter, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Filter(_message.Message):
     __slots__ = ("title", "key", "externalType", "internalType", "rangeFilter", "selectionFilter", "boolFilter")

@@ -4,7 +4,7 @@ package app.protos;
 import "app/protos/types.proto";
 import "google/rpc/status.proto";
 
-option go_package = "itemsworker.protos";
+option go_package = "protos/parser";
 
 service ItemParser {
   rpc GetItems(ItemsRequest) returns (stream ItemResponse);
@@ -26,6 +26,17 @@ message ItemResponse {
   }
 }
 
+message Item {
+  string name = 1;
+  string url = 2;
+  string imageUrl = 3;
+  bool isAdult = 4;
+  double price = 5;
+  optional double oldPrice = 6;
+  optional float rating = 7;
+  optional int32 comments = 8;
+}
+
 message CharacteristicsRequest {
   Markets market = 1;
   string itemUrl = 2;
@@ -36,17 +47,6 @@ message CharacteristicResponse {
     Characteristic characteristic = 1;
     google.rpc.Status status = 2;
   }
-}
-
-message Item {
-  string name = 1;
-  string url = 2;
-  string imageUrl = 3;
-  bool isAdult = 4;
-  int32 price = 5;
-  optional int32 oldPrice = 6;
-  optional float rating = 7;
-  optional int32 comments = 8;
 }
 
 message Characteristic {

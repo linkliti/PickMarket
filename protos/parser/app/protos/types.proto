@@ -1,6 +1,8 @@
 syntax = "proto3";
 package app.protos;
 
+option go_package = "protos/parser";
+
 enum Markets {
   OZON = 0;
 }
@@ -13,8 +15,8 @@ enum Filters {
 }
 
 message RangeFilter {
-  int32 min = 1;
-  int32 max = 2;
+  double min = 1;
+  double max = 2;
 }
 
 message SelectionFilterItem {
