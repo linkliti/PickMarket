@@ -7,7 +7,9 @@
   },
   "hidefiles.configurationType": "local",
   "debug.javascript.terminalOptions": {
-    "skipFiles": ["<node_internals>/**"]
+    "skipFiles": [
+      "<node_internals>/**"
+    ]
   },
   "hidefiles.globalConfig": {
     "profiles": [
@@ -23,15 +25,19 @@
           "frontend/*config.*",
           "*/vite.config.ts",
           // backend
-          "go.work",
+          "**/go.sum",
           "**/go.mod",
+          "**/__debug*",
+          "go.work.sum",
           // parser
-          "parser/venv",
-          "parser/__pycache__",
+          "pmparser/venv",
+          "**/__pycache__",
+          "**/.pytest_cache",
+          "**/downloaded_files",
           "parser/requirements.txt",
-          // global
-          ".gitignore",
-          ".vscode/"
+          ".style.yapf",
+          ".pylintrc",
+          "**/*.egg-info",
         ]
       }
     ]
@@ -47,13 +53,46 @@
     "frontend/package*": true,
     "frontend/*config.*": true,
     "*/vite.config.ts": true,
-    "go.work": true,
+    "**/go.sum": true,
     "**/go.mod": true,
-    "parser/venv": true,
-    "parser/__pycache__": true,
+    "**/__debug*": true,
+    "go.work.sum": true,
+    "pmparser/venv": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/downloaded_files": true,
     "parser/requirements.txt": true,
-    ".gitignore": true,
-    ".vscode/": true
+    ".style.yapf": true,
+    ".pylintrc": true,
+    "**/*.egg-info": true
   },
-  "hidefiles.selectedProfile": "Hide Files"
+  "hidefiles.selectedProfile": "Hide Files",
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportShadowedImports": "none"
+  },
+  "python.analysis.typeCheckingMode": "standard",
+  "protoc": {
+    "options": [
+      "--proto_path=${workspaceRoot}/proto"
+    ],
+  },
+  "pylint.ignorePatterns": [
+    "**/site-packages/**/*.py",
+    ".vscode/*.py",
+    "**/protos/**"
+  ],
+  "python.analysis.extraPaths": [
+    "./pmparser/app"
+  ],
+  "python.testing.pytestArgs": [
+    "pmparser/tests",
+    "-s",
+  ],
+  "python.analysis.ignore": [
+    "pmparser/app/protos"
+  ],
+  "go.testEnvFile": "${workspaceFolder}/backend/.env",
+  "python.envFile": "${workspaceFolder}/pmparser/.env"
 }

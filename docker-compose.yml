@@ -1,0 +1,95 @@
+version: "3"
+services:
+  # pmparser (python parser)
+  parser:
+    restart: on-failure:3
+    build:
+      context: ./pmparser
+      dockerfile: app.dockerfile
+    environment:
+      - DEBUG=True
+    env_file:
+      - ./pmparser/.env
+    volumes:
+      - ./pmparser.log:/application/pmparser.log
+    ports:
+      - 5000:5000
+      # - 9999:9999
+  # postgreSQL
+  db:
+    restart: on-failure:3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5001"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    image: postgres:15.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/001.sql
+      - ./db/pgdata:/var/lib/postgresql/data
+    command: -p 5001
+    ports:
+      - 5001:5001
+  # categoriesWorker
+  categories_worker:
+    depends_on:
+      db:
+        condition: service_healthy
+      parser:
+        condition: service_started
+    restart: on-failure:3
+    build:
+      context: ./backend/
+      dockerfile: categoriesWorker.dockerfile
+      args:
+        SERVICE_NAME: categoriesWorker
+    environment:
+      - DEBUG=True
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./categoriesWorker.log:/application/categoriesWorker.log
+    ports:
+      - 5002:5002
+  # itemsWorker
+  items_worker:
+    depends_on:
+      db:
+        condition: service_healthy
+      parser:
+        condition: service_started
+    restart: on-failure:3
+    build:
+      context: ./backend/
+      dockerfile: itemsWorker.dockerfile
+      args:
+        SERVICE_NAME: itemsWorker
+    environment:
+      - DEBUG=True
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./itemsWorker.log:/application/itemsWorker.log
+    ports:
+      - 5003:5003
+  # requestHandler
+  # request_handler:
+  #   depends_on:
+  #       - categories_worker
+  #       - items_worker
+  #   restart: on-failure:3
+  #   build:
+  #     context: ./backend/
+  #     dockerfile: requestHandler.dockerfile
+  #     args:
+  #       SERVICE_NAME: requestHandler
+  #   env_file:
+  #     - ./backend/.env
+  #   volumes:
+  #     - ./requestHandler.log:/application/requestHandler.log
+  #   ports:
+  #     - 5004:5004
