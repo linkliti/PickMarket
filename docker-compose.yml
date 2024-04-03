@@ -77,19 +77,33 @@ services:
     ports:
       - 5003:5003
   # requestHandler
-  # request_handler:
-  #   depends_on:
-  #       - categories_worker
-  #       - items_worker
-  #   restart: on-failure:3
-  #   build:
-  #     context: ./backend/
-  #     dockerfile: requestHandler.dockerfile
-  #     args:
-  #       SERVICE_NAME: requestHandler
-  #   env_file:
-  #     - ./backend/.env
-  #   volumes:
-  #     - ./requestHandler.log:/application/requestHandler.log
-  #   ports:
-  #     - 5004:5004
+  request_handler:
+    depends_on:
+        - categories_worker
+        - items_worker
+    restart: on-failure:3
+    build:
+      context: ./backend/
+      dockerfile: requestHandler.dockerfile
+      args:
+        SERVICE_NAME: requestHandler
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./requestHandler.log:/application/requestHandler.log
+    ports:
+      - 5004:5004
+  # frontend
+  frontend:
+    depends_on:
+      - request_handler
+    restart: on-failure:3
+    build:
+      context: ./frontend/
+      dockerfile: app.dockerfile
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend.log:/application/frontend.log
+    ports:
+      - 5005:5005
