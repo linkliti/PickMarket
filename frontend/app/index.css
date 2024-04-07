@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.pm-btn-active {
+  @apply bg-sky-200;
+}
+.pm-btn {
+  @apply focus:ring-0 border border-black text-black;
+}
+
+.hidden-radio {
+  @apply focus:ring-0;
+}

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./components/base/Header";
 
-function Layout() {
+export default function Layout() {
   if (import.meta.env.DEV) {
     // Runtime error overlay in DEV
     window.onerror = (_event, _source, _lineno, _colno, err) => {
@@ -20,8 +20,8 @@ function Layout() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col items-center px-16 pt-10 pb-20 bg-sky-100 max-md:px-5">
-        <div className="flex flex-col w-full max-w-[1065px] max-md:max-w-full">
+      <div className="flex min-h-screen flex-col items-center bg-sky-100 px-16 pb-20 pt-5 max-md:px-2">
+        <div className="flex w-full max-w-[1065px] flex-col max-md:max-w-full">
           <Header />
           <Outlet />
         </div>
@@ -29,5 +29,3 @@ function Layout() {
     </>
   );
 }
-
-export default Layout;

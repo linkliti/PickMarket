@@ -34,7 +34,9 @@
           "parser/requirements.txt",
           ".style.yapf",
           ".pylintrc",
-          "**/*.egg-info"
+          "**/*.egg-info",
+          "**/vite-env.d.ts",
+          ".prettierrc"
         ]
       }
     ]
@@ -44,26 +46,9 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true,
-    "frontend/node_modules": true,
-    "frontend/.eslintrc.cjs": true,
-    "frontend/package*": true,
-    "frontend/*config.*": true,
-    "*/vite.config.ts": true,
-    "**/go.sum": true,
-    "**/go.mod": true,
-    "**/__debug*": true,
-    "go.work.sum": true,
-    "pmparser/venv": true,
-    "**/__pycache__": true,
-    "**/.pytest_cache": true,
-    "**/downloaded_files": true,
-    "parser/requirements.txt": true,
-    ".style.yapf": true,
-    ".pylintrc": true,
-    "**/*.egg-info": true
+    "**/.DS_Store": true
   },
-  "hidefiles.selectedProfile": "Hide Files",
+  "hidefiles.selectedProfile": "Show All Files",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.analysis.diagnosticSeverityOverrides": {
