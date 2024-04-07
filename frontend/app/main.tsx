@@ -1,12 +1,13 @@
+import Layout from "@/Layout";
+import NotFound from "@/components/base/404";
+import Categories from "@/pages/Categories";
+import Favorites from "@/pages/Favorites";
+import Hero from "@/pages/Hero";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Layout from "./Layout";
-import NotFound from "./components/base/404";
+import "./globals.css";
 import "./index.css";
-import Categories from "./pages/Categories";
-import Favorites from "./pages/Favorites";
-import Hero from "./pages/Hero";
 
 const router = createBrowserRouter([
   {

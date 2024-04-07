@@ -1,5 +1,5 @@
+import Header from "@/components/base/Header";
 import { Outlet } from "react-router-dom";
-import Header from "./components/base/Header";
 
 export default function Layout() {
   if (import.meta.env.DEV) {

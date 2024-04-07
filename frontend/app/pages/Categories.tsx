@@ -1,4 +1,4 @@
-import CategoryMarketSelector from "../components/categories/CategoryMarketSelector";
+import CategoryMarketSelector from "@/components/categories/CategoryMarketSelector";
 
 export default function Categories() {
   return (

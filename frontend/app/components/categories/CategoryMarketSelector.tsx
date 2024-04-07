@@ -1,7 +1,9 @@
+import BodyHeader from "@/components/base/BodyHeader";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
+
 // @ts-expect-error missing types
 import { terminal } from "virtual:terminal";
-import BodyHeader from "../base/BodyHeader";
 
 const marketplaces = {
   OZON: ["OZON", "https://ozon.ru"],
@@ -25,7 +27,7 @@ export default function CategoryMarketSelector() {
           {Object.entries(marketplaces).map(([id, [name]]) => (
             <label
               key={id}
-              className={`justify-center rounded-2xl px-9 py-3.5 max-md:px-5 ${selectedMarketplace === id ? "pm-btn pm-btn-active" : "pm-btn"}`}
+              className={`pm-btn ${selectedMarketplace === id ? "pm-btn-act" : "pm-btn-deact"}`}
             >
               <input
                 type="radio"
@@ -41,7 +43,7 @@ export default function CategoryMarketSelector() {
         </div>
         <div className="flex justify-between gap-5">
           <div className="my-auto text-center text-lg text-black">Поиск:</div>
-          <input
+          <Input
             type="text"
             className="justify-center rounded-2xl border border-solid border-black p-4 text-base"
             placeholder="Поиск"
@@ -54,10 +56,7 @@ export default function CategoryMarketSelector() {
         <div className="my-auto flex-auto max-md:max-w-full">
           Выбранная категория: “Категория - ДочерКатегория”
         </div>
-        <button
-          className="justify-center rounded-2xl bg-sky-200 px-12 py-3.5 text-center max-md:px-5"
-          onClick={showProducts}
-        >
+        <button className="pm-btn pm-btn-act" onClick={showProducts}>
           Показать товары
         </button>
       </div>
