@@ -1,8 +1,9 @@
 from app.protos import types_pb2 as _types_pb2
 from google.rpc import status_pb2 as _status_pb2
+from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -47,6 +48,16 @@ class Item(_message.Message):
     rating: float
     comments: int
     def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[float] = ..., oldPrice: _Optional[float] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ...) -> None: ...
+
+class ItemExtended(_message.Message):
+    __slots__ = ("item", "characteristics", "weight")
+    ITEM_FIELD_NUMBER: _ClassVar[int]
+    CHARACTERISTICS_FIELD_NUMBER: _ClassVar[int]
+    WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    item: Item
+    characteristics: _containers.RepeatedCompositeFieldContainer[Characteristic]
+    weight: int
+    def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., characteristics: _Optional[_Iterable[_Union[Characteristic, _Mapping]]] = ..., weight: _Optional[int] = ...) -> None: ...
 
 class CharacteristicsRequest(_message.Message):
     __slots__ = ("market", "itemUrl")

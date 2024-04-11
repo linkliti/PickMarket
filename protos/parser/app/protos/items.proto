@@ -37,6 +37,12 @@ message Item {
   optional int32 comments = 8;
 }
 
+message ItemExtended {
+  Item item = 1;
+  repeated Characteristic characteristics = 2;
+  int32 weight = 3;
+}
+
 message CharacteristicsRequest {
   Markets market = 1;
   string itemUrl = 2;
