@@ -1,12 +1,15 @@
 @tailwind components;
 @layer components {
   .pm-btn {
-    @apply justify-center px-9 py-3.5 rounded-2xl max-md:px-5 border
+    @apply justify-center px-9 py-1 rounded-2xl max-md:px-5 border border-black
   }
   .pm-btn-act {
-    @apply bg-sky-200 border-sky-200
+    @apply bg-sky-200
   }
   .pm-btn-deact {
-    @apply bg-white border-black
+    @apply bg-white
+  }
+  .pm-btn-deact:hover {
+    @apply bg-slate-200
   }
 }

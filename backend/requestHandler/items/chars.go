@@ -1,9 +1,7 @@
 package items
 
 import (
-	"context"
 	"encoding/json"
-	"io"
 	"log/slog"
 	"net/http"
 	"pickmarket/requestHandler/misc"
@@ -26,34 +24,13 @@ func (c *ItemsClient) GetItemCharacteristics(rw http.ResponseWriter, r *http.Req
 		ItemUrl: url,
 	}
 	slog.Debug("GetItemCharacteristics", "request", req)
-	// gRPC call
-	stream, err := c.cl.GetItemCharacteristics(context.Background(), req)
+	charsList, err := c.grpcGetCharacteristics(req)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var chars []*parser.Characteristic
-	for {
-		response, err := stream.Recv()
-		// End of stream
-		if err == io.EOF {
-			break
-		}
-		// Failed message
-		if err != nil {
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// Message
-		if char := response.GetCharacteristic(); char != nil {
-			chars = append(chars, char)
-		} else if status := response.GetStatus(); status != nil {
-			slog.Warn("Received an error status", "status", status.Message)
-			http.Error(rw, status.Message, http.StatusInternalServerError)
-		}
-	}
 	// All to JSON
-	jsonData, err := json.Marshal(chars)
+	jsonData, err := json.Marshal(charsList)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
