@@ -31,9 +31,9 @@ func main() {
 	catR := sm.Methods(http.MethodGet).PathPrefix("/categories").Subrouter()
 	catR.HandleFunc("/{market}/root", categClient.GetRootCategories)
 	catR.HandleFunc("/{market}/sub", categClient.GetSubCategories)
-	catR.HandleFunc("/{market}/filter", categClient.GetCategoryFilters)
 
 	itR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
+	catR.HandleFunc("/{market}/filter", itemClient.GetCategoryFilters)
 	itR.HandleFunc("/{market}/list", itemClient.GetItems)
 	itR.HandleFunc("/{market}/chars", itemClient.GetItemCharacteristics)
 

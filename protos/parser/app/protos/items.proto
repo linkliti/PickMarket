@@ -9,6 +9,7 @@ option go_package = "protos/parser";
 service ItemParser {
   rpc GetItems(ItemsRequest) returns (stream ItemResponse);
   rpc GetItemCharacteristics(CharacteristicsRequest) returns (stream CharacteristicResponse);
+  rpc GetCategoryFilters(FiltersRequest) returns (stream FilterResponse);
 }
 
 message ItemsRequest {
@@ -63,5 +64,29 @@ message Characteristic {
     int32 intValue = 4;
     float floatValue = 5;
     StringList listValue = 6;
+  }
+}
+
+message FiltersRequest {
+  Markets market = 1;
+  string categoryUrl = 2;
+}
+
+message FilterResponse {
+  oneof message {
+    Filter filter = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message Filter {
+  string title = 1;
+  string key = 2;
+  string externalType = 3;
+  Filters internalType = 4;
+  oneof data {
+    RangeFilter rangeFilter = 5;
+    SelectionFilter selectionFilter = 6;
+    BoolFilter boolFilter = 7;
   }
 }

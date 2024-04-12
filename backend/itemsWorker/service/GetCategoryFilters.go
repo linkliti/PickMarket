@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.CategoryParser_GetCategoryFiltersServer) error {
+func (c *ItemsService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.ItemParser_GetCategoryFiltersServer) error {
 	// Get filters from DB
 	filters, err := c.db.DBGetFilters(req.CategoryUrl, req.Market)
 	if err != nil {
@@ -75,7 +75,7 @@ func (c *CategoryService) GetCategoryFilters(req *parser.FiltersRequest, srv par
 	return nil
 }
 
-func sendErrorStatus_GetCategoryFilters(srv parser.CategoryParser_GetCategoryFiltersServer, errText string) error {
+func sendErrorStatus_GetCategoryFilters(srv parser.ItemParser_GetCategoryFiltersServer, errText string) error {
 	resp := &parser.FilterResponse{
 		Message: &parser.FilterResponse_Status{
 			Status: &statuspb.Status{

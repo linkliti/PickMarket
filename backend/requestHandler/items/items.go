@@ -47,5 +47,5 @@ func (c *ItemsClient) GetItems(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(jsonData)
 }
 
-func (c *ItemsClient) getCharsForItems(market parser.Markets) {
-}
+// func (c *ItemsClient) getCharsForItems(market parser.Markets) {
+// }

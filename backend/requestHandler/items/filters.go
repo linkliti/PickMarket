@@ -1,4 +1,4 @@
-package categories
+package items
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"protos/parser"
 )
 
-func (c *CategoryClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request) {
+func (c *ItemsClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request) {
 	// Request
 	market, err := misc.GetMarketFromVars(r)
 	if err != nil {

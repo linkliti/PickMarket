@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	ItemParser_GetItems_FullMethodName               = "/app.protos.ItemParser/GetItems"
 	ItemParser_GetItemCharacteristics_FullMethodName = "/app.protos.ItemParser/GetItemCharacteristics"
+	ItemParser_GetCategoryFilters_FullMethodName     = "/app.protos.ItemParser/GetCategoryFilters"
 )
 
 // ItemParserClient is the client API for ItemParser service.
@@ -29,6 +30,7 @@ const (
 type ItemParserClient interface {
 	GetItems(ctx context.Context, in *ItemsRequest, opts ...grpc.CallOption) (ItemParser_GetItemsClient, error)
 	GetItemCharacteristics(ctx context.Context, in *CharacteristicsRequest, opts ...grpc.CallOption) (ItemParser_GetItemCharacteristicsClient, error)
+	GetCategoryFilters(ctx context.Context, in *FiltersRequest, opts ...grpc.CallOption) (ItemParser_GetCategoryFiltersClient, error)
 }
 
 type itemParserClient struct {
@@ -103,12 +105,45 @@ func (x *itemParserGetItemCharacteristicsClient) Recv() (*CharacteristicResponse
 	return m, nil
 }
 
+func (c *itemParserClient) GetCategoryFilters(ctx context.Context, in *FiltersRequest, opts ...grpc.CallOption) (ItemParser_GetCategoryFiltersClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ItemParser_ServiceDesc.Streams[2], ItemParser_GetCategoryFilters_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &itemParserGetCategoryFiltersClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ItemParser_GetCategoryFiltersClient interface {
+	Recv() (*FilterResponse, error)
+	grpc.ClientStream
+}
+
+type itemParserGetCategoryFiltersClient struct {
+	grpc.ClientStream
+}
+
+func (x *itemParserGetCategoryFiltersClient) Recv() (*FilterResponse, error) {
+	m := new(FilterResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ItemParserServer is the server API for ItemParser service.
 // All implementations must embed UnimplementedItemParserServer
 // for forward compatibility
 type ItemParserServer interface {
 	GetItems(*ItemsRequest, ItemParser_GetItemsServer) error
 	GetItemCharacteristics(*CharacteristicsRequest, ItemParser_GetItemCharacteristicsServer) error
+	GetCategoryFilters(*FiltersRequest, ItemParser_GetCategoryFiltersServer) error
 	mustEmbedUnimplementedItemParserServer()
 }
 
@@ -121,6 +156,9 @@ func (UnimplementedItemParserServer) GetItems(*ItemsRequest, ItemParser_GetItems
 }
 func (UnimplementedItemParserServer) GetItemCharacteristics(*CharacteristicsRequest, ItemParser_GetItemCharacteristicsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetItemCharacteristics not implemented")
+}
+func (UnimplementedItemParserServer) GetCategoryFilters(*FiltersRequest, ItemParser_GetCategoryFiltersServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetCategoryFilters not implemented")
 }
 func (UnimplementedItemParserServer) mustEmbedUnimplementedItemParserServer() {}
 
@@ -177,6 +215,27 @@ func (x *itemParserGetItemCharacteristicsServer) Send(m *CharacteristicResponse)
 	return x.ServerStream.SendMsg(m)
 }
 
+func _ItemParser_GetCategoryFilters_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(FiltersRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ItemParserServer).GetCategoryFilters(m, &itemParserGetCategoryFiltersServer{stream})
+}
+
+type ItemParser_GetCategoryFiltersServer interface {
+	Send(*FilterResponse) error
+	grpc.ServerStream
+}
+
+type itemParserGetCategoryFiltersServer struct {
+	grpc.ServerStream
+}
+
+func (x *itemParserGetCategoryFiltersServer) Send(m *FilterResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // ItemParser_ServiceDesc is the grpc.ServiceDesc for ItemParser service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -193,6 +252,11 @@ var ItemParser_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetItemCharacteristics",
 			Handler:       _ItemParser_GetItemCharacteristics_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetCategoryFilters",
+			Handler:       _ItemParser_GetCategoryFilters_Handler,
 			ServerStreams: true,
 		},
 	},

@@ -19,9 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CategoryParser_GetRootCategories_FullMethodName  = "/app.protos.CategoryParser/GetRootCategories"
-	CategoryParser_GetSubCategories_FullMethodName   = "/app.protos.CategoryParser/GetSubCategories"
-	CategoryParser_GetCategoryFilters_FullMethodName = "/app.protos.CategoryParser/GetCategoryFilters"
+	CategoryParser_GetRootCategories_FullMethodName = "/app.protos.CategoryParser/GetRootCategories"
+	CategoryParser_GetSubCategories_FullMethodName  = "/app.protos.CategoryParser/GetSubCategories"
 )
 
 // CategoryParserClient is the client API for CategoryParser service.
@@ -30,7 +29,6 @@ const (
 type CategoryParserClient interface {
 	GetRootCategories(ctx context.Context, in *RootCategoriesRequest, opts ...grpc.CallOption) (CategoryParser_GetRootCategoriesClient, error)
 	GetSubCategories(ctx context.Context, in *SubCategoriesRequest, opts ...grpc.CallOption) (CategoryParser_GetSubCategoriesClient, error)
-	GetCategoryFilters(ctx context.Context, in *FiltersRequest, opts ...grpc.CallOption) (CategoryParser_GetCategoryFiltersClient, error)
 }
 
 type categoryParserClient struct {
@@ -105,45 +103,12 @@ func (x *categoryParserGetSubCategoriesClient) Recv() (*CategoryResponse, error)
 	return m, nil
 }
 
-func (c *categoryParserClient) GetCategoryFilters(ctx context.Context, in *FiltersRequest, opts ...grpc.CallOption) (CategoryParser_GetCategoryFiltersClient, error) {
-	stream, err := c.cc.NewStream(ctx, &CategoryParser_ServiceDesc.Streams[2], CategoryParser_GetCategoryFilters_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &categoryParserGetCategoryFiltersClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type CategoryParser_GetCategoryFiltersClient interface {
-	Recv() (*FilterResponse, error)
-	grpc.ClientStream
-}
-
-type categoryParserGetCategoryFiltersClient struct {
-	grpc.ClientStream
-}
-
-func (x *categoryParserGetCategoryFiltersClient) Recv() (*FilterResponse, error) {
-	m := new(FilterResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // CategoryParserServer is the server API for CategoryParser service.
 // All implementations must embed UnimplementedCategoryParserServer
 // for forward compatibility
 type CategoryParserServer interface {
 	GetRootCategories(*RootCategoriesRequest, CategoryParser_GetRootCategoriesServer) error
 	GetSubCategories(*SubCategoriesRequest, CategoryParser_GetSubCategoriesServer) error
-	GetCategoryFilters(*FiltersRequest, CategoryParser_GetCategoryFiltersServer) error
 	mustEmbedUnimplementedCategoryParserServer()
 }
 
@@ -156,9 +121,6 @@ func (UnimplementedCategoryParserServer) GetRootCategories(*RootCategoriesReques
 }
 func (UnimplementedCategoryParserServer) GetSubCategories(*SubCategoriesRequest, CategoryParser_GetSubCategoriesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetSubCategories not implemented")
-}
-func (UnimplementedCategoryParserServer) GetCategoryFilters(*FiltersRequest, CategoryParser_GetCategoryFiltersServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetCategoryFilters not implemented")
 }
 func (UnimplementedCategoryParserServer) mustEmbedUnimplementedCategoryParserServer() {}
 
@@ -215,27 +177,6 @@ func (x *categoryParserGetSubCategoriesServer) Send(m *CategoryResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _CategoryParser_GetCategoryFilters_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(FiltersRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(CategoryParserServer).GetCategoryFilters(m, &categoryParserGetCategoryFiltersServer{stream})
-}
-
-type CategoryParser_GetCategoryFiltersServer interface {
-	Send(*FilterResponse) error
-	grpc.ServerStream
-}
-
-type categoryParserGetCategoryFiltersServer struct {
-	grpc.ServerStream
-}
-
-func (x *categoryParserGetCategoryFiltersServer) Send(m *FilterResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 // CategoryParser_ServiceDesc is the grpc.ServiceDesc for CategoryParser service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -252,11 +193,6 @@ var CategoryParser_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetSubCategories",
 			Handler:       _CategoryParser_GetSubCategories_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "GetCategoryFilters",
-			Handler:       _CategoryParser_GetCategoryFilters_Handler,
 			ServerStreams: true,
 		},
 	},

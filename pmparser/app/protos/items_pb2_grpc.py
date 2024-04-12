@@ -24,6 +24,11 @@ class ItemParserStub(object):
                 request_serializer=app_dot_protos_dot_items__pb2.CharacteristicsRequest.SerializeToString,
                 response_deserializer=app_dot_protos_dot_items__pb2.CharacteristicResponse.FromString,
                 )
+        self.GetCategoryFilters = channel.unary_stream(
+                '/app.protos.ItemParser/GetCategoryFilters',
+                request_serializer=app_dot_protos_dot_items__pb2.FiltersRequest.SerializeToString,
+                response_deserializer=app_dot_protos_dot_items__pb2.FilterResponse.FromString,
+                )
 
 
 class ItemParserServicer(object):
@@ -41,6 +46,12 @@ class ItemParserServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetCategoryFilters(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ItemParserServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -53,6 +64,11 @@ def add_ItemParserServicer_to_server(servicer, server):
                     servicer.GetItemCharacteristics,
                     request_deserializer=app_dot_protos_dot_items__pb2.CharacteristicsRequest.FromString,
                     response_serializer=app_dot_protos_dot_items__pb2.CharacteristicResponse.SerializeToString,
+            ),
+            'GetCategoryFilters': grpc.unary_stream_rpc_method_handler(
+                    servicer.GetCategoryFilters,
+                    request_deserializer=app_dot_protos_dot_items__pb2.FiltersRequest.FromString,
+                    response_serializer=app_dot_protos_dot_items__pb2.FilterResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -95,5 +111,22 @@ class ItemParser(object):
         return grpc.experimental.unary_stream(request, target, '/app.protos.ItemParser/GetItemCharacteristics',
             app_dot_protos_dot_items__pb2.CharacteristicsRequest.SerializeToString,
             app_dot_protos_dot_items__pb2.CharacteristicResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetCategoryFilters(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/app.protos.ItemParser/GetCategoryFilters',
+            app_dot_protos_dot_items__pb2.FiltersRequest.SerializeToString,
+            app_dot_protos_dot_items__pb2.FilterResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
