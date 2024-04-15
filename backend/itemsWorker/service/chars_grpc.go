@@ -1,4 +1,4 @@
-package items
+package service
 
 import (
 	"context"
@@ -8,9 +8,9 @@ import (
 	"protos/parser"
 )
 
-func (c *ItemsClient) grpcGetCharacteristics(req *parser.CharacteristicsRequest) ([]*parser.Characteristic, error) {
+func (c *ItemsService) grpcGetCharacteristics(req *parser.CharacteristicsRequest) ([]*parser.Characteristic, error) {
 	// gRPC call
-	stream, err := c.cl.GetItemCharacteristics(context.Background(), req)
+	stream, err := c.parsClient.GetItemCharacteristics(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}

@@ -63,11 +63,11 @@ def test_grpcGetSubCategories(logger: None, channel: grpc.Channel) -> None:
 
 def test_grpcGetFilters(logger: None, channel: grpc.Channel) -> None:
   """Test getFilters via gRPC"""
-  categoryUrl: str = "/category/bluzy-i-rubashki-zhenskie-7511/"
+  categoryUrl: str = "/category/smartfony-15502/"
   market: typesPB.Markets = typesPB.Markets.OZON
 
-  stub = categPBgrpc.CategoryParserStub(channel=channel)
-  response: categPB.FilterResponse = stub.GetCategoryFilters(
-    categPB.FiltersRequest(market=market, categoryUrl=categoryUrl))
+  stub = itemsPBgrpc.ItemParserStub(channel=channel)
+  response: itemsPB.FilterResponse = stub.GetCategoryFilters(
+    itemsPB.FiltersRequest(market=market, categoryUrl=categoryUrl))
   for filt in response:  # type: ignore
     print(filt)

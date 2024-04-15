@@ -6,7 +6,7 @@ from itertools import islice
 from typing import Any, Generator, Iterator
 
 from app.parsers.ozon.ozonParser import OzonParser
-from app.protos import categories_pb2 as categPB
+from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
 from app.utilities.jsonUtil import toJson
 
@@ -27,7 +27,7 @@ class OzonParserFilters(OzonParser):
     self.tooLargeFilterTitles: list[str] = ["Продавец"]
     super().__init__()
 
-  def getRootFilters(self, categoryUrl: str) -> Generator[categPB.Filter, None, None]:
+  def getRootFilters(self, categoryUrl: str) -> Generator[itemsPB.Filter, None, None]:
     """ Get filters for category """
     self.categoryUrl = categoryUrl
     log.info('Getting filters: %s', self.categoryUrl)
@@ -47,13 +47,13 @@ class OzonParserFilters(OzonParser):
       filterList.extend(j["sections"][2]["filters"])
 
     with ThreadPoolExecutor() as executor:
-      futures: Iterator[categPB.Filter | None] = executor.map(self.worker, filterList)
+      futures: Iterator[itemsPB.Filter | None] = executor.map(self.worker, filterList)
       for res in futures:
-        fdata: categPB.Filter | None = res
+        fdata: itemsPB.Filter | None = res
         if fdata:
           yield fdata
 
-  def worker(self, filt) -> categPB.Filter | None:
+  def worker(self, filt) -> itemsPB.Filter | None:
     """Get filter values from OZON"""
     fw = OzonFilterWorker(filterJson=filt, categoryUrl=self.categoryUrl)
     return fw.returnFilter()
@@ -114,11 +114,11 @@ class OzonFilterWorker(OzonParser):
         log.warning('Unknown filter type: %s', self.externalType)
         return
 
-  def returnFilter(self) -> categPB.Filter | None:
+  def returnFilter(self) -> itemsPB.Filter | None:
     """Return filter"""
     if self.internalType is None:
       return None
-    filt: categPB.Filter | None = None
+    filt: itemsPB.Filter | None = None
     kwargs: dict[str, Any] = {
       'title': self.title,
       'key': self.key,
@@ -131,7 +131,7 @@ class OzonFilterWorker(OzonParser):
       kwargs['selectionFilter'] = self.selectionFilter
     elif self.boolFilter:
       kwargs['boolFilter'] = self.boolFilter
-    filt: categPB.Filter | None = categPB.Filter(**kwargs)
+    filt: itemsPB.Filter | None = itemsPB.Filter(**kwargs)
     return filt
 
   def determineSelectionType(self, isRadio) -> typesPB.Filters:

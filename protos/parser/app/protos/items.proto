@@ -36,11 +36,12 @@ message Item {
   optional double oldPrice = 6;
   optional float rating = 7;
   optional int32 comments = 8;
+  bool original = 9;
 }
 
 message ItemExtended {
   Item item = 1;
-  repeated Characteristic characteristics = 2;
+  repeated Characteristic chars = 2;
   int32 weight = 3;
 }
 
@@ -51,7 +52,7 @@ message CharacteristicsRequest {
 
 message CharacteristicResponse {
   oneof message {
-    Characteristic characteristic = 1;
+    Characteristic char = 1;
     google.rpc.Status status = 2;
   }
 }
@@ -60,10 +61,8 @@ message Characteristic {
   string key = 1;
   string name = 2;
   oneof value {
-    string strValue = 3;
-    int32 intValue = 4;
-    float floatValue = 5;
-    StringList listValue = 6;
+    double numVal = 3;
+    StringList listVal = 4;
   }
 }
 

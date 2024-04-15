@@ -3,8 +3,9 @@ import logging
 from typing import Generator
 
 import grpc
+from app.parsers.ozon.ozonFilterMerge import OzonFilterMerge
 from app.parsers.ozon.ozonParserChars import OzonParserChars
-from app.parsers.ozon.ozonParserFilters import OzonParserFilters
+# from app.parsers.ozon.ozonParserFilters import OzonParserFilters
 from app.parsers.ozon.ozonParserItems import OzonParserItems
 from app.protos import items_pb2 as itemsPB
 from app.protos import items_pb2_grpc as itemsPBgrpc
@@ -71,8 +72,10 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
     try:
       match market:
         case typesPB.Markets.OZON:
-          p = OzonParserFilters()
-          gen = p.getRootFilters(categoryUrl=categoryUrl)
+          # p = OzonParserFilters()
+          # gen = p.getRootFilters(categoryUrl=categoryUrl)
+          p = OzonFilterMerge()
+          gen = p.getMergedFilters(categoryUrl=categoryUrl)
       if gen:
         for filt in gen:
           resp = itemsPB.FilterResponse(filter=filt)

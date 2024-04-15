@@ -1,4 +1,4 @@
-package items
+package service
 
 import (
 	"context"
@@ -8,13 +8,13 @@ import (
 	"protos/parser"
 )
 
-func (c *ItemsClient) grpcGetCharacteristics(req *parser.CharacteristicsRequest) ([]*parser.Characteristic, error) {
+func (c *ItemsService) grpcGetItems(req *parser.ItemsRequest) ([]*parser.Item, error) {
 	// gRPC call
-	stream, err := c.cl.GetItemCharacteristics(context.Background(), req)
+	stream, err := c.parsClient.GetItems(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
-	var chars []*parser.Characteristic
+	var items []*parser.Item
 	for {
 		response, err := stream.Recv()
 		// End of stream
@@ -26,12 +26,12 @@ func (c *ItemsClient) grpcGetCharacteristics(req *parser.CharacteristicsRequest)
 			return nil, err
 		}
 		// Message
-		if char := response.GetChar(); char != nil {
-			chars = append(chars, char)
+		if item := response.GetItem(); item != nil {
+			items = append(items, item)
 		} else if status := response.GetStatus(); status != nil {
 			slog.Warn("Received an error status", "status", status.Message)
 			return nil, fmt.Errorf(status.Message)
 		}
 	}
-	return chars, nil
+	return items, nil
 }

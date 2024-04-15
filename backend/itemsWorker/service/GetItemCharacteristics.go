@@ -47,7 +47,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 				return sendErrorStatus_GetItemCharacteristics(srv, errText)
 			}
 			// Message
-			if char, ok := charResponse.Message.(*parser.CharacteristicResponse_Characteristic); ok {
+			if char, ok := charResponse.Message.(*parser.CharacteristicResponse_Char); ok {
 				resp := &parser.CharacteristicResponse{
 					Message: char,
 				}
@@ -55,7 +55,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 					slog.Error("failed to send characteristic to caller", "err", err)
 					return err
 				}
-				charsToSave = append(charsToSave, char.Characteristic)
+				charsToSave = append(charsToSave, char.Char)
 			} else {
 				errText := "received a non-characteristic message"
 				slog.Error(errText, "message", charResponse)
@@ -66,8 +66,8 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 		// Send chars from DB
 		for _, char := range chars {
 			resp := &parser.CharacteristicResponse{
-				Message: &parser.CharacteristicResponse_Characteristic{
-					Characteristic: char,
+				Message: &parser.CharacteristicResponse_Char{
+					Char: char,
 				},
 			}
 			if err := srv.Send(resp); err != nil {

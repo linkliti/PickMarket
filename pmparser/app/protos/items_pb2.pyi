@@ -30,7 +30,7 @@ class ItemResponse(_message.Message):
     def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Item(_message.Message):
-    __slots__ = ("name", "url", "imageUrl", "isAdult", "price", "oldPrice", "rating", "comments")
+    __slots__ = ("name", "url", "imageUrl", "isAdult", "price", "oldPrice", "rating", "comments", "original")
     NAME_FIELD_NUMBER: _ClassVar[int]
     URL_FIELD_NUMBER: _ClassVar[int]
     IMAGEURL_FIELD_NUMBER: _ClassVar[int]
@@ -39,6 +39,7 @@ class Item(_message.Message):
     OLDPRICE_FIELD_NUMBER: _ClassVar[int]
     RATING_FIELD_NUMBER: _ClassVar[int]
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
+    ORIGINAL_FIELD_NUMBER: _ClassVar[int]
     name: str
     url: str
     imageUrl: str
@@ -47,17 +48,18 @@ class Item(_message.Message):
     oldPrice: float
     rating: float
     comments: int
-    def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[float] = ..., oldPrice: _Optional[float] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ...) -> None: ...
+    original: bool
+    def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[float] = ..., oldPrice: _Optional[float] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ..., original: bool = ...) -> None: ...
 
 class ItemExtended(_message.Message):
-    __slots__ = ("item", "characteristics", "weight")
+    __slots__ = ("item", "chars", "weight")
     ITEM_FIELD_NUMBER: _ClassVar[int]
-    CHARACTERISTICS_FIELD_NUMBER: _ClassVar[int]
+    CHARS_FIELD_NUMBER: _ClassVar[int]
     WEIGHT_FIELD_NUMBER: _ClassVar[int]
     item: Item
-    characteristics: _containers.RepeatedCompositeFieldContainer[Characteristic]
+    chars: _containers.RepeatedCompositeFieldContainer[Characteristic]
     weight: int
-    def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., characteristics: _Optional[_Iterable[_Union[Characteristic, _Mapping]]] = ..., weight: _Optional[int] = ...) -> None: ...
+    def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., chars: _Optional[_Iterable[_Union[Characteristic, _Mapping]]] = ..., weight: _Optional[int] = ...) -> None: ...
 
 class CharacteristicsRequest(_message.Message):
     __slots__ = ("market", "itemUrl")
@@ -68,28 +70,24 @@ class CharacteristicsRequest(_message.Message):
     def __init__(self, market: _Optional[_Union[_types_pb2.Markets, str]] = ..., itemUrl: _Optional[str] = ...) -> None: ...
 
 class CharacteristicResponse(_message.Message):
-    __slots__ = ("characteristic", "status")
-    CHARACTERISTIC_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("char", "status")
+    CHAR_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
-    characteristic: Characteristic
+    char: Characteristic
     status: _status_pb2.Status
-    def __init__(self, characteristic: _Optional[_Union[Characteristic, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
+    def __init__(self, char: _Optional[_Union[Characteristic, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Characteristic(_message.Message):
-    __slots__ = ("key", "name", "strValue", "intValue", "floatValue", "listValue")
+    __slots__ = ("key", "name", "numVal", "listVal")
     KEY_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    STRVALUE_FIELD_NUMBER: _ClassVar[int]
-    INTVALUE_FIELD_NUMBER: _ClassVar[int]
-    FLOATVALUE_FIELD_NUMBER: _ClassVar[int]
-    LISTVALUE_FIELD_NUMBER: _ClassVar[int]
+    NUMVAL_FIELD_NUMBER: _ClassVar[int]
+    LISTVAL_FIELD_NUMBER: _ClassVar[int]
     key: str
     name: str
-    strValue: str
-    intValue: int
-    floatValue: float
-    listValue: _types_pb2.StringList
-    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., strValue: _Optional[str] = ..., intValue: _Optional[int] = ..., floatValue: _Optional[float] = ..., listValue: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
+    numVal: float
+    listVal: _types_pb2.StringList
+    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class FiltersRequest(_message.Message):
     __slots__ = ("market", "categoryUrl")
