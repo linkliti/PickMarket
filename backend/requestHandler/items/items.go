@@ -31,13 +31,14 @@ func (c *ItemsClient) GetItems(rw http.ResponseWriter, r *http.Request) {
 		NumOfPages: &numOfPages,
 	}
 	slog.Debug("GetItems", "request", req)
-	itemsList, err := c.grpcGetItems(req)
+	itemsListWithoutWeight, err := c.grpcGetItems(req)
+
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(itemsList)
+	jsonData, err := json.Marshal(itemsListWithoutWeight)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
@@ -46,6 +47,3 @@ func (c *ItemsClient) GetItems(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(jsonData)
 }
-
-// func (c *ItemsClient) getCharsForItems(market parser.Markets) {
-// }

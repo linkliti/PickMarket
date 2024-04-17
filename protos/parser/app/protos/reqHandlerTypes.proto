@@ -1,0 +1,25 @@
+syntax = "proto3";
+package app.protos;
+
+import "app/protos/items.proto";
+import "app/protos/types.proto";
+
+option go_package = "protos/parser";
+
+enum PrefType {
+  NUM = 0;
+  LIST = 1;
+}
+
+message UserPrefs {
+  string key = 1;
+  PrefType type = 2;
+  double numValue = 3;
+  StringList listValue = 4;
+}
+
+message ItemExtended {
+  Item item = 1;
+  repeated Characteristic chars = 2;
+  int32 totalWeight = 3;
+}

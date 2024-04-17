@@ -1,9 +1,8 @@
 from app.protos import types_pb2 as _types_pb2
 from google.rpc import status_pb2 as _status_pb2
-from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -51,16 +50,6 @@ class Item(_message.Message):
     original: bool
     def __init__(self, name: _Optional[str] = ..., url: _Optional[str] = ..., imageUrl: _Optional[str] = ..., isAdult: bool = ..., price: _Optional[float] = ..., oldPrice: _Optional[float] = ..., rating: _Optional[float] = ..., comments: _Optional[int] = ..., original: bool = ...) -> None: ...
 
-class ItemExtended(_message.Message):
-    __slots__ = ("item", "chars", "weight")
-    ITEM_FIELD_NUMBER: _ClassVar[int]
-    CHARS_FIELD_NUMBER: _ClassVar[int]
-    WEIGHT_FIELD_NUMBER: _ClassVar[int]
-    item: Item
-    chars: _containers.RepeatedCompositeFieldContainer[Characteristic]
-    weight: int
-    def __init__(self, item: _Optional[_Union[Item, _Mapping]] = ..., chars: _Optional[_Iterable[_Union[Characteristic, _Mapping]]] = ..., weight: _Optional[int] = ...) -> None: ...
-
 class CharacteristicsRequest(_message.Message):
     __slots__ = ("market", "itemUrl")
     MARKET_FIELD_NUMBER: _ClassVar[int]
@@ -78,16 +67,18 @@ class CharacteristicResponse(_message.Message):
     def __init__(self, char: _Optional[_Union[Characteristic, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Characteristic(_message.Message):
-    __slots__ = ("key", "name", "numVal", "listVal")
+    __slots__ = ("key", "name", "itemWeight", "numVal", "listVal")
     KEY_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
+    ITEMWEIGHT_FIELD_NUMBER: _ClassVar[int]
     NUMVAL_FIELD_NUMBER: _ClassVar[int]
     LISTVAL_FIELD_NUMBER: _ClassVar[int]
     key: str
     name: str
+    itemWeight: float
     numVal: float
     listVal: _types_pb2.StringList
-    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
+    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., itemWeight: _Optional[float] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class FiltersRequest(_message.Message):
     __slots__ = ("market", "categoryUrl")

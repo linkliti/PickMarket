@@ -39,12 +39,6 @@ message Item {
   bool original = 9;
 }
 
-message ItemExtended {
-  Item item = 1;
-  repeated Characteristic chars = 2;
-  int32 weight = 3;
-}
-
 message CharacteristicsRequest {
   Markets market = 1;
   string itemUrl = 2;
@@ -60,9 +54,10 @@ message CharacteristicResponse {
 message Characteristic {
   string key = 1;
   string name = 2;
+  double itemWeight = 3; // RequestHandler field
   oneof value {
-    double numVal = 3;
-    StringList listVal = 4;
+    double numVal = 4;
+    StringList listVal = 5;
   }
 }
 
