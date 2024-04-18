@@ -1,6 +1,8 @@
 package calc
 
 import (
+	"fmt"
+	"log/slog"
 	"math"
 	"protos/parser"
 )
@@ -12,7 +14,7 @@ type calcVault struct {
 
 type calc struct {
 	itemList []*parser.ItemExtended
-	UserPref []*parser.UserPref
+	userPref []*parser.UserPref
 	vaults   map[string]*calcVault
 }
 
@@ -20,17 +22,27 @@ var caseFuncs = map[string]func(*parser.Characteristic, *parser.UserPref){
 	"color": calc_color,
 }
 
-func CalcWeight(itemList []*parser.ItemExtended, UserPref []*parser.UserPref) {
+func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref) ([]*parser.ItemExtended, error) {
 	c := &calc{
 		itemList: itemList,
-		UserPref: UserPref,
+		userPref: userPref,
 		vaults:   make(map[string]*calcVault),
 	}
+	slog.Debug("Filling vaults")
 	c.fillPreferences()
+	// Validation for non nil v.prefPointer
+	for key, v := range c.vaults {
+		if v.prefPointer == nil {
+			return nil, fmt.Errorf("missing pointer for %s", key)
+		}
+	}
 	c.fillChars()
+	slog.Debug("Calculating weights")
 	c.calculateDifferences()
 	c.calculateWeights()
 	c.sumWeights()
+
+	return c.itemList, nil
 }
 
 func (c *calc) calculateDifferences() {
@@ -67,7 +79,7 @@ func (c *calc) calculateWeights() {
 				max = char.CharWeight
 			}
 		}
-		// Remove vault from calculations
+		// Remove vault from calculations if all values are equal
 		if min == max {
 			delete(c.vaults, key)
 			continue

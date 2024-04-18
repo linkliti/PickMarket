@@ -16,7 +16,7 @@ func (c *calc) getVaultByKey(key string, create bool) *calcVault {
 }
 
 func (c *calc) fillPreferences() {
-	for _, pref := range c.UserPref {
+	for _, pref := range c.userPref {
 		v := c.getVaultByKey(pref.Key, true)
 		v.prefPointer = pref
 	}
