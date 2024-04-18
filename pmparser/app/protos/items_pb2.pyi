@@ -67,18 +67,18 @@ class CharacteristicResponse(_message.Message):
     def __init__(self, char: _Optional[_Union[Characteristic, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Characteristic(_message.Message):
-    __slots__ = ("key", "name", "itemWeight", "numVal", "listVal")
+    __slots__ = ("key", "name", "charWeight", "numVal", "listVal")
     KEY_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    ITEMWEIGHT_FIELD_NUMBER: _ClassVar[int]
+    CHARWEIGHT_FIELD_NUMBER: _ClassVar[int]
     NUMVAL_FIELD_NUMBER: _ClassVar[int]
     LISTVAL_FIELD_NUMBER: _ClassVar[int]
     key: str
     name: str
-    itemWeight: float
+    charWeight: float
     numVal: float
     listVal: _types_pb2.StringList
-    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., itemWeight: _Optional[float] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
+    def __init__(self, key: _Optional[str] = ..., name: _Optional[str] = ..., charWeight: _Optional[float] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class FiltersRequest(_message.Message):
     __slots__ = ("market", "categoryUrl")

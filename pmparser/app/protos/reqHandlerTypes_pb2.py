@@ -16,7 +16,7 @@ from app.protos import items_pb2 as app_dot_protos_dot_items__pb2
 from app.protos import types_pb2 as app_dot_protos_dot_types__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n app/protos/reqHandlerTypes.proto\x12\napp.protos\x1a\x16\x61pp/protos/items.proto\x1a\x16\x61pp/protos/types.proto\"y\n\tUserPrefs\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\"\n\x04type\x18\x02 \x01(\x0e\x32\x14.app.protos.PrefType\x12\x10\n\x08numValue\x18\x03 \x01(\x01\x12)\n\tlistValue\x18\x04 \x01(\x0b\x32\x16.app.protos.StringList\"n\n\x0cItemExtended\x12\x1e\n\x04item\x18\x01 \x01(\x0b\x32\x10.app.protos.Item\x12)\n\x05\x63hars\x18\x02 \x03(\x0b\x32\x1a.app.protos.Characteristic\x12\x13\n\x0btotalWeight\x18\x03 \x01(\x05*\x1d\n\x08PrefType\x12\x07\n\x03NUM\x10\x00\x12\x08\n\x04LIST\x10\x01\x42\x0fZ\rprotos/parserb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n app/protos/reqHandlerTypes.proto\x12\napp.protos\x1a\x16\x61pp/protos/items.proto\x1a\x16\x61pp/protos/types.proto\"s\n\x08UserPref\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x10\n\x08priority\x18\x02 \x01(\x05\x12\x12\n\x08numValue\x18\x03 \x01(\x01H\x00\x12+\n\tlistValue\x18\x04 \x01(\x0b\x32\x16.app.protos.StringListH\x00\x42\x07\n\x05value\"n\n\x0cItemExtended\x12\x1e\n\x04item\x18\x01 \x01(\x0b\x32\x10.app.protos.Item\x12)\n\x05\x63hars\x18\x02 \x03(\x0b\x32\x1a.app.protos.Characteristic\x12\x13\n\x0btotalWeight\x18\x03 \x01(\x01\x42\x0fZ\rprotos/parserb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,10 +24,8 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'app.protos.reqHandlerTypes_
 if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['DESCRIPTOR']._options = None
   _globals['DESCRIPTOR']._serialized_options = b'Z\rprotos/parser'
-  _globals['_PREFTYPE']._serialized_start=331
-  _globals['_PREFTYPE']._serialized_end=360
-  _globals['_USERPREFS']._serialized_start=96
-  _globals['_USERPREFS']._serialized_end=217
-  _globals['_ITEMEXTENDED']._serialized_start=219
-  _globals['_ITEMEXTENDED']._serialized_end=329
+  _globals['_USERPREF']._serialized_start=96
+  _globals['_USERPREF']._serialized_end=211
+  _globals['_ITEMEXTENDED']._serialized_start=213
+  _globals['_ITEMEXTENDED']._serialized_end=323
 # @@protoc_insertion_point(module_scope)

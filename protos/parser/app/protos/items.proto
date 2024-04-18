@@ -54,7 +54,7 @@ message CharacteristicResponse {
 message Characteristic {
   string key = 1;
   string name = 2;
-  double itemWeight = 3; // RequestHandler field
+  double charWeight = 3; // RequestHandler field
   oneof value {
     double numVal = 4;
     StringList listVal = 5;
