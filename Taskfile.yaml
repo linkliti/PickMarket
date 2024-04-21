@@ -1,0 +1,72 @@
+version: '3'
+
+tasks:
+  py-venv:
+    desc: "Create conda environment and install requirements"
+    cmds:
+      - conda create --prefix ./pmparser/venv python=3.12 -y
+      - cd pmparser && python -m pip install -r "requirements.txt"
+
+  py-freeze:
+    desc: "Update requirements_freeze.txt"
+    cmds:
+      - cd pmparser && python -m pip freeze > "requirements_freeze.txt"
+
+  clean-workspace:
+    desc: "Clean non-tracked files from workspace"
+    cmds:
+      - git clean -Xdf
+
+  remove-env:
+    desc: "Remove Node modules and conda environment"
+    cmds:
+      - rm -rf "./frontend/node_modules"
+      - conda env remove -p ./pmparser/venv -y
+
+  proto:
+    desc: "Generate proto and gRPC files"
+    cmds:
+      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto
+      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
+
+  db-rm:
+    desc: "Remove database using sudo"
+    cmds:
+      - sudo rm -rf ./db/pgdata
+
+  compose-up:
+    desc: "Force recreate containers"
+    cmds:
+      - docker-compose -f docker-compose.yml up --force-recreate
+
+  go-mod-tidy:
+    desc: "Tidy go modules"
+    cmds:
+      - cd ./backend/categoriesWorker && go mod tidy
+      - cd ./backend/itemsWorker && go mod tidy
+      - cd ./backend/pmutils && go mod tidy
+      - cd ./backend/protos && go mod tidy
+      - cd ./backend/requestHandler && go mod tidy
+
+  js-install:
+    desc: "Install frontend dependencies"
+    cmds:
+      - cd frontend && npm install
+
+  js-build:
+    desc: "Build frontend"
+    cmds:
+      - cd frontend && npm run build
+
+  logs:
+    desc: "Create log files"
+    cmds:
+      - touch categoriesWorker.log itemsWorker.log requestHandler.log pmparser.log
+
+  js-dev:
+    desc: "Run frontend in development mode"
+    env:
+      DEBUG: "True"
+    cmds:
+      - source ~/.nvm/nvm.sh
+      - cd frontend && npm run dev
