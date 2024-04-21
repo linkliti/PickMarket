@@ -12,7 +12,7 @@ import (
 
 func (c *CategoryClient) GetRootCategories(rw http.ResponseWriter, r *http.Request) {
 	// Request
-	market, err := misc.GetMarketFromVars(r)
+	market, err := misc.GetMarketFromUrlVar(r)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return

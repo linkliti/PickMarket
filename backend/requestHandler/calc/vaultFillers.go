@@ -3,14 +3,16 @@ package calc
 import "protos/parser"
 
 func (c *calc) getVaultByKey(key string, create bool) *calcVault {
-	if vault, ok := c.vaults[key]; ok {
-		return vault
+	if v, ok := c.vaults[key]; ok {
+		return v
 	}
 	if create {
-		return &calcVault{
+		v := &calcVault{
 			prefPointer:  nil,
 			charPointers: make([]*parser.Characteristic, 0),
 		}
+		c.vaults[key] = v
+		return v
 	}
 	return nil
 }

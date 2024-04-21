@@ -1,7 +1,6 @@
 package calc
 
 import (
-	"fmt"
 	"log/slog"
 	"math"
 	"protos/parser"
@@ -22,7 +21,7 @@ var caseFuncs = map[string]func(*parser.Characteristic, *parser.UserPref){
 	"color": calc_color,
 }
 
-func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref) ([]*parser.ItemExtended, error) {
+func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref) error {
 	c := &calc{
 		itemList: itemList,
 		userPref: userPref,
@@ -30,19 +29,13 @@ func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref) ([
 	}
 	slog.Debug("Filling vaults")
 	c.fillPreferences()
-	// Validation for non nil v.prefPointer
-	for key, v := range c.vaults {
-		if v.prefPointer == nil {
-			return nil, fmt.Errorf("missing pointer for %s", key)
-		}
-	}
 	c.fillChars()
 	slog.Debug("Calculating weights")
 	c.calculateDifferences()
 	c.calculateWeights()
 	c.sumWeights()
-
-	return c.itemList, nil
+	slog.Debug("Calculation successful")
+	return nil
 }
 
 func (c *calc) calculateDifferences() {
@@ -70,7 +63,7 @@ func (c *calc) calculateDifferences() {
 func (c *calc) calculateWeights() {
 	for key, v := range c.vaults {
 		// Min and max values
-		min, max := math.MaxFloat64, math.SmallestNonzeroFloat64
+		min, max := math.MaxFloat64, -math.MaxFloat64
 		for _, char := range v.charPointers {
 			if char.CharWeight < min {
 				min = char.CharWeight

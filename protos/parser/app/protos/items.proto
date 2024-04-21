@@ -34,7 +34,7 @@ message Item {
   bool isAdult = 4;
   double price = 5;
   optional double oldPrice = 6;
-  optional float rating = 7;
+  optional double rating = 7;
   optional int32 comments = 8;
   bool original = 9;
 }

@@ -7,6 +7,14 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class ItemsRequestWithPrefs(_message.Message):
+    __slots__ = ("request", "userPrefs")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    USERPREFS_FIELD_NUMBER: _ClassVar[int]
+    request: _items_pb2.ItemsRequest
+    userPrefs: _containers.RepeatedCompositeFieldContainer[UserPref]
+    def __init__(self, request: _Optional[_Union[_items_pb2.ItemsRequest, _Mapping]] = ..., userPrefs: _Optional[_Iterable[_Union[UserPref, _Mapping]]] = ...) -> None: ...
+
 class UserPref(_message.Message):
     __slots__ = ("key", "priority", "numValue", "listValue")
     KEY_FIELD_NUMBER: _ClassVar[int]
@@ -20,11 +28,11 @@ class UserPref(_message.Message):
     def __init__(self, key: _Optional[str] = ..., priority: _Optional[int] = ..., numValue: _Optional[float] = ..., listValue: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class ItemExtended(_message.Message):
-    __slots__ = ("item", "chars", "totalWeight")
+    __slots__ = ("item", "totalWeight", "chars")
     ITEM_FIELD_NUMBER: _ClassVar[int]
-    CHARS_FIELD_NUMBER: _ClassVar[int]
     TOTALWEIGHT_FIELD_NUMBER: _ClassVar[int]
+    CHARS_FIELD_NUMBER: _ClassVar[int]
     item: _items_pb2.Item
-    chars: _containers.RepeatedCompositeFieldContainer[_items_pb2.Characteristic]
     totalWeight: float
-    def __init__(self, item: _Optional[_Union[_items_pb2.Item, _Mapping]] = ..., chars: _Optional[_Iterable[_Union[_items_pb2.Characteristic, _Mapping]]] = ..., totalWeight: _Optional[float] = ...) -> None: ...
+    chars: _containers.RepeatedCompositeFieldContainer[_items_pb2.Characteristic]
+    def __init__(self, item: _Optional[_Union[_items_pb2.Item, _Mapping]] = ..., totalWeight: _Optional[float] = ..., chars: _Optional[_Iterable[_Union[_items_pb2.Characteristic, _Mapping]]] = ...) -> None: ...

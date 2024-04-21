@@ -7,6 +7,11 @@ import "app/protos/types.proto";
 option go_package = "protos/parser";
 
 
+message ItemsRequestWithPrefs {
+  ItemsRequest request = 1;
+  repeated UserPref userPrefs = 2;
+}
+
 message UserPref {
   string key = 1;
   int32 priority = 2;
@@ -18,6 +23,6 @@ message UserPref {
 
 message ItemExtended {
   Item item = 1;
-  repeated Characteristic chars = 2;
-  double totalWeight = 3;
+  double totalWeight = 2;
+  repeated Characteristic chars = 3;
 }

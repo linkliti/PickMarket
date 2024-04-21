@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetMarketFromVars(r *http.Request) (parser.Markets, error) {
+func GetMarketFromUrlVar(r *http.Request) (parser.Markets, error) {
 	marketStr := mux.Vars(r)["market"]
 	if marketStr == "" {
 		return 0, fmt.Errorf("market not provided")

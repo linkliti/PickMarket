@@ -34,8 +34,10 @@ func main() {
 
 	itR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
 	catR.HandleFunc("/{market}/filter", itemClient.GetCategoryFilters)
-	itR.HandleFunc("/{market}/list", itemClient.GetItems)
 	itR.HandleFunc("/{market}/chars", itemClient.GetItemCharacteristics)
+
+	itCalc := sm.Methods(http.MethodPost).PathPrefix("/calc").Subrouter()
+	itCalc.HandleFunc("/{market}/list", itemClient.PostItems)
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 

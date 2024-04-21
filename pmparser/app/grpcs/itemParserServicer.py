@@ -55,7 +55,7 @@ class PMItemParserServicer(itemsPBgrpc.ItemParserServicer):
           gen = p.getItemChars(itemUrl=itemUrl)
       if gen:
         for char in gen:
-          resp = itemsPB.CharacteristicResponse(characteristic=char)
+          resp = itemsPB.CharacteristicResponse(char=char)
           yield resp
     except Exception as e:  # pylint: disable=broad-except
       log.error("GetItemCharacteristics exception", extra={"error": str(e)})

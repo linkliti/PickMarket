@@ -13,6 +13,15 @@
         }
       },
       "problemMatcher": []
+    },
+    {
+      "label": "Docker Rebuild",
+      "type": "shell",
+      "command": "docker compose -f \"docker-compose.yml\" down && docker compose -f \"docker-compose.yml\" up -d --build",
+      "options": {
+        "cwd": "${workspaceFolder}",
+      },
+      "problemMatcher": []
     }
   ]
 }
