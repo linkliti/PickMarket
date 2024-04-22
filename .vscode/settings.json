@@ -21,8 +21,8 @@
           "frontend/node_modules",
           "frontend/.eslintrc.cjs",
           "frontend/package*",
-          "frontend/*config.*",
-          "*/vite.config.ts",
+          "frontend/*config.js*",
+          "frontend/*config.node*",
           "**/go.sum",
           "**/go.mod",
           "**/__debug*",
@@ -36,7 +36,8 @@
           ".pylintrc",
           "**/*.egg-info",
           "**/vite-env.d.ts",
-          ".prettierrc"
+          ".prettierrc",
+          "requests_backup"
         ]
       }
     ]
@@ -50,8 +51,8 @@
     "frontend/node_modules": true,
     "frontend/.eslintrc.cjs": true,
     "frontend/package*": true,
-    "frontend/*config.*": true,
-    "*/vite.config.ts": true,
+    "frontend/*config.js*": true,
+    "frontend/*config.node*": true,
     "**/go.sum": true,
     "**/go.mod": true,
     "**/__debug*": true,
@@ -65,7 +66,8 @@
     ".pylintrc": true,
     "**/*.egg-info": true,
     "**/vite-env.d.ts": true,
-    ".prettierrc": true
+    ".prettierrc": true,
+    "requests_backup": true
   },
   "hidefiles.selectedProfile": "Hide Files",
   "python.testing.unittestEnabled": false,

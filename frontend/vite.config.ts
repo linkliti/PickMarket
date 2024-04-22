@@ -4,13 +4,16 @@ import { defineConfig } from 'vite'
 import Terminal from 'vite-plugin-terminal'
 
 // https://vitejs.dev/config/
+
+const port = (process.env.FRONTEND_ADDR ?? '127.0.0.1:1111').split(':')[1]
+
 export default defineConfig({
   server: {
-    port: 5005,
+    port: Number.parseInt(port),
     strictPort: true,
   },
   preview: {
-    port: 5005,
+    port: Number.parseInt(port),
     strictPort: true,
   },
   plugins: [react(), Terminal()],

@@ -13,6 +13,7 @@ import (
 
 func (c *ItemsService) GetCategoryFilters(req *parser.FiltersRequest, srv parser.ItemParser_GetCategoryFiltersServer) error {
 	// Get filters from DB
+	slog.Debug("Incoming GetCategoryFilters request", "request", req)
 	filters, err := c.db.DBGetFilters(req.CategoryUrl, req.Market)
 	if err != nil {
 		errText := "failed to get filters from database"
@@ -21,6 +22,7 @@ func (c *ItemsService) GetCategoryFilters(req *parser.FiltersRequest, srv parser
 	}
 	// Get from parser
 	if len(filters) == 0 {
+		slog.Debug("Sending filters from parser", "request", req)
 		stream, err := c.parsClient.GetCategoryFilters(context.Background(), req)
 		if err != nil {
 			slog.Error("failed to get filters from parser", "err", err)
@@ -60,6 +62,7 @@ func (c *ItemsService) GetCategoryFilters(req *parser.FiltersRequest, srv parser
 		}
 	} else {
 		// Send filters from DB
+		slog.Debug("Sending filters from database", "request", req)
 		for _, filter := range filters {
 			resp := &parser.FilterResponse{
 				Message: &parser.FilterResponse_Filter{

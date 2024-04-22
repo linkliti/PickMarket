@@ -11,12 +11,14 @@ import (
 
 func (c *CategoryService) GetSubCategories(req *parser.SubCategoriesRequest, srv parser.CategoryParser_GetSubCategoriesServer) error {
 	// Get subcategories from the database
+	slog.Debug("Incoming GetSubCategories request", "request", req)
 	categories, err := c.db.DBGetCategoryChildren(req.CategoryUrl, req.Market)
 	if err != nil {
 		errText := "failed to get subcategories from database"
 		slog.Error(errText, "err", err)
 		return sendErrorStatus_GetSubCategories(srv, errText)
 	}
+	slog.Debug("Sending sub categories from database", "request", req)
 	// Iterate over the categories and send them to the caller
 	for _, category := range categories {
 		resp := &parser.CategoryResponse{

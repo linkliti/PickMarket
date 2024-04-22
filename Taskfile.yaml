@@ -1,11 +1,31 @@
 version: '3'
 
+vars:
+  PYENV:
+    cmds: source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv
+
 tasks:
+  util-ask-prompt:
+    desc: "Ask for confirmation"
+    interactive: true
+    silent: true
+    internal: true
+    cmds:
+      - |
+        read -p "Are you sure? (y/N): " confirm
+        confirm=${confirm,,}  # tolower
+        if [[ $confirm =~ ^(yes|y)$ ]]; then
+            exit 0
+        else
+            echo "Cancelled"
+            exit 1
+        fi
+
   py-activate:
     desc: "Activate conda environment"
-    cmds:
-      - source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv
     internal: true
+    cmds:
+      - bash -c "source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv"
 
   py-venv:
     desc: "Create conda environment and install requirements"
@@ -16,33 +36,34 @@ tasks:
 
   py-freeze:
     desc: "Update requirements_freeze.txt"
-    deps:
-      - py-activate
     cmds:
-      - cd pmparser && python -m pip freeze > 'requirements_freeze.txt'"
+      - task: py-activate
+      - "cd pmparser && python -m pip freeze > 'requirements_freeze.txt'"
 
   clean-workspace:
     desc: "Clean non-tracked files from workspace"
     cmds:
+      - task: util-ask-prompt
       - git clean -Xdf
 
   remove-env:
     desc: "Remove Node modules and conda environment"
     cmds:
+      - task: util-ask-prompt
       - rm -rf "./frontend/node_modules"
       - conda env remove -p ./pmparser/venv -y
 
   proto:
     desc: "Generate proto and gRPC files"
-    deps:
-      - py-activate
     cmds:
+      - task: py-activate
       - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto
-      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto"
+      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
 
   db-rm:
     desc: "Remove database using sudo"
     cmds:
+      - task: util-ask-prompt
       - sudo rm -rf ./db/pgdata
 
   compose-up:
