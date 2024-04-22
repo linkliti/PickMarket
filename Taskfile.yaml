@@ -1,16 +1,25 @@
 version: '3'
 
 tasks:
+  py-activate:
+    desc: "Activate conda environment"
+    cmds:
+      - source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv
+    internal: true
+
   py-venv:
     desc: "Create conda environment and install requirements"
     cmds:
       - conda create --prefix ./pmparser/venv python=3.12 -y
-      - cd pmparser && python -m pip install -r "requirements.txt"
+      - conda activate "./pmparser/venv"
+      - cd pmparser python -m pip install -r 'requirements.txt'"
 
   py-freeze:
     desc: "Update requirements_freeze.txt"
+    deps:
+      - py-activate
     cmds:
-      - cd pmparser && python -m pip freeze > "requirements_freeze.txt"
+      - cd pmparser && python -m pip freeze > 'requirements_freeze.txt'"
 
   clean-workspace:
     desc: "Clean non-tracked files from workspace"
@@ -25,9 +34,11 @@ tasks:
 
   proto:
     desc: "Generate proto and gRPC files"
+    deps:
+      - py-activate
     cmds:
       - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto
-      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
+      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto"
 
   db-rm:
     desc: "Remove database using sudo"
@@ -65,8 +76,8 @@ tasks:
 
   js-dev:
     desc: "Run frontend in development mode"
+    interactive: true
     env:
       DEBUG: "True"
     cmds:
-      - source ~/.nvm/nvm.sh
       - cd frontend && npm run dev
