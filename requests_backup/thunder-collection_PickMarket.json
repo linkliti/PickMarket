@@ -1,7 +1,7 @@
 {
   "client": "Thunder Client",
   "collectionName": "PickMarket",
-  "dateExported": "2024-04-03T11:40:11.366Z",
+  "dateExported": "2024-04-22T17:23:37.300Z",
   "version": "1.1",
   "folders": [],
   "requests": [
@@ -44,16 +44,16 @@
       "colId": "da208021-2787-4552-b1e9-94a412a74d09",
       "containerId": "",
       "name": "PM Filters",
-      "url": "localhost:5004/categories/ozon/filter?url=/category/tehnika-dlya-kuhni-10523/",
+      "url": "localhost:5004/categories/ozon/filter?url=/category/smartfony-15502/",
       "method": "GET",
       "sortNum": 21250,
       "created": "2024-04-01T14:39:08.085Z",
-      "modified": "2024-04-03T11:38:11.995Z",
+      "modified": "2024-04-11T12:08:16.581Z",
       "headers": [],
       "params": [
         {
           "name": "url",
-          "value": "/category/tehnika-dlya-kuhni-10523/",
+          "value": "/category/smartfony-15502/",
           "isPath": false
         }
       ],
@@ -64,19 +64,18 @@
       "colId": "da208021-2787-4552-b1e9-94a412a74d09",
       "containerId": "",
       "name": "[TEMP]PM Items",
-      "url": "localhost:5004/items/ozon/list?url=/category/dom-i-sad-14500/",
-      "method": "GET",
+      "url": "localhost:5004/calc/ozon/list",
+      "method": "POST",
       "sortNum": 22500,
       "created": "2024-04-03T11:29:53.818Z",
-      "modified": "2024-04-03T11:38:35.418Z",
+      "modified": "2024-04-22T17:23:18.673Z",
       "headers": [],
-      "params": [
-        {
-          "name": "url",
-          "value": "/category/dom-i-sad-14500/",
-          "isPath": false
-        }
-      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"request\": {\n    \"pageUrl\": \"/category/smartfony-15502/\",\n    \"numOfPages\": 1\n  },\n  \"userPrefs\": [\n    {\n      \"key\": \"pm_price\",\n      \"priority\": 5,\n      \"numVal\": 0\n    },\n    {\n      \"key\": \"color\",\n      \"priority\": 5,\n      \"listVal\": {\n        \"values\": [\n          \"Красный\",\n          \"Черный\"\n        ]\n      }\n    },\n    {\n      \"key\": \"pm_isAdult\",\n      \"priority\": 4,\n      \"listVal\": {\n        \"values\": [\n          \"Нет\"\n        ]\n      }\n    }\n  ]\n}",
+        "form": []
+      },
       "tests": []
     },
     {
@@ -84,16 +83,16 @@
       "colId": "da208021-2787-4552-b1e9-94a412a74d09",
       "containerId": "",
       "name": "[TEMP]PM Chars",
-      "url": "localhost:5004/items/ozon/chars?url=/product/maska-na-hellouin-golovnoy-ubor-dinozavra-podvizhnyy-rot-veselaya-vecherinka-1510098234/",
+      "url": "localhost:5004/items/ozon/chars?url=/product/realme-smartfon-c53-6-128-gb-chernyy-1112674025/",
       "method": "GET",
       "sortNum": 23750,
       "created": "2024-04-03T11:29:55.859Z",
-      "modified": "2024-04-03T11:38:37.467Z",
+      "modified": "2024-04-12T08:56:54.044Z",
       "headers": [],
       "params": [
         {
           "name": "url",
-          "value": "/product/maska-na-hellouin-golovnoy-ubor-dinozavra-podvizhnyy-rot-veselaya-vecherinka-1510098234/",
+          "value": "/product/realme-smartfon-c53-6-128-gb-chernyy-1112674025/",
           "isPath": false
         }
       ],

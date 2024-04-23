@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"protos/parser"
+	"sync"
 )
 
 func (c *ItemsClient) grpcGetItems(req *parser.ItemsRequest) ([]*parser.ItemExtended, error) {
@@ -15,7 +16,8 @@ func (c *ItemsClient) grpcGetItems(req *parser.ItemsRequest) ([]*parser.ItemExte
 		return nil, err
 	}
 	var items []*parser.ItemExtended
-	// var wg sync.WaitGroup
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
 	for {
 		response, err := stream.Recv()
 		// End of stream
@@ -28,10 +30,10 @@ func (c *ItemsClient) grpcGetItems(req *parser.ItemsRequest) ([]*parser.ItemExte
 		}
 		// Message
 		if item := response.GetItem(); item != nil {
-			// wg.Add(1)
-			func(item *parser.Item) {
+			wg.Add(1)
+			go func(item *parser.Item) {
 				// Create ItemExtended with chars and without weight
-				// defer wg.Done()
+				defer wg.Done()
 				charsReq := &parser.CharacteristicsRequest{
 					Market:  req.Market,
 					ItemUrl: item.Url,
@@ -45,13 +47,15 @@ func (c *ItemsClient) grpcGetItems(req *parser.ItemsRequest) ([]*parser.ItemExte
 					Item:  item,
 					Chars: chars,
 				}
+				mutex.Lock()
 				items = append(items, itemExt)
+				mutex.Unlock()
 			}(item)
 		} else if status := response.GetStatus(); status != nil {
 			slog.Warn("Received an error status", "status", status.Message)
 			return nil, fmt.Errorf(status.Message)
 		}
 	}
-	// wg.Wait()
+	wg.Wait()
 	return items, nil
 }

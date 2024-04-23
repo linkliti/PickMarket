@@ -1,7 +1,33 @@
 """ Set up logger """
+import json
 import logging
+import re
 import sys
+from datetime import datetime
+from typing import Any
+
 from pythonjsonlogger import jsonlogger
+
+
+class CustomJsonFormatter(jsonlogger.JsonFormatter):
+  """ Custom logger formatter """
+
+  def add_fields(self, log_record: dict[str, Any], record: logging.LogRecord,
+                 message_dict: dict[str, Any]) -> None:
+    super().add_fields(log_record=log_record, record=record, message_dict=message_dict)
+    # Remove default field
+    del log_record['taskName']
+    # Update fields
+    log_record['time'] = datetime.fromtimestamp(timestamp=record.created).isoformat()
+    log_record['level'] = record.levelname
+    log_record['process'] = record.process
+    log_record['name'] = record.name
+    log_record['msg'] = record.getMessage()
+
+
+def jsonSerializer(obj: Any, *args, **kwargs) -> str:
+  """JSON serializer without spaces"""
+  return json.dumps(obj=obj, separators=(',', ':'), *args, **kwargs)
 
 
 def setupLogger(name, debug, filename='pmparser.log') -> None:
@@ -10,8 +36,9 @@ def setupLogger(name, debug, filename='pmparser.log') -> None:
   logger.setLevel(level=logging.DEBUG if debug else logging.INFO)
 
   # Create formatter
-  formatter = jsonlogger.JsonFormatter(
-    fmt="%(asctime)s %(levelname)s %(process)s %(name)s %(message)s", datefmt='%Y-%m-%dT%H:%M:%S')
+  formatter = CustomJsonFormatter(fmt="%(time)s %(level)s %(process)s %(name)s %(msg)s",
+                                  json_ensure_ascii=False,
+                                  json_serializer=jsonSerializer)
 
   # Create a file handler and add it to logger
   fileHandler = logging.FileHandler(filename=filename, encoding='utf-8')

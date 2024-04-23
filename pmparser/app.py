@@ -18,6 +18,7 @@ from app.selen.seleniumPool import browserQueue
 from app.utilities.log import setupLogger
 # from flask import Flask, Response
 from grpc._server import _Server
+
 # from waitress import serve as waitress_serve
 
 DEBUG = bool(os.environ.get('DEBUG', False))
@@ -25,7 +26,7 @@ setupLogger(name='root', debug=DEBUG)
 
 log = logging.getLogger(__name__)
 workerCount: int = cpu_count() // 4
-browserCount: int = workerCount // 2
+browserCount: int = workerCount
 
 
 def serve(bindAddress: str) -> None:
@@ -72,6 +73,7 @@ def main() -> None:
   addrStr: str = addr[0] + ':' + str(addr[1])
   workers: list[Process] = []
   # Browsers
+  log.info("Starting browsers", extra={'browserCount': browserCount})
   for _ in range(browserCount):
     worker = SeleniumWorkerMarkets()
     browserQueue.put(item=worker)

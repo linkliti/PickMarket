@@ -1,63 +1,79 @@
 package calc
 
 import (
+	"fmt"
 	"log/slog"
 	"math"
+	"pickmarket/requestHandler/calc/cases"
+	"pmutils"
 	"protos/parser"
+	"sync"
 )
 
-type calcVault struct {
-	prefPointer  *parser.UserPref
-	charPointers []*parser.Characteristic
+// Keys must be lowered
+var caseFuncs = map[string]caseStruct{
+	"color":       {fn: cases.CalcList_Color, calcType: LIST_TYPE},
+	"pm_price":    {fn: cases.CalcNum_difference, calcType: NUM_TYPE},
+	"pm_oldprice": {fn: cases.CalcNum_difference, calcType: NUM_TYPE},
 }
 
-type calc struct {
-	itemList []*parser.ItemExtended
-	userPref []*parser.UserPref
-	vaults   map[string]*calcVault
-}
-
-var caseFuncs = map[string]func(*parser.Characteristic, *parser.UserPref){
-	"color": calc_color,
-}
-
-func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref) error {
+func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref, req *parser.ItemsRequest) error {
+	if req == nil || itemList == nil || userPref == nil {
+		return fmt.Errorf("calc received nil pointer")
+	}
 	c := &calc{
 		itemList: itemList,
 		userPref: userPref,
 		vaults:   make(map[string]*calcVault),
+		req:      req,
 	}
-	slog.Debug("Filling vaults")
+	slog.Debug("Filling vaults", "pageUrl", c.req.PageUrl, "prefs", len(c.userPref), "items", len(c.itemList))
 	c.fillPreferences()
 	c.fillChars()
-	slog.Debug("Calculating weights")
+	c.removeVaultsWithoutChars()
+	slog.Debug("Calculating weights", "pageUrl", c.req.PageUrl, "vaults", len(c.vaults))
 	c.calculateDifferences()
 	c.calculateWeights()
 	c.sumWeights()
-	slog.Debug("Calculation successful")
+	slog.Debug("Calculation successful", "pageUrl", c.req.PageUrl)
 	return nil
 }
 
 func (c *calc) calculateDifferences() {
+	// var wg sync.WaitGroup
 	for key, v := range c.vaults {
-		// Special cases
-		if fn, ok := caseFuncs[key]; ok {
-			for _, char := range v.charPointers {
-				fn(char, v.prefPointer)
+		// wg.Add(1)
+		func(key string, v *calcVault) {
+			// defer wg.Done()
+			// Special cases
+			if fnStruct, ok := caseFuncs[key]; ok {
+				if v.prefType != fnStruct.calcType {
+					slog.Error("calcDif: Special case key has incorrect type", "key", key, "expected", fnStruct.calcType.Name(), "got", v.prefType.Name())
+					return
+				}
+				funcName := pmutils.GetFunctionName(fnStruct.fn)
+				slog.Debug("calcDif: Calculating key using special func", "key", key, "func", funcName, "isList", fnStruct.calcType.Name())
+				for _, char := range v.charPointers {
+					fnStruct.fn(char, v.prefPointer)
+				}
+				return
 			}
-		}
-		// General cases
-		switch v.prefPointer.Value.(type) {
-		case *parser.UserPref_NumValue:
-			for _, char := range v.charPointers {
-				calc_numVal(char, v.prefPointer)
+			// General cases
+			switch v.prefType {
+			case NUM_TYPE:
+				slog.Debug("calcDif: Calculating key using numVal func", "key", key)
+				for _, char := range v.charPointers {
+					cases.CalcNum_negAbsDifference(char, v.prefPointer)
+				}
+			case LIST_TYPE:
+				slog.Debug("calcDif: Calculating key using listVal func", "key", key)
+				for _, char := range v.charPointers {
+					cases.CalcList_numOfMatches(char, v.prefPointer)
+				}
 			}
-		case *parser.UserPref_ListValue:
-			for _, char := range v.charPointers {
-				calc_listVal(char, v.prefPointer)
-			}
-		}
+		}(key, v)
 	}
+	// wg.Wait()
 }
 
 func (c *calc) calculateWeights() {
@@ -74,6 +90,7 @@ func (c *calc) calculateWeights() {
 		}
 		// Remove vault from calculations if all values are equal
 		if min == max {
+			slog.Debug("calcWeight: Removing vault with equal max and min", "key", key)
 			delete(c.vaults, key)
 			continue
 		}
@@ -85,12 +102,18 @@ func (c *calc) calculateWeights() {
 }
 
 func (c *calc) sumWeights() {
+	var wg sync.WaitGroup
 	for _, item := range c.itemList {
-		for _, char := range item.Chars {
-			// Sum weights that are present in the vault
-			if _, ok := c.vaults[char.Key]; ok {
-				item.TotalWeight += char.CharWeight
+		wg.Add(1)
+		go func(item *parser.ItemExtended) {
+			wg.Done()
+			for _, char := range item.Chars {
+				// Sum weights that are present in the vault
+				if _, ok := c.vaults[char.Key]; ok {
+					item.TotalWeight += char.CharWeight
+				}
 			}
-		}
+		}(item)
 	}
+	wg.Wait()
 }

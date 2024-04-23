@@ -16,16 +16,16 @@ class ItemsRequestWithPrefs(_message.Message):
     def __init__(self, request: _Optional[_Union[_items_pb2.ItemsRequest, _Mapping]] = ..., userPrefs: _Optional[_Iterable[_Union[UserPref, _Mapping]]] = ...) -> None: ...
 
 class UserPref(_message.Message):
-    __slots__ = ("key", "priority", "numValue", "listValue")
+    __slots__ = ("key", "priority", "numVal", "listVal")
     KEY_FIELD_NUMBER: _ClassVar[int]
     PRIORITY_FIELD_NUMBER: _ClassVar[int]
-    NUMVALUE_FIELD_NUMBER: _ClassVar[int]
-    LISTVALUE_FIELD_NUMBER: _ClassVar[int]
+    NUMVAL_FIELD_NUMBER: _ClassVar[int]
+    LISTVAL_FIELD_NUMBER: _ClassVar[int]
     key: str
     priority: int
-    numValue: float
-    listValue: _types_pb2.StringList
-    def __init__(self, key: _Optional[str] = ..., priority: _Optional[int] = ..., numValue: _Optional[float] = ..., listValue: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
+    numVal: float
+    listVal: _types_pb2.StringList
+    def __init__(self, key: _Optional[str] = ..., priority: _Optional[int] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class ItemExtended(_message.Message):
     __slots__ = ("item", "totalWeight", "chars")

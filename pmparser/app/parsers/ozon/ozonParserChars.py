@@ -5,7 +5,7 @@ from typing import Generator
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
-from app.utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import msgToStr, toJson
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class OzonParserChars(OzonParser):
             else:
               log.error("Invalid value type", extra={"value": value, "type": type(value)})
               raise ValueError("Invalid value type " + str(type(value)))
-            log.debug("char data", extra={"char": charObj})
+            log.debug("char data", extra={"char": msgToStr(msg=charObj)})
             yield charObj
 
 

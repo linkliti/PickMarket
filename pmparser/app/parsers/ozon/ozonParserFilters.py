@@ -103,8 +103,14 @@ class OzonFilterWorker(OzonParser):
         self.internalType = typesPB.Filters.RANGE
         return
       case "cellWithSubtitleToggleCounter":
-        self.boolFilter = self.getBoolFilterValues()
-        self.internalType = typesPB.Filters.BOOL
+        boolFilter: typesPB.BoolFilter = self.getBoolFilterValues()
+        # self.internalType = typesPB.Filters.BOOL
+        # Use list instead of bool filter
+        items: list[typesPB.SelectionFilterItem] = []
+        items.append(typesPB.SelectionFilterItem(text="Да", value=boolFilter.value))
+        items.append(typesPB.SelectionFilterItem(text="Нет", value=""))
+        self.selectionFilter = typesPB.SelectionFilter(isRadio=True, items=items)
+        self.internalType = self.determineSelectionType(isRadio=self.selectionFilter.isRadio)
         return
       case "cellWithSubtitleCounter":
         self.selectionFilter = self.getCollapsedTagFilterValues()

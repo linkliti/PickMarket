@@ -5,6 +5,11 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"protos/parser"
+	"reflect"
+	"runtime"
+	"strings"
+	"unicode"
 
 	"golang.org/x/exp/constraints"
 )
@@ -71,4 +76,21 @@ func InterSection[T constraints.Ordered](pS ...[]T) []T {
 		}
 	}
 	return result
+}
+
+func BoolToStringList(b bool) *parser.StringList {
+	if b {
+		return &parser.StringList{Values: []string{"Да"}}
+	}
+	return &parser.StringList{Values: []string{"Нет"}}
+}
+
+func GetFunctionName(f interface{}) string {
+	strs := strings.Split((runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()), ".")
+	return strs[len(strs)-1]
+}
+
+func CapitalFirstLet(s string) string {
+	r := []rune(s)
+	return string(append([]rune{unicode.ToUpper(r[0])}, r[1:]...))
 }

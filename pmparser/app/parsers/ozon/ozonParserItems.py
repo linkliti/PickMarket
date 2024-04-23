@@ -7,7 +7,7 @@ from typing import Generator
 
 from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
-from app.utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import msgToStr, toJson
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class OzonParserItems(OzonParser):
       except KeyError as e:
         log.error("Failed to get item with error", extra={"error": e})
         continue
-      log.debug("Item data", extra={"data": data})
+      log.debug("Item data", extra={"data": msgToStr(msg=data)})
       yield data
 
   def getItem(self, itemJson: dict) -> itemsPB.Item:

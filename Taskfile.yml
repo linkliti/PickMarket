@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 vars:
   PYENV:
@@ -57,8 +57,11 @@ tasks:
     desc: "Generate proto and gRPC files"
     cmds:
       - task: py-activate
-      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser ./protos/parser/app/protos/*.proto
-      - python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty --go-grpc_out=./backend --go_out=./backend ./protos/parser/app/protos/*.proto
+      - |
+        python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty \
+        --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser \
+        --go-grpc_out=./backend --go_out=./backend \
+         ./protos/parser/app/protos/*.proto
 
   db-rm:
     desc: "Remove database using sudo"
@@ -74,11 +77,13 @@ tasks:
   go-mod-tidy:
     desc: "Tidy go modules"
     cmds:
-      - cd ./backend/categoriesWorker && go mod tidy
-      - cd ./backend/itemsWorker && go mod tidy
-      - cd ./backend/pmutils && go mod tidy
-      - cd ./backend/protos && go mod tidy
-      - cd ./backend/requestHandler && go mod tidy
+      - |
+        cd ./backend/categoriesWorker && go mod tidy &
+        cd ./backend/itemsWorker && go mod tidy &
+        cd ./backend/pmutils && go mod tidy &
+        cd ./backend/protos && go mod tidy &
+        cd ./backend/requestHandler && go mod tidy &
+        wait
 
   js-install:
     desc: "Install frontend dependencies"

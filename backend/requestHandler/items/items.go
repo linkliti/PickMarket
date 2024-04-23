@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"pickmarket/requestHandler/calc"
 	"pickmarket/requestHandler/misc"
+	"pmutils"
 	"protos/parser"
 	"sync"
 
 	"google.golang.org/protobuf/encoding/protojson"
-	// "pickmarket/requestHandler/calc"
 )
 
 func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
@@ -45,12 +45,16 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 	// Extended items
 	itemsList, err := c.grpcGetItems(req)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
 	userPrefs := reqBodyProto.GetUserPrefs()
 	c.appendExtraChars(itemsList)
-	calc.CalcWeight(itemsList, userPrefs)
+	err = calc.CalcWeight(itemsList, userPrefs, req)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// All to JSON
 	jsonData, err := json.Marshal(itemsList)
@@ -64,6 +68,7 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (c *ItemsClient) appendExtraChars(itemsList []*parser.ItemExtended) {
+	// Add items info as chars
 	var wg sync.WaitGroup
 	for _, item := range itemsList {
 		wg.Add(1)
@@ -86,6 +91,28 @@ func (c *ItemsClient) appendExtraChars(itemsList []*parser.ItemExtended) {
 				}
 				chars = append(chars, &ratingChar)
 			}
+			if item.Item.OldPrice != nil {
+				oldPriceChar := parser.Characteristic{
+					Name:  "Старая цена",
+					Key:   "pm_oldPrice",
+					Value: &parser.Characteristic_NumVal{NumVal: *item.Item.OldPrice},
+				}
+				chars = append(chars, &oldPriceChar)
+			}
+			originalChar := parser.Characteristic{
+				Name:  "Оригинал",
+				Key:   "pm_isOriginal",
+				Value: &parser.Characteristic_ListVal{ListVal: pmutils.BoolToStringList(item.Item.GetOriginal())},
+			}
+			chars = append(chars, &originalChar)
+
+			adultChar := parser.Characteristic{
+				Name:  "Для взрослых",
+				Key:   "pm_isAdult",
+				Value: &parser.Characteristic_ListVal{ListVal: pmutils.BoolToStringList(item.Item.GetIsAdult())},
+			}
+			chars = append(chars, &adultChar)
+
 			priceChar := parser.Characteristic{
 				Name:  "Цена",
 				Key:   "pm_price",
