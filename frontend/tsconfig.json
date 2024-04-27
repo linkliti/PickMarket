@@ -30,7 +30,7 @@
   },
   "include": [
     "app"
-  ],
+, "layouts/Layout.tsx"  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

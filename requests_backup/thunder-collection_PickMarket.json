@@ -1,8 +1,9 @@
 {
-  "client": "Thunder Client",
+  "clientName": "Thunder Client",
   "collectionName": "PickMarket",
-  "dateExported": "2024-04-22T17:23:37.300Z",
-  "version": "1.1",
+  "collectionId": "da208021-2787-4552-b1e9-94a412a74d09",
+  "dateExported": "2024-04-27T14:24:11.070Z",
+  "version": "1.2",
   "folders": [],
   "requests": [
     {
@@ -112,5 +113,6 @@
       "params": [],
       "tests": []
     }
-  ]
+  ],
+  "ref": "SYKcImsu6yAZAqoxhpzn9VSndW0R9WRzq5J61Q8RZPkG7bqQ1eDgDylq-P2hX0lX7BdXQwqSQ2ObdBBzPpGniA"
 }

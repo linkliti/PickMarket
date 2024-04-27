@@ -20,11 +20,11 @@ export default function Layout() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center bg-sky-100 px-16 pb-20 pt-5 max-md:px-2">
-        <div className="flex w-full max-w-[1065px] flex-col max-md:max-w-full">
-          <Header />
-          <Outlet />
-        </div>
+      <div className="flex min-h-screen min-w-[320px] flex-col items-cente px-16 py-4 max-md:px-2 max-w-[1280px] mx-auto">
+        {/* <div className="flex min-h-screen w-full max-w-[1065px] flex-col max-md:max-w-full"> */}
+        <Header />
+        <Outlet />
+        {/* </div> */}
       </div>
     </>
   );

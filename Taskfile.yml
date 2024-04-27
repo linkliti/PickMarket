@@ -103,7 +103,7 @@ tasks:
   js-dev:
     desc: "Run frontend in development mode"
     interactive: true
-    env:
-      DEBUG: "True"
+    dotenv:
+      - "./frontend/.env"
     cmds:
       - cd frontend && npm run dev
