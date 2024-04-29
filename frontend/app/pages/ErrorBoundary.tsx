@@ -1,5 +1,6 @@
+import { ReactElement } from "react";
 
-export default function ErrorBoundary() {
+export default function ErrorBoundary(): ReactElement | undefined {
   if (import.meta.env.DEV) {
     // Runtime error overlay in DEV
     window.onerror = (_event, _source, _lineno, _colno, err) => {

@@ -6,7 +6,7 @@ import Favorites from "@/pages/Favorites";
 import Hero from "@/pages/Hero";
 import { createBrowserRouter } from "react-router-dom";
 
-export const mainRouter = createBrowserRouter([
+const mainRouter = createBrowserRouter([
   {
     element: <Layout />,
     errorElement: <ErrorBoundary />,
@@ -30,5 +30,7 @@ export const mainRouter = createBrowserRouter([
     ],
   },
 ]);
+
+export default mainRouter;
 
 

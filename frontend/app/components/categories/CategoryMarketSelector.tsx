@@ -1,5 +1,5 @@
 import BodyHeader from "@/components/base/BodyHeader";
-import { useState } from "react";
+import { ChangeEvent, ReactElement, useState } from "react";
 
 interface Marketplace {
   name: string;
@@ -11,43 +11,46 @@ const marketplaces: Marketplace[] = [
   { name: 'Я.Маркет', url: 'https://market.yandex.ru' },
 ];
 
-const categories = ['Элетроника', 'Одежда'];
+const categories: string[] = ['Элетроника', 'Одежда'];
 
-export default function CategoryMarketSelector() {
+export default function CategoryMarketSelector(): ReactElement {
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [text, setText] = useState<string>('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault();
     if (selectedMarketplace && selectedCategory) {
       console.log({ selectedMarketplace, selectedCategory, text });
     }
-  };
+  }
 
   return (
     <BodyHeader>
       <form onSubmit={handleSubmit}>
-        <select value={selectedMarketplace?.name || ''} onChange={(e) => setSelectedMarketplace(marketplaces.find(m => m.name === e.target.value) || null)} required>
+        <select
+          value={selectedMarketplace?.name || ''}
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void => setSelectedMarketplace(marketplaces.find((m: Marketplace): boolean => m.name === e.target.value) || null)} required
+        >
           <option value="">Выберите магазин</option>
-          {marketplaces.map(m => (
+          {marketplaces.map((m: Marketplace): ReactElement => (
             <option key={m.name} value={m.name}>{m.name}</option>
           ))}
         </select>
         <select
           value={selectedCategory || ''}
-          onChange={(e) => setSelectedCategory(e.target.value || null)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void => setSelectedCategory(e.target.value || null)}
           required
         >
           <option value="">Выберите категорию</option>
-          {categories.map(c => (
+          {categories.map((c: string): ReactElement => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
         <input
           type="text"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.target.value)}
           placeholder="Поисковая фраза"
         />
         <button type="submit">Поиск</button>

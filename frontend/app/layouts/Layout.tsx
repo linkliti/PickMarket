@@ -1,8 +1,9 @@
 import Header from "@/components/base/Header";
 import ErrorBoundary from "@/pages/ErrorBoundary";
+import { ReactElement } from "react";
 import { Outlet } from "react-router-dom";
 
-export default function Layout() {
+export default function Layout(): ReactElement {
 
   ErrorBoundary();
 
