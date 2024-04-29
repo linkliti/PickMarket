@@ -22,7 +22,7 @@ export default function CategoryItem({
           defaultChecked={category.url === selectedCategory?.url}
         />
         {category.title}
-        {selectedCategory?.url === category.url ? ' [выбрано]' : ''}
+        {selectedCategory?.url === category.url ? " [выбрано]" : ""}
       </label>
     </li>
   );

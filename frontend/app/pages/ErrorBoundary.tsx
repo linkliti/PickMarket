@@ -15,10 +15,7 @@ export default function ErrorBoundary(): ReactElement | undefined {
       const overlay = new ErrorOverlay(err);
       document.body.appendChild(overlay);
     };
-  }
-  else {
-    return (
-      <div> Ошибка</div>
-    )
+  } else {
+    return <div> Ошибка</div>;
   }
 }

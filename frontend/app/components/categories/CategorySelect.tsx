@@ -8,7 +8,7 @@ export default function CategorySelect(): ReactElement {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   useEffect((): void => {
-    fetchCategories('/api/categories/ozon/root');
+    fetchCategories("/api/categories/ozon/root");
   }, []);
 
   function fetchCategories(url: string): void {
@@ -19,8 +19,11 @@ export default function CategorySelect(): ReactElement {
           data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
           setCategories((prevCategories: Category[]): Category[] => [
             ...new Map(
-              [...prevCategories, ...data].map((item: Category): [string, Category] => [item.url, item])
-            ).values()
+              [...prevCategories, ...data].map((item: Category): [string, Category] => [
+                item.url,
+                item,
+              ]),
+            ).values(),
           ]);
         }
       })
@@ -38,94 +41,117 @@ export default function CategorySelect(): ReactElement {
   }
 
   function displayCategories(categories: Category[]): ReactElement {
-    let level: number = 0
+    let level: number = 0;
     // Если не выбрана категория, отображаем только категории без родителей
     if (!selectedCategory) {
-      const filteredCategories: Category[] = categories.filter((category: Category): boolean => !category.parentUrl);
+      const filteredCategories: Category[] = categories.filter(
+        (category: Category): boolean => !category.parentUrl,
+      );
       return (
         <>
-          {filteredCategories.map((category: Category): ReactElement => (
-            <CategoryItem
-              category={category}
-              level={level}
-              handleCategoryChange={handleCategoryChange}
-            />
-          ))}
+          {filteredCategories.map(
+            (category: Category): ReactElement => (
+              <CategoryItem
+                category={category}
+                level={level}
+                handleCategoryChange={handleCategoryChange}
+              />
+            ),
+          )}
         </>
-      )
+      );
     }
 
     // Parents array of selectedCategory for nesting
     function findParents(parentUrl: string): Category[] {
-      const parentCategories: Category[] = []
-      for (; ;) {
-        const parentCat: Category = categories.filter((category: Category): boolean => parentUrl === category.url)[0]
-        parentCategories.unshift(parentCat)
+      const parentCategories: Category[] = [];
+      for (;;) {
+        const parentCat: Category = categories.filter(
+          (category: Category): boolean => parentUrl === category.url,
+        )[0];
+        parentCategories.unshift(parentCat);
         if (parentCat.parentUrl) {
-          parentUrl = parentCat.parentUrl
-        }
-        else {
-          break
+          parentUrl = parentCat.parentUrl;
+        } else {
+          break;
         }
       }
-      return parentCategories
+      return parentCategories;
     }
 
     // Chain of parents
-    let parents: Category[] = []
+    let parents: Category[] = [];
     if (selectedCategory.parentUrl) {
-      parents = findParents(selectedCategory.parentUrl)
+      parents = findParents(selectedCategory.parentUrl);
     }
     // Neighbours arrays
-    const neighbours: Category[] = categories.filter((category: Category): boolean => category.parentUrl === selectedCategory?.parentUrl);
-    const startNeighbours: Category[] = neighbours.slice(0, neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url) + 1);
-    const endNeighbours: Category[] = neighbours.slice(neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url) + 1);
+    const neighbours: Category[] = categories.filter(
+      (category: Category): boolean => category.parentUrl === selectedCategory?.parentUrl,
+    );
+    const startNeighbours: Category[] = neighbours.slice(
+      0,
+      neighbours.findIndex(
+        (category: Category): boolean => category.url === selectedCategory?.url,
+      ) + 1,
+    );
+    const endNeighbours: Category[] = neighbours.slice(
+      neighbours.findIndex(
+        (category: Category): boolean => category.url === selectedCategory?.url,
+      ) + 1,
+    );
 
     // Children array
-    const children: Category[] = categories.filter((category: Category): boolean => category.parentUrl === selectedCategory?.url);
+    const children: Category[] = categories.filter(
+      (category: Category): boolean => category.parentUrl === selectedCategory?.url,
+    );
 
     // Return
     return (
       <>
-        {parents.map((category: Category): ReactElement => (
-          <CategoryItem
-            category={category}
-            level={level++}
-            handleCategoryChange={handleCategoryChange}
-            selectedCategory={selectedCategory}
-          />
-        ))}
-        {startNeighbours.map((category: Category): ReactElement => (
-          <CategoryItem
-            category={category}
-            level={level}
-            handleCategoryChange={handleCategoryChange}
-            selectedCategory={selectedCategory}
-          />
-        ))}
-        {children.length > 0 && children.map((category: Category): ReactElement => (
-          <CategoryItem
-            category={category}
-            level={(level + 1)}
-            handleCategoryChange={handleCategoryChange}
-            selectedCategory={selectedCategory}
-          />
-        ))}
-        {endNeighbours.map((category: Category): ReactElement => (
-          <CategoryItem
-            category={category}
-            level={level}
-            handleCategoryChange={handleCategoryChange}
-            selectedCategory={selectedCategory}
-          />
-        ))}
+        {parents.map(
+          (category: Category): ReactElement => (
+            <CategoryItem
+              category={category}
+              level={level++}
+              handleCategoryChange={handleCategoryChange}
+              selectedCategory={selectedCategory}
+            />
+          ),
+        )}
+        {startNeighbours.map(
+          (category: Category): ReactElement => (
+            <CategoryItem
+              category={category}
+              level={level}
+              handleCategoryChange={handleCategoryChange}
+              selectedCategory={selectedCategory}
+            />
+          ),
+        )}
+        {children.length > 0 &&
+          children.map(
+            (category: Category): ReactElement => (
+              <CategoryItem
+                category={category}
+                level={level + 1}
+                handleCategoryChange={handleCategoryChange}
+                selectedCategory={selectedCategory}
+              />
+            ),
+          )}
+        {endNeighbours.map(
+          (category: Category): ReactElement => (
+            <CategoryItem
+              category={category}
+              level={level}
+              handleCategoryChange={handleCategoryChange}
+              selectedCategory={selectedCategory}
+            />
+          ),
+        )}
       </>
     );
   }
 
-  return (
-    <ul>
-      {displayCategories(categories)}
-    </ul>
-  )
+  return <ul>{displayCategories(categories)}</ul>;
 }

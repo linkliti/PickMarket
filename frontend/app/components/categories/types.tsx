@@ -3,7 +3,7 @@ export type Category = {
   url: string;
   parentUrl?: string;
   isParsed: boolean;
-}
+};
 
 export type CategoryItemProps = {
   category: Category;

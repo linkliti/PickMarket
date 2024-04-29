@@ -7,16 +7,16 @@ interface Marketplace {
 }
 
 const marketplaces: Marketplace[] = [
-  { name: 'OZON', url: 'https://ozon.ru' },
-  { name: 'Я.Маркет', url: 'https://market.yandex.ru' },
+  { name: "OZON", url: "https://ozon.ru" },
+  { name: "Я.Маркет", url: "https://market.yandex.ru" },
 ];
 
-const categories: string[] = ['Элетроника', 'Одежда'];
+const categories: string[] = ["Элетроника", "Одежда"];
 
 export default function CategoryMarketSelector(): ReactElement {
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [text, setText] = useState<string>('');
+  const [text, setText] = useState<string>("");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault();
@@ -29,23 +29,38 @@ export default function CategoryMarketSelector(): ReactElement {
     <BodyHeader>
       <form onSubmit={handleSubmit}>
         <select
-          value={selectedMarketplace?.name || ''}
-          onChange={(e: ChangeEvent<HTMLSelectElement>): void => setSelectedMarketplace(marketplaces.find((m: Marketplace): boolean => m.name === e.target.value) || null)} required
+          value={selectedMarketplace?.name || ""}
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void =>
+            setSelectedMarketplace(
+              marketplaces.find((m: Marketplace): boolean => m.name === e.target.value) || null,
+            )
+          }
+          required
         >
           <option value="">Выберите магазин</option>
-          {marketplaces.map((m: Marketplace): ReactElement => (
-            <option key={m.name} value={m.name}>{m.name}</option>
-          ))}
+          {marketplaces.map(
+            (m: Marketplace): ReactElement => (
+              <option key={m.name} value={m.name}>
+                {m.name}
+              </option>
+            ),
+          )}
         </select>
         <select
-          value={selectedCategory || ''}
-          onChange={(e: ChangeEvent<HTMLSelectElement>): void => setSelectedCategory(e.target.value || null)}
+          value={selectedCategory || ""}
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void =>
+            setSelectedCategory(e.target.value || null)
+          }
           required
         >
           <option value="">Выберите категорию</option>
-          {categories.map((c: string): ReactElement => (
-            <option key={c} value={c}>{c}</option>
-          ))}
+          {categories.map(
+            (c: string): ReactElement => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ),
+          )}
         </select>
         <input
           type="text"
@@ -55,7 +70,6 @@ export default function CategoryMarketSelector(): ReactElement {
         />
         <button type="submit">Поиск</button>
       </form>
-
     </BodyHeader>
   );
 }
