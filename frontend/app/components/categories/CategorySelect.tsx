@@ -1,90 +1,131 @@
-import { useEffect, useState } from "react";
-import { terminal } from "virtual:terminal";
+import CategoryItem from "@/components/categories/CategoryItem";
+import { Category } from "@/components/categories/types";
+import { ReactElement, useEffect, useState } from "react";
+import terminal from "virtual:terminal";
 
-type Category = {
-  title: string;
-  url: string;
-  isParsed: boolean;
-  children?: Category[];
-}
-
-export default function CategorySelect() {
+export default function CategorySelect(): ReactElement {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  const updateCategory = (categories: Category[], url: string, children: Category[]): Category[] => {
-    return categories.map(category => {
-      if (category.url === url) {
-        return { ...category, children: children.map(child => ({ ...child })), isParsed: true };
-      }
-      if (category.children) {
-        return { ...category, children: updateCategory(category.children, url, children) };
-      }
-      return category;
-    });
-  };
-
-  const fetchCategories = (url: string, parentCategory: Category | null = null) => {
-    if (parentCategory && parentCategory.isParsed) {
-      setSelectedCategory(parentCategory);
-      terminal.log(parentCategory.title);
-      return;
-    }
-    terminal.log('Загрузка категорий', url);
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (data !== null) {
-          if (parentCategory) {
-            setCategories(prevCategories => updateCategory(prevCategories, parentCategory.url, data));
-          } else {
-            setCategories(data.map((category: Category) => ({ ...category, isParsed: false })));
-          }
-        }
-        setSelectedCategory(parentCategory);
-        if (parentCategory) {
-          terminal.log(parentCategory.title);
-        }
-      })
-      .catch(terminal.error);
-  };
-
-  useEffect(() => {
+  useEffect((): void => {
     fetchCategories('/api/categories/ozon/root');
   }, []);
 
-  const handleCategoryChange = (category: Category) => {
-    fetchCategories(`/api/categories/ozon/sub?url=${encodeURIComponent(category.url)}`, category);
-  };
+  function fetchCategories(url: string): void {
+    fetch(url)
+      .then((res: Response): Promise<Category[]> => res.json())
+      .then((data: Category[]): void => {
+        if (data) {
+          data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
+          setCategories((prevCategories: Category[]): Category[] => [
+            ...new Map(
+              [...prevCategories, ...data].map((item: Category): [string, Category] => [item.url, item])
+            ).values()
+          ]);
+        }
+      })
+      .catch(terminal.error);
+  }
 
-  const renderCategories = (categories: Category[], level = 0) => {
-    return categories.map(category => (
-      <li
-        key={category.url}
-        style={{ paddingLeft: `${level * 1}rem` }}
-      >
-        <label>
-          <input
-            type="radio"
-            name="category"
-            value={category.url}
-            onChange={() => handleCategoryChange(category)}
-            defaultChecked={category.url === '/'}
+  function handleCategoryChange(category: Category): void {
+    if (!category.isParsed) {
+      terminal.log("Fetching", category.url);
+      fetchCategories(`/api/categories/ozon/sub?url=${encodeURIComponent(category.url)}`);
+      category.isParsed = true;
+    }
+    setSelectedCategory(category);
+    terminal.log("Selected", category.title);
+  }
+
+  function displayCategories(categories: Category[]): ReactElement {
+    let level: number = 0
+    // Если не выбрана категория, отображаем только категории без родителей
+    if (!selectedCategory) {
+      const filteredCategories: Category[] = categories.filter((category: Category): boolean => !category.parentUrl);
+      return (
+        <>
+          {filteredCategories.map((category: Category): ReactElement => (
+            <CategoryItem
+              category={category}
+              level={level}
+              handleCategoryChange={handleCategoryChange}
+            />
+          ))}
+        </>
+      )
+    }
+
+    // Parents array of selectedCategory for nesting
+    function findParents(parentUrl: string): Category[] {
+      const parentCategories: Category[] = []
+      for (; ;) {
+        const parentCat: Category = categories.filter((category: Category): boolean => parentUrl === category.url)[0]
+        parentCategories.unshift(parentCat)
+        if (parentCat.parentUrl) {
+          parentUrl = parentCat.parentUrl
+        }
+        else {
+          break
+        }
+      }
+      return parentCategories
+    }
+
+    // Chain of parents
+    let parents: Category[] = []
+    if (selectedCategory.parentUrl) {
+      parents = findParents(selectedCategory.parentUrl)
+    }
+    // Neighbours arrays
+    const neighbours: Category[] = categories.filter((category: Category): boolean => category.parentUrl === selectedCategory?.parentUrl);
+    const startNeighbours: Category[] = neighbours.slice(0, neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url) + 1);
+    const endNeighbours: Category[] = neighbours.slice(neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url) + 1);
+
+    // Children array
+    const children: Category[] = categories.filter((category: Category): boolean => category.parentUrl === selectedCategory?.url);
+
+    // Return
+    return (
+      <>
+        {parents.map((category: Category): ReactElement => (
+          <CategoryItem
+            category={category}
+            level={level++}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
           />
-          {category.title}
-          {selectedCategory && selectedCategory.url === category.url && ' [выбрано]'}
-        </label>
-        {category.children && <ul>{renderCategories(category.children, level + 1)}</ul>}
-      </li>
-    ));
-  };
+        ))}
+        {startNeighbours.map((category: Category): ReactElement => (
+          <CategoryItem
+            category={category}
+            level={level}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
+          />
+        ))}
+        {children.length > 0 && children.map((category: Category): ReactElement => (
+          <CategoryItem
+            category={category}
+            level={(level + 1)}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
+          />
+        ))}
+        {endNeighbours.map((category: Category): ReactElement => (
+          <CategoryItem
+            category={category}
+            level={level}
+            handleCategoryChange={handleCategoryChange}
+            selectedCategory={selectedCategory}
+          />
+        ))}
+      </>
+    );
+  }
 
   return (
-    <form>
-      <ul>
-        {renderCategories(categories)}
-      </ul>
-      {selectedCategory && <p>Выбранная категория: {selectedCategory.title}</p>}
-    </form>
-  );
+    <ul>
+      {displayCategories(categories)}
+    </ul>
+  )
 }
