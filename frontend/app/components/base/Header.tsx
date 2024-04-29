@@ -7,13 +7,13 @@ export default function Header() {
   ];
 
   return (
-    <header className="flex w-full gap-5 whitespace-nowrap rounded-2xl bg-sky-200 px-6 py-5 font-bold text-black max-md:max-w-full max-md:flex-wrap max-md:pr-5">
-      <Link to="/" className="flex-auto text-2xl">
+    <header className="flex w-full flex-wrap gap-5 rounded-2xl bg-sky-200 p-4">
+      <Link to="/" className="flex-auto text-2xl font-extrabold">
         PickMarket
       </Link>
-      <nav className="flex justify-between gap-5 self-start text-center text-base max-md:flex-wrap">
+      <nav className="my-auto flex flex-wrap justify-between gap-5">
         {navItems.map((item) => (
-          <Link key={item.name} to={item.path}>
+          <Link key={item.name} to={item.path} className="font-bold ">
             {item.name}
           </Link>
         ))}

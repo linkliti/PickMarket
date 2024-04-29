@@ -104,6 +104,6 @@ tasks:
     desc: "Run frontend in development mode"
     interactive: true
     dotenv:
-      - "./frontend/.env"
+      - "./frontend/vscode.env"
     cmds:
       - cd frontend && npm run dev
