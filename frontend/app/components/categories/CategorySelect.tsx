@@ -1,40 +1,56 @@
 import CategoryItem from "@/components/categories/CategoryItem";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Category } from "@/types/categoryTypes";
+import { useCategoryStore } from "@/store/categoryStore";
+import { Category, CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
 
-export default function CategorySelect(): ReactElement {
+export default function CategorySelect({
+  marketplace,
+}: {
+  marketplace: Marketplace;
+}): ReactElement {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [selectedCategory, setSelectedCategory] = useCategoryStore((state: CategoryStore) => [
+    state.selectedCategory,
+    state.setSelectedCategory,
+  ]);
 
   useEffect((): void => {
-    fetchCategories("/api/categories/ozon/root");
-  }, []);
+    setSelectedCategory(null);
+    setCategories([]);
+    fetchCategories(`/api/categories/${marketplace.shortLabel}/root`);
+    setIsLoading(false);
+  }, [marketplace.shortLabel, setSelectedCategory]);
 
-  function fetchCategories(url: string): void {
-    fetch(url)
-      .then((res: Response): Promise<Category[]> => res.json())
-      .then((data: Category[]): void => {
-        if (data) {
-          data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
-          setCategories((prevCategories: Category[]): Category[] => [
-            ...new Map(
-              [...prevCategories, ...data].map((item: Category): [string, Category] => [
-                item.url,
-                item,
-              ]),
-            ).values(),
-          ]);
-        }
-      })
-      .catch(terminal.error);
+  async function fetchCategories(url: string): Promise<void> {
+    try {
+      const res: Response = await fetch(url);
+      const data: Category[] = await res.json();
+      if (data) {
+        data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
+        setCategories((prevCategories: Category[]): Category[] => [
+          ...new Map(
+            [...prevCategories, ...data].map((item: Category): [string, Category] => [
+              item.url,
+              item,
+            ]),
+          ).values(),
+        ]);
+      }
+    } catch (error) {
+      terminal.error(error);
+    }
   }
 
   function handleCategoryChange(category: Category): void {
     if (!category.isParsed) {
       terminal.log("Fetching", category.url);
-      fetchCategories(`/api/categories/ozon/sub?url=${encodeURIComponent(category.url)}`);
+      fetchCategories(
+        `/api/categories/${marketplace.shortLabel}/sub?url=${encodeURIComponent(category.url)}`,
+      );
       category.isParsed = true;
     }
     setSelectedCategory(category);
@@ -42,6 +58,9 @@ export default function CategorySelect(): ReactElement {
   }
 
   function displayCategories(categories: Category[]): ReactElement {
+    if (categories.length === 0) {
+      return <p>Категории не найдены</p>;
+    }
     let level: number = 0;
     // Если не выбрана категория, отображаем только категории без родителей
     if (!selectedCategory) {
@@ -163,10 +182,19 @@ export default function CategorySelect(): ReactElement {
 
   return (
     <>
-      <p className="mb-4">
-        Выбранная категория: {selectedCategory?.title ? selectedCategory.title : "Не выбрана"}
-      </p>
-      <RadioGroup>{displayCategories(categories)}</RadioGroup>
+      {isLoading ? (
+        <div className="flex items-center gap-2">
+          <LoadingSpinner /> <p>Загрузка категорий</p>
+        </div>
+      ) : (
+        <>
+          <p className="mb-4">
+            {"Выбранная категория: "}
+            {selectedCategory?.title ? selectedCategory.title : "Не выбрана"}
+          </p>
+          <RadioGroup>{displayCategories(categories)}</RadioGroup>
+        </>
+      )}
     </>
   );
 }

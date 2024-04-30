@@ -9,6 +9,10 @@ export default function CategoryItem({
   handleCategoryChange,
   selectedCategory,
 }: CategoryItemProps): ReactElement {
+  if (!category) {
+    return <></>;
+  }
+
   return (
     <div className="flex items-center space-x-2 py-0.5">
       <RadioGroupItem
@@ -20,7 +24,7 @@ export default function CategoryItem({
             ? (): void => handleCategoryChange(category)
             : undefined
         }
-        defaultChecked={category.url === selectedCategory?.url}
+        checked={category.url === selectedCategory?.url}
       />
       <Label
         htmlFor={category.url}

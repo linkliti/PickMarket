@@ -8,14 +8,10 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { marketplaces } from "@/store/categoryStore";
+import { marketplaces, useCategoryStore } from "@/store/categoryStore";
+import { CategoryStore, Marketplace } from "@/types/categoryTypes";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { ReactElement, useState } from "react";
-
-interface Marketplace {
-  label: string;
-  value: string;
-}
 
 export default function CategoryMarketSelector({
   className = "",
@@ -25,7 +21,12 @@ export default function CategoryMarketSelector({
   listClassNames?: string;
 }): ReactElement {
   const [isOpenMarketSelect, setOpenMarketSelect] = useState(false);
-  const [selectedMarket, setSelectedMarket] = useState(marketplaces[0]);
+  const [selectedMarket, setSelectedMarket] = useCategoryStore(
+    (state: CategoryStore): [Marketplace, (market: Marketplace) => void] => [
+      state.selectedMarket,
+      state.setSelectedMarket,
+    ],
+  );
 
   return (
     <div className={cn(className)}>
