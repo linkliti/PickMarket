@@ -1,5 +1,6 @@
 import CategoryItem from "@/components/categories/CategoryItem";
-import { Category } from "@/components/categories/types";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Category } from "@/types/categoryTypes";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
 
@@ -90,10 +91,11 @@ export default function CategorySelect(): ReactElement {
     );
     const startNeighbours: Category[] = neighbours.slice(
       0,
-      neighbours.findIndex(
-        (category: Category): boolean => category.url === selectedCategory?.url,
-      ) + 1,
+      neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url),
     );
+    const selectedCat: Category = categories.filter(
+      (category: Category): boolean => category.url === selectedCategory?.url,
+    )[0];
     const endNeighbours: Category[] = neighbours.slice(
       neighbours.findIndex(
         (category: Category): boolean => category.url === selectedCategory?.url,
@@ -128,6 +130,12 @@ export default function CategorySelect(): ReactElement {
             />
           ),
         )}
+        <CategoryItem
+          category={selectedCat}
+          level={level}
+          handleCategoryChange={handleCategoryChange}
+          selectedCategory={selectedCategory}
+        />
         {children.length > 0 &&
           children.map(
             (category: Category): ReactElement => (
@@ -153,5 +161,12 @@ export default function CategorySelect(): ReactElement {
     );
   }
 
-  return <ul>{displayCategories(categories)}</ul>;
+  return (
+    <>
+      <p className="mb-4">
+        Выбранная категория: {selectedCategory?.title ? selectedCategory.title : "Не выбрана"}
+      </p>
+      <RadioGroup>{displayCategories(categories)}</RadioGroup>
+    </>
+  );
 }

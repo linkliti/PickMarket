@@ -11,3 +11,8 @@ export type CategoryItemProps = {
   handleCategoryChange: (category: Category) => void;
   selectedCategory?: Category;
 };
+
+export type Marketplace = {
+  label: string;
+  value: string;
+};

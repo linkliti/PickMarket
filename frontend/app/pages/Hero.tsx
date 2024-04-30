@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
@@ -10,11 +11,14 @@ export default function Hero(): ReactElement {
         <p className="mt-4 text-lg">Удобная подборка товаров</p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link to="/categories">
-            <a className="text-md block w-full rounded-lg bg-sky-200 px-5 py-3 font-medium text-black sm:w-auto">
+          <Button asChild>
+            <Link
+              to="/categories"
+              className="text-md block w-full rounded-lg px-5 py-3 font-medium sm:w-auto"
+            >
               Перейти к категориям
-            </a>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

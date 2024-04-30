@@ -4,6 +4,7 @@ import Categories from "@/pages/Categories";
 import ErrorBoundary from "@/pages/ErrorBoundary";
 import Favorites from "@/pages/Favorites";
 import Hero from "@/pages/Hero";
+import Test from "@/pages/Test";
 import { createBrowserRouter } from "react-router-dom";
 
 const mainRouter = createBrowserRouter([
@@ -29,8 +30,10 @@ const mainRouter = createBrowserRouter([
       },
     ],
   },
+  {
+    element: <Test />,
+    path: "/test",
+  },
 ]);
 
 export default mainRouter;
-
-
