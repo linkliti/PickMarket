@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (c *ItemsClient) GetItemCharacteristics(rw http.ResponseWriter, r *http.Request) {
@@ -30,12 +32,23 @@ func (c *ItemsClient) GetItemCharacteristics(rw http.ResponseWriter, r *http.Req
 		return
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(charsList)
+	// parser.Characteristic to json.RawMessage
+	charsRaw := make([]json.RawMessage, len(charsList))
+	for i, char := range charsList {
+		charJSON, err := protojson.Marshal(char)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		charsRaw[i] = json.RawMessage(charJSON)
+	}
+	// json.RawMessage to JSONB
+	charsJSON, err := json.Marshal(charsRaw)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Return
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(jsonData)
+	rw.Write(charsJSON)
 }

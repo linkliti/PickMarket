@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (c *CategoryClient) GetRootCategories(rw http.ResponseWriter, r *http.Request) {
@@ -48,12 +50,23 @@ func (c *CategoryClient) GetRootCategories(rw http.ResponseWriter, r *http.Reque
 		}
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(categories)
+	// parser.Category to json.RawMessage
+	categsRaw := make([]json.RawMessage, len(categories))
+	for i, item := range categories {
+		categJSON, err := protojson.Marshal(item)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		categsRaw[i] = json.RawMessage(categJSON)
+	}
+	// json.RawMessage to JSONB
+	categsJSON, err := json.Marshal(categsRaw)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Return
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(jsonData)
+	rw.Write(categsJSON)
 }

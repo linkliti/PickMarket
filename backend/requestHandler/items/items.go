@@ -57,14 +57,26 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// All to JSON
-	jsonData, err := json.Marshal(itemsList)
+	// parser.ItemExtended to json.RawMessage
+	itemsRaw := make([]json.RawMessage, len(itemsList))
+	for i, item := range itemsList {
+		itemJSON, err := protojson.Marshal(item)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		itemsRaw[i] = json.RawMessage(itemJSON)
+	}
+	// json.RawMessage to JSONB
+	itemsJSON, err := json.Marshal(itemsRaw)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// Return
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(jsonData)
+	rw.Write(itemsJSON)
 }
 
 func (c *ItemsClient) appendExtraChars(itemsList []*parser.ItemExtended) {

@@ -33,7 +33,7 @@ func (c *ItemsClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request
 		return
 	}
 	// All to JSON
-	// parser.Characteristic to json.RawMessage
+	// parser.Filter to json.RawMessage
 	filterRaw := make([]json.RawMessage, len(filterList))
 	for i, char := range filterList {
 		charJSON, err := protojson.Marshal(char)
