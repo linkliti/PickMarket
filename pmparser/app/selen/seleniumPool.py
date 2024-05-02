@@ -1,7 +1,8 @@
 """ Selenium Browser Pool """
 import queue
-from app.selen.seleniumMarkets import SeleniumWorkerMarkets
+
 from app.selen.seleniumHelpers import BlockedError
+from app.selen.seleniumMarkets import SeleniumWorkerMarkets
 
 browserQueue = queue.Queue()
 
@@ -24,10 +25,9 @@ def getBrowserToGetOzonJson(url) -> str:
   browserWorker: SeleniumWorkerMarkets = browserQueue.get()
   try:
     data: str = browserWorker.getOzonStringJSON(url)
-    browserWorker.resetCookies()
     return data
   except BlockedError:
-    browserWorker.setOzonAdultCookies()
+    browserWorker.resetCookies()
     # Last attempt
     return browserWorker.getOzonStringJSON(url)
   finally:

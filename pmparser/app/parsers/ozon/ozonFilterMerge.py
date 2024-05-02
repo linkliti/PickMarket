@@ -66,25 +66,62 @@ class OzonFilterMerge:
           # Add numeric filter
           if char.HasField("numVal"):
             # Guess max value (4 -> 100, 65 -> 1000, etc)
-            guessedMaxValue: int = 10**(len(str(int(char.numVal))) + 1)
+            guessedMaxValue: int = self.guessMaxValue(char.numVal)
             rangeFilter = typesPB.RangeFilter(min=0, max=guessedMaxValue)
             newFilt = itemsPB.Filter(title=char.name,
                                      key=char.key.lower(),
                                      internalType=typesPB.Filters.RANGE,
                                      rangeFilter=rangeFilter)
-          # Add bool filter
-          elif len(char.listVal.values) > 1 and char.listVal.values[0] in ["Да", "Нет"]:
-            newFilt = itemsPB.Filter(title=char.name,
-                                     key=char.key.lower(),
-                                     internalType=typesPB.Filters.BOOL,
-                                     boolFilter=typesPB.BoolFilter(value="t"))
-          else:
-            continue
-          filterList += [newFilt]
-          filterKeys.add(newFilt.key)
-      # Yield new filters
+            filterList += [newFilt]
+            filterKeys.add(newFilt.key)
+      # Matching keys and filters
       compatibleKeys: set[str] = charsKeys.intersection(filterKeys)
       compatibleFilters: list[itemsPB.Filter] = list(
         filter(lambda x: x.key in compatibleKeys, filterList))
-      for filt in compatibleFilters:
+      # Extra filters
+      pmFilters: list[itemsPB.Filter] = self.appendExtraFilters(itemList=itemList)
+      # Yield all filters
+      for filt in compatibleFilters + pmFilters:
         yield filt
+
+  def guessMaxValue(self, num: float) -> int:
+    """ Guess max value """
+    return 10**(len(str(int(num))) + 1)
+
+  def appendExtraFilters(self, itemList: list[itemsPB.Item]) -> list[itemsPB.Filter]:
+    """ Append extra filters """
+    pmFilters: list[itemsPB.Filter] = []
+    maxComments: float = max(map(lambda x: x.comments, itemList), default=0)
+    maxOldPrice: float = max(map(lambda x: x.oldPrice, itemList), default=0)
+    maxPrice: float = max(map(lambda x: x.price, itemList), default=0)
+    commentsFilter = itemsPB.Filter(title="Отзывы",
+                                    key="pm_reviews",
+                                    internalType=typesPB.Filters.RANGE,
+                                    rangeFilter=typesPB.RangeFilter(
+                                      min=0, max=self.guessMaxValue(maxComments)))
+    ratingFilter = itemsPB.Filter(title="Рейтинг",
+                                  key="pm_rating",
+                                  internalType=typesPB.Filters.RANGE,
+                                  rangeFilter=typesPB.RangeFilter(min=0, max=5))
+    oldPriceFilter = itemsPB.Filter(title="Старая цена",
+                                    key="pm_oldPrice",
+                                    internalType=typesPB.Filters.RANGE,
+                                    rangeFilter=typesPB.RangeFilter(
+                                      min=0, max=self.guessMaxValue(maxOldPrice)))
+    priceFilter = itemsPB.Filter(title="Цена",
+                                 key="pm_price",
+                                 internalType=typesPB.Filters.RANGE,
+                                 rangeFilter=typesPB.RangeFilter(min=0,
+                                                                 max=self.guessMaxValue(maxPrice)))
+    isOriginalFilter = itemsPB.Filter(title="Оригинал",
+                                      key="pm_isOriginal",
+                                      internalType=typesPB.Filters.BOOL,
+                                      boolFilter=typesPB.BoolFilter(value="t"))
+    isAdultFilter = itemsPB.Filter(title="Для взрослых",
+                                   key="pm_isAdult",
+                                   internalType=typesPB.Filters.BOOL,
+                                   boolFilter=typesPB.BoolFilter(value="t"))
+    pmFilters += [
+      commentsFilter, ratingFilter, oldPriceFilter, priceFilter, isOriginalFilter, isAdultFilter
+    ]
+    return pmFilters
