@@ -1,7 +1,8 @@
 import CategoryItem from "@/components/categories/CategoryItem";
 import { RadioGroup } from "@/components/ui/radio-group";
+import { Category } from "@/proto/app/protos/categories";
 import { useCategoryStore } from "@/store/categoryStore";
-import { Category, CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { CategoryStore, Marketplace } from "@/types/categoryTypes";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
@@ -59,7 +60,7 @@ export default function CategorySelect({
 
   function displayCategories(categories: Category[]): ReactElement {
     if (categories.length === 0) {
-      return <p>Категории не найдены</p>;
+      return <p>Не удалось загрузить категории</p>;
     }
     let level: number = 0;
     // Если не выбрана категория, отображаем только категории без родителей

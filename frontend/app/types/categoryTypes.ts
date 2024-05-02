@@ -1,9 +1,4 @@
-export type Category = {
-  title: string;
-  url: string;
-  parentUrl?: string;
-  isParsed: boolean;
-};
+import { Category } from "@/proto/app/protos/categories";
 
 export type CategoryItemProps = {
   category: Category;

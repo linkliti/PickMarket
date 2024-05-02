@@ -3,8 +3,8 @@ import NotFound from "@/pages/404";
 import Categories from "@/pages/Categories";
 import ErrorBoundary from "@/pages/ErrorBoundary";
 import Favorites from "@/pages/Favorites";
-import Filters from "@/pages/Filters";
 import Hero from "@/pages/Hero";
+import ItemsPage from "@/pages/Items";
 import Test from "@/pages/Test";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -26,8 +26,8 @@ const mainRouter = createBrowserRouter([
         element: <Favorites />,
       },
       {
-        path: "/filters*",
-        element: <Filters />,
+        path: "/items",
+        element: <ItemsPage />,
       },
       {
         path: "/categories",

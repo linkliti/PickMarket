@@ -29,11 +29,13 @@ class CategoryResponse(_message.Message):
     def __init__(self, category: _Optional[_Union[Category, _Mapping]] = ..., status: _Optional[_Union[_status_pb2.Status, _Mapping]] = ...) -> None: ...
 
 class Category(_message.Message):
-    __slots__ = ("title", "url", "parentUrl")
+    __slots__ = ("title", "url", "parentUrl", "isParsed")
     TITLE_FIELD_NUMBER: _ClassVar[int]
     URL_FIELD_NUMBER: _ClassVar[int]
     PARENTURL_FIELD_NUMBER: _ClassVar[int]
+    ISPARSED_FIELD_NUMBER: _ClassVar[int]
     title: str
     url: str
     parentUrl: str
-    def __init__(self, title: _Optional[str] = ..., url: _Optional[str] = ..., parentUrl: _Optional[str] = ...) -> None: ...
+    isParsed: bool
+    def __init__(self, title: _Optional[str] = ..., url: _Optional[str] = ..., parentUrl: _Optional[str] = ..., isParsed: bool = ...) -> None: ...

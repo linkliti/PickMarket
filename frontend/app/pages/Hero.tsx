@@ -18,7 +18,7 @@ export default function Hero(): ReactElement {
           >
             <Link
               to="/categories"
-              className="text-md block w-full rounded-lg px-5 py-3 font-medium sm:w-auto"
+              className="px-5 py-3"
             >
               Перейти к категориям
             </Link>

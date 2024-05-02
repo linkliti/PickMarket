@@ -54,7 +54,7 @@ tasks:
       - conda env remove -p ./pmparser/venv -y
 
   proto:
-    desc: "Generate proto and gRPC files"
+    desc: "Generate proto and gRPC files. Use `npm install @protobuf-ts/plugin`` for TS"
     cmds:
       - task: py-activate
       - |
@@ -62,6 +62,10 @@ tasks:
         --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser \
         --go-grpc_out=./backend --go_out=./backend \
          ./protos/parser/app/protos/*.proto
+      - |
+        npx protoc -I ./protos/parser -I ./protos/thirdParty --experimental_allow_proto3_optional \
+        --ts_out ./frontend/app/proto \
+        ./protos/parser/app/protos/*.proto
 
   db-rm:
     desc: "Remove database using sudo"

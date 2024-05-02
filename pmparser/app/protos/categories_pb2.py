@@ -16,7 +16,7 @@ from app.protos import types_pb2 as app_dot_protos_dot_types__pb2
 from google.rpc import status_pb2 as google_dot_rpc_dot_status__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pp/protos/categories.proto\x12\napp.protos\x1a\x16\x61pp/protos/types.proto\x1a\x17google/rpc/status.proto\"<\n\x15RootCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\"P\n\x14SubCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\x12\x13\n\x0b\x63\x61tegoryUrl\x18\x02 \x01(\t\"m\n\x10\x43\x61tegoryResponse\x12(\n\x08\x63\x61tegory\x18\x01 \x01(\x0b\x32\x14.app.protos.CategoryH\x00\x12$\n\x06status\x18\x02 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\t\n\x07message\"L\n\x08\x43\x61tegory\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x16\n\tparentUrl\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_parentUrl2\xbe\x01\n\x0e\x43\x61tegoryParser\x12V\n\x11GetRootCategories\x12!.app.protos.RootCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x12T\n\x10GetSubCategories\x12 .app.protos.SubCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x42\x0fZ\rprotos/parserb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pp/protos/categories.proto\x12\napp.protos\x1a\x16\x61pp/protos/types.proto\x1a\x17google/rpc/status.proto\"<\n\x15RootCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\"P\n\x14SubCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\x12\x13\n\x0b\x63\x61tegoryUrl\x18\x02 \x01(\t\"m\n\x10\x43\x61tegoryResponse\x12(\n\x08\x63\x61tegory\x18\x01 \x01(\x0b\x32\x14.app.protos.CategoryH\x00\x12$\n\x06status\x18\x02 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\t\n\x07message\"p\n\x08\x43\x61tegory\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x16\n\tparentUrl\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08isParsed\x18\x04 \x01(\x08H\x01\x88\x01\x01\x42\x0c\n\n_parentUrlB\x0b\n\t_isParsed2\xbe\x01\n\x0e\x43\x61tegoryParser\x12V\n\x11GetRootCategories\x12!.app.protos.RootCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x12T\n\x10GetSubCategories\x12 .app.protos.SubCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x42\x0fZ\rprotos/parserb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -31,7 +31,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_CATEGORYRESPONSE']._serialized_start=236
   _globals['_CATEGORYRESPONSE']._serialized_end=345
   _globals['_CATEGORY']._serialized_start=347
-  _globals['_CATEGORY']._serialized_end=423
-  _globals['_CATEGORYPARSER']._serialized_start=426
-  _globals['_CATEGORYPARSER']._serialized_end=616
+  _globals['_CATEGORY']._serialized_end=459
+  _globals['_CATEGORYPARSER']._serialized_start=462
+  _globals['_CATEGORYPARSER']._serialized_end=652
 # @@protoc_insertion_point(module_scope)

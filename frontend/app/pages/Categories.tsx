@@ -3,8 +3,9 @@ import CategoryMarketSelector from "@/components/categories/CategoryMarketSelect
 import CategorySelect from "@/components/categories/CategorySelect";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Category } from "@/proto/app/protos/categories";
 import { useCategoryStore } from "@/store/categoryStore";
-import { Category, CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { CategoryStore, Marketplace } from "@/types/categoryTypes";
 import { TriangleAlert } from "lucide-react";
 import { ReactElement } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
@@ -36,7 +37,7 @@ export default function Categories(): ReactElement {
     const searchParams = new URLSearchParams();
     searchParams.set("market", selectedMarket.shortLabel);
     searchParams.set("category", selectedCategory.url);
-    const targetURL: string = `/filters?${searchParams.toString()}`;
+    const targetURL: string = `/items?${searchParams.toString()}`;
     navigate(targetURL);
   }
 
@@ -47,14 +48,14 @@ export default function Categories(): ReactElement {
         <div className="inline-flex flex-wrap">
           <CategoryMarketSelector
             className="me-4 pb-4"
-            listClassNames="w-[200px] bg-white text-primary-foreground hover:bg-secondary"
+            listClassNames="w-[250px]  bg-white text-primary-foreground hover:bg-secondary"
           />
           <Button
             onClick={redirectToFilters}
-            // disabled={!selectedCategory}
-            className="border-border w-[150px] border sm:w-[200px]"
+            disabled={!selectedCategory}
+            className=" w-[200px] select-none"
           >
-            Поиск
+            Поиск {!selectedCategory && "[выберите категорию]"}
           </Button>
         </div>
       </WhiteBlock>
