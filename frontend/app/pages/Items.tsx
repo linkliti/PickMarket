@@ -1,5 +1,5 @@
-import Filters from "@/components/filters/Filters";
 import FiltersNotSelected from "@/components/filters/FiltersNotSelected";
+import FiltersSection from "@/components/filters/FiltersSection";
 import { ReactElement } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -13,7 +13,7 @@ export default function ItemsPage(): ReactElement {
   }
 
   return (
-    <Filters
+    <FiltersSection
       market={market}
       category={categoryURL}
     />

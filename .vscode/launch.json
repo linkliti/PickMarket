@@ -67,8 +67,21 @@
       ]
     },
     {
+      "type": "chrome",
+      "request": "launch",
+      "noDebug": true,
+      "name": "JS: Launch Chrome [No debug]",
+      "url": "http://localhost:5005",
+      "webRoot": "${workspaceFolder}/frontend",
+      "skipFiles": [
+        "${workspaceFolder}/frontend/node_modules/**/*.js",
+        "${workspaceFolder}/frontend/@*"
+      ]
+    },
+    {
       "type": "node-terminal",
-      "name": "JS: Run Dev server",
+      "name": "JS: Run Dev server [No debug]",
+      "noDebug": true,
       "envFile": "${workspaceFolder}/frontend/vscode.env",
       "request": "launch",
       "command": "npm run dev",

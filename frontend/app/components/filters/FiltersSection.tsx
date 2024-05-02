@@ -1,5 +1,5 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
-import FilterElem from "@/components/filters/FilterElem";
+import FilterSelector from "@/components/filters/selectors/FilterSelector";
 
 import { Filter } from "@/proto/app/protos/items";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
@@ -8,7 +8,9 @@ import axios, { AxiosResponse } from "axios";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
 
-export default function Filters({
+// const blacklistKeys = ["pm_isAdult", "trucode"];
+
+export default function FiltersSection({
   market,
   category,
 }: {
@@ -41,24 +43,39 @@ export default function Filters({
   }, [category, market]);
 
   return (
-    <WhiteBlock className="w-full">
+    <WhiteBlock className="w-full grow">
       <>
         {isLoading ? (
           <div className="flex items-center gap-2">
             <LoadingSpinner /> <p>Загрузка фильтров</p>
           </div>
         ) : (
-          <div>
-            <h1 className="text-2xl font-bold"> Настройка фильтров:</h1>
-            {filters.map((filter) => (
-              <FilterElem
-                filter={filter}
-                key={filter.key}
+          <>
+            <h1 className="pb-4 text-2xl font-bold"> Настройка предпочтений:</h1>
+            <div className="grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
+              <FilterSelectorMultiple filters={filters.slice(0, filters.length / 3)} />
+              <FilterSelectorMultiple
+                filters={filters.slice(filters.length / 3, (2 * filters.length) / 3)}
               />
-            ))}
-          </div>
+              <FilterSelectorMultiple filters={filters.slice((2 * filters.length) / 3)} />
+            </div>
+          </>
         )}
       </>
     </WhiteBlock>
+  );
+}
+
+function FilterSelectorMultiple({ filters }: { filters: Filter[] }): ReactElement {
+  return (
+    <div className="col-span-1">
+      {filters.map((filter) => (
+        <FilterSelector
+          filter={filter}
+          key={filter.key}
+          className="rounded border-b border-b-gray-200"
+        />
+      ))}
+    </div>
   );
 }
