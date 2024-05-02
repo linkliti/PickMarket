@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (c *ItemsClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request) {
@@ -31,12 +33,24 @@ func (c *ItemsClient) GetCategoryFilters(rw http.ResponseWriter, r *http.Request
 		return
 	}
 	// All to JSON
-	jsonData, err := json.Marshal(filterList)
+	// parser.Characteristic to json.RawMessage
+	filterRaw := make([]json.RawMessage, len(filterList))
+	for i, char := range filterList {
+		charJSON, err := protojson.Marshal(char)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		filterRaw[i] = json.RawMessage(charJSON)
+	}
+	// json.RawMessage to JSONB
+	filtersJSON, err := json.Marshal(filterRaw)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// Return
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(jsonData)
+	rw.Write(filtersJSON)
 }

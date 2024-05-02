@@ -65,7 +65,8 @@ tasks:
       - |
         npx protoc -I ./protos/parser -I ./protos/thirdParty --experimental_allow_proto3_optional \
         --ts_out ./frontend/app/proto \
-        ./protos/parser/app/protos/*.proto
+        ./protos/parser/app/protos/*.proto ./protos/thirdParty/**/**/*.proto
+      - rm -f ./frontend/app/proto/app/protos/*.client.ts
 
   db-rm:
     desc: "Remove database using sudo"

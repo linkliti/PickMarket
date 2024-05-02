@@ -4,6 +4,7 @@ import { Category } from "@/proto/app/protos/categories";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CategoryStore, Marketplace } from "@/types/categoryTypes";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
+import axios, { AxiosResponse } from "axios";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
 
@@ -28,8 +29,8 @@ export default function CategorySelect({
 
   async function fetchCategories(url: string): Promise<void> {
     try {
-      const res: Response = await fetch(url);
-      const data: Category[] = await res.json();
+      const res: AxiosResponse = await axios.get<Category[]>(url);
+      const data: Category[] = res.data;
       if (data) {
         data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
         setCategories((prevCategories: Category[]): Category[] => [

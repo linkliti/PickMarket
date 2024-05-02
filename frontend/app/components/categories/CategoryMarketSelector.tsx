@@ -20,7 +20,7 @@ export default function CategoryMarketSelector({
   className?: string;
   listClassNames?: string;
 }): ReactElement {
-  const [isOpenMarketSelect, setOpenMarketSelect] = useState(false);
+  const [isOpenMarketSelect, setIsOpenMarketSelect] = useState<boolean>(false);
   const [selectedMarket, setSelectedMarket] = useCategoryStore(
     (state: CategoryStore): [Marketplace, (market: Marketplace) => void] => [
       state.selectedMarket,
@@ -32,7 +32,7 @@ export default function CategoryMarketSelector({
     <div className={cn(className)}>
       <Popover
         open={isOpenMarketSelect}
-        onOpenChange={setOpenMarketSelect}
+        onOpenChange={setIsOpenMarketSelect}
       >
         <PopoverTrigger asChild>
           <Button
@@ -67,7 +67,7 @@ export default function CategoryMarketSelector({
                             (market: Marketplace): boolean => market.value === currentValue,
                           )!,
                         );
-                        setOpenMarketSelect(false);
+                        setIsOpenMarketSelect(false);
                       }}
                     >
                       <Check
