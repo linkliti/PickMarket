@@ -1,4 +1,5 @@
 import { Category } from "@/proto/app/protos/categories";
+import { Markets } from "@/proto/app/protos/types";
 
 export type CategoryItemProps = {
   category: Category;
@@ -11,6 +12,7 @@ export type Marketplace = {
   label: string;
   value: string;
   shortLabel: string;
+  id: Markets
 };
 
 export type CategoryStore = {

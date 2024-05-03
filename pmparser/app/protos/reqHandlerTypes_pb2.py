@@ -16,7 +16,7 @@ from app.protos import items_pb2 as app_dot_protos_dot_items__pb2
 from app.protos import types_pb2 as app_dot_protos_dot_types__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n app/protos/reqHandlerTypes.proto\x12\napp.protos\x1a\x16\x61pp/protos/items.proto\x1a\x16\x61pp/protos/types.proto\"k\n\x15ItemsRequestWithPrefs\x12)\n\x07request\x18\x01 \x01(\x0b\x32\x18.app.protos.ItemsRequest\x12\'\n\tuserPrefs\x18\x02 \x03(\x0b\x32\x14.app.protos.UserPref\"o\n\x08UserPref\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x10\n\x08priority\x18\x02 \x01(\x05\x12\x10\n\x06numVal\x18\x03 \x01(\x01H\x00\x12)\n\x07listVal\x18\x04 \x01(\x0b\x32\x16.app.protos.StringListH\x00\x42\x07\n\x05value\"n\n\x0cItemExtended\x12\x1e\n\x04item\x18\x01 \x01(\x0b\x32\x10.app.protos.Item\x12\x13\n\x0btotalWeight\x18\x02 \x01(\x01\x12)\n\x05\x63hars\x18\x03 \x03(\x0b\x32\x1a.app.protos.CharacteristicB\x0fZ\rprotos/parserb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n app/protos/reqHandlerTypes.proto\x12\napp.protos\x1a\x16\x61pp/protos/items.proto\x1a\x16\x61pp/protos/types.proto\"\xc3\x01\n\x15ItemsRequestWithPrefs\x12)\n\x07request\x18\x01 \x01(\x0b\x32\x18.app.protos.ItemsRequest\x12;\n\x05prefs\x18\x02 \x03(\x0b\x32,.app.protos.ItemsRequestWithPrefs.PrefsEntry\x1a\x42\n\nPrefsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.app.protos.UserPref:\x02\x38\x01\"b\n\x08UserPref\x12\x10\n\x08priority\x18\x01 \x01(\x05\x12\x10\n\x06numVal\x18\x02 \x01(\x01H\x00\x12)\n\x07listVal\x18\x03 \x01(\x0b\x32\x16.app.protos.StringListH\x00\x42\x07\n\x05value\"n\n\x0cItemExtended\x12\x1e\n\x04item\x18\x01 \x01(\x0b\x32\x10.app.protos.Item\x12\x13\n\x0btotalWeight\x18\x02 \x01(\x01\x12)\n\x05\x63hars\x18\x03 \x03(\x0b\x32\x1a.app.protos.CharacteristicB\x0fZ\rprotos/parserb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,10 +24,14 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'app.protos.reqHandlerTypes_
 if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['DESCRIPTOR']._options = None
   _globals['DESCRIPTOR']._serialized_options = b'Z\rprotos/parser'
-  _globals['_ITEMSREQUESTWITHPREFS']._serialized_start=96
-  _globals['_ITEMSREQUESTWITHPREFS']._serialized_end=203
-  _globals['_USERPREF']._serialized_start=205
-  _globals['_USERPREF']._serialized_end=316
-  _globals['_ITEMEXTENDED']._serialized_start=318
-  _globals['_ITEMEXTENDED']._serialized_end=428
+  _globals['_ITEMSREQUESTWITHPREFS_PREFSENTRY']._options = None
+  _globals['_ITEMSREQUESTWITHPREFS_PREFSENTRY']._serialized_options = b'8\001'
+  _globals['_ITEMSREQUESTWITHPREFS']._serialized_start=97
+  _globals['_ITEMSREQUESTWITHPREFS']._serialized_end=292
+  _globals['_ITEMSREQUESTWITHPREFS_PREFSENTRY']._serialized_start=226
+  _globals['_ITEMSREQUESTWITHPREFS_PREFSENTRY']._serialized_end=292
+  _globals['_USERPREF']._serialized_start=294
+  _globals['_USERPREF']._serialized_end=392
+  _globals['_ITEMEXTENDED']._serialized_start=394
+  _globals['_ITEMEXTENDED']._serialized_end=504
 # @@protoc_insertion_point(module_scope)

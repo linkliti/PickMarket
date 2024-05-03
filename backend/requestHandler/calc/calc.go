@@ -17,7 +17,7 @@ var caseFuncs = map[string]caseStruct{
 	"pm_oldprice": {fn: cases.CalcNum_difference, calcType: NUM_TYPE},
 }
 
-func CalcWeight(itemList []*parser.ItemExtended, userPref []*parser.UserPref, req *parser.ItemsRequest) error {
+func CalcWeight(itemList []*parser.ItemExtended, userPref map[string]*parser.UserPref, req *parser.ItemsRequest) error {
 	if req == nil || itemList == nil || userPref == nil {
 		return fmt.Errorf("calc received nil pointer")
 	}

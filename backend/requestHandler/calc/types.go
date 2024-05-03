@@ -18,7 +18,7 @@ var (
 
 type calc struct {
 	itemList []*parser.ItemExtended
-	userPref []*parser.UserPref
+	userPref map[string]*parser.UserPref
 	vaults   map[string]*calcVault
 	req      *parser.ItemsRequest
 }

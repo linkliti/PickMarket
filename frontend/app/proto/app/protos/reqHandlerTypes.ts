@@ -23,31 +23,18 @@ export interface ItemsRequestWithPrefs {
      */
     request?: ItemsRequest;
     /**
-     * @generated from protobuf field: repeated app.protos.UserPref userPrefs = 2;
+     * @generated from protobuf field: map<string, app.protos.UserPref> prefs = 2;
      */
-    userPrefs: UserPref[];
+    prefs: {
+        [key: string]: UserPref;
+    };
 }
 /**
- * {
- *   "key": "string",
- *   "priority": "int32",
- *   "value": {
- *     "numVal": "double",
- *     "listVal": {
- *       "values": [ "string", ... ]
- *     }
- *   }
- * }
- *
  * @generated from protobuf message app.protos.UserPref
  */
 export interface UserPref {
     /**
-     * @generated from protobuf field: string key = 1;
-     */
-    key: string;
-    /**
-     * @generated from protobuf field: int32 priority = 2;
+     * @generated from protobuf field: int32 priority = 1;
      */
     priority: number;
     /**
@@ -56,13 +43,13 @@ export interface UserPref {
     value: {
         oneofKind: "numVal";
         /**
-         * @generated from protobuf field: double numVal = 3;
+         * @generated from protobuf field: double numVal = 2;
          */
         numVal: number;
     } | {
         oneofKind: "listVal";
         /**
-         * @generated from protobuf field: app.protos.StringList listVal = 4;
+         * @generated from protobuf field: app.protos.StringList listVal = 3;
          */
         listVal: StringList;
     } | {
@@ -91,12 +78,12 @@ class ItemsRequestWithPrefs$Type extends MessageType<ItemsRequestWithPrefs> {
     constructor() {
         super("app.protos.ItemsRequestWithPrefs", [
             { no: 1, name: "request", kind: "message", T: () => ItemsRequest },
-            { no: 2, name: "userPrefs", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => UserPref }
+            { no: 2, name: "prefs", kind: "map", K: 9 /*ScalarType.STRING*/, V: { kind: "message", T: () => UserPref } }
         ]);
     }
     create(value?: PartialMessage<ItemsRequestWithPrefs>): ItemsRequestWithPrefs {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.userPrefs = [];
+        message.prefs = {};
         if (value !== undefined)
             reflectionMergePartial<ItemsRequestWithPrefs>(this, message, value);
         return message;
@@ -109,8 +96,8 @@ class ItemsRequestWithPrefs$Type extends MessageType<ItemsRequestWithPrefs> {
                 case /* app.protos.ItemsRequest request */ 1:
                     message.request = ItemsRequest.internalBinaryRead(reader, reader.uint32(), options, message.request);
                     break;
-                case /* repeated app.protos.UserPref userPrefs */ 2:
-                    message.userPrefs.push(UserPref.internalBinaryRead(reader, reader.uint32(), options));
+                case /* map<string, app.protos.UserPref> prefs */ 2:
+                    this.binaryReadMap2(message.prefs, reader, options);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -123,13 +110,33 @@ class ItemsRequestWithPrefs$Type extends MessageType<ItemsRequestWithPrefs> {
         }
         return message;
     }
+    private binaryReadMap2(map: ItemsRequestWithPrefs["prefs"], reader: IBinaryReader, options: BinaryReadOptions): void {
+        let len = reader.uint32(), end = reader.pos + len, key: keyof ItemsRequestWithPrefs["prefs"] | undefined, val: ItemsRequestWithPrefs["prefs"][any] | undefined;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case 1:
+                    key = reader.string();
+                    break;
+                case 2:
+                    val = UserPref.internalBinaryRead(reader, reader.uint32(), options);
+                    break;
+                default: throw new globalThis.Error("unknown map entry field for field app.protos.ItemsRequestWithPrefs.prefs");
+            }
+        }
+        map[key ?? ""] = val ?? UserPref.create();
+    }
     internalBinaryWrite(message: ItemsRequestWithPrefs, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* app.protos.ItemsRequest request = 1; */
         if (message.request)
             ItemsRequest.internalBinaryWrite(message.request, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* repeated app.protos.UserPref userPrefs = 2; */
-        for (let i = 0; i < message.userPrefs.length; i++)
-            UserPref.internalBinaryWrite(message.userPrefs[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* map<string, app.protos.UserPref> prefs = 2; */
+        for (let k of globalThis.Object.keys(message.prefs)) {
+            writer.tag(2, WireType.LengthDelimited).fork().tag(1, WireType.LengthDelimited).string(k);
+            writer.tag(2, WireType.LengthDelimited).fork();
+            UserPref.internalBinaryWrite(message.prefs[k], writer, options);
+            writer.join().join();
+        }
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -144,15 +151,13 @@ export const ItemsRequestWithPrefs = new ItemsRequestWithPrefs$Type();
 class UserPref$Type extends MessageType<UserPref> {
     constructor() {
         super("app.protos.UserPref", [
-            { no: 1, name: "key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "priority", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 3, name: "numVal", kind: "scalar", oneof: "value", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 4, name: "listVal", kind: "message", oneof: "value", T: () => StringList }
+            { no: 1, name: "priority", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "numVal", kind: "scalar", oneof: "value", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 3, name: "listVal", kind: "message", oneof: "value", T: () => StringList }
         ]);
     }
     create(value?: PartialMessage<UserPref>): UserPref {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.key = "";
         message.priority = 0;
         message.value = { oneofKind: undefined };
         if (value !== undefined)
@@ -164,19 +169,16 @@ class UserPref$Type extends MessageType<UserPref> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string key */ 1:
-                    message.key = reader.string();
-                    break;
-                case /* int32 priority */ 2:
+                case /* int32 priority */ 1:
                     message.priority = reader.int32();
                     break;
-                case /* double numVal */ 3:
+                case /* double numVal */ 2:
                     message.value = {
                         oneofKind: "numVal",
                         numVal: reader.double()
                     };
                     break;
-                case /* app.protos.StringList listVal */ 4:
+                case /* app.protos.StringList listVal */ 3:
                     message.value = {
                         oneofKind: "listVal",
                         listVal: StringList.internalBinaryRead(reader, reader.uint32(), options, (message.value as any).listVal)
@@ -194,18 +196,15 @@ class UserPref$Type extends MessageType<UserPref> {
         return message;
     }
     internalBinaryWrite(message: UserPref, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string key = 1; */
-        if (message.key !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.key);
-        /* int32 priority = 2; */
+        /* int32 priority = 1; */
         if (message.priority !== 0)
-            writer.tag(2, WireType.Varint).int32(message.priority);
-        /* double numVal = 3; */
+            writer.tag(1, WireType.Varint).int32(message.priority);
+        /* double numVal = 2; */
         if (message.value.oneofKind === "numVal")
-            writer.tag(3, WireType.Bit64).double(message.value.numVal);
-        /* app.protos.StringList listVal = 4; */
+            writer.tag(2, WireType.Bit64).double(message.value.numVal);
+        /* app.protos.StringList listVal = 3; */
         if (message.value.oneofKind === "listVal")
-            StringList.internalBinaryWrite(message.value.listVal, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+            StringList.internalBinaryWrite(message.value.listVal, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

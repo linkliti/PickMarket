@@ -8,24 +8,29 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ItemsRequestWithPrefs(_message.Message):
-    __slots__ = ("request", "userPrefs")
+    __slots__ = ("request", "prefs")
+    class PrefsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: UserPref
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[UserPref, _Mapping]] = ...) -> None: ...
     REQUEST_FIELD_NUMBER: _ClassVar[int]
-    USERPREFS_FIELD_NUMBER: _ClassVar[int]
+    PREFS_FIELD_NUMBER: _ClassVar[int]
     request: _items_pb2.ItemsRequest
-    userPrefs: _containers.RepeatedCompositeFieldContainer[UserPref]
-    def __init__(self, request: _Optional[_Union[_items_pb2.ItemsRequest, _Mapping]] = ..., userPrefs: _Optional[_Iterable[_Union[UserPref, _Mapping]]] = ...) -> None: ...
+    prefs: _containers.MessageMap[str, UserPref]
+    def __init__(self, request: _Optional[_Union[_items_pb2.ItemsRequest, _Mapping]] = ..., prefs: _Optional[_Mapping[str, UserPref]] = ...) -> None: ...
 
 class UserPref(_message.Message):
-    __slots__ = ("key", "priority", "numVal", "listVal")
-    KEY_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("priority", "numVal", "listVal")
     PRIORITY_FIELD_NUMBER: _ClassVar[int]
     NUMVAL_FIELD_NUMBER: _ClassVar[int]
     LISTVAL_FIELD_NUMBER: _ClassVar[int]
-    key: str
     priority: int
     numVal: float
     listVal: _types_pb2.StringList
-    def __init__(self, key: _Optional[str] = ..., priority: _Optional[int] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
+    def __init__(self, priority: _Optional[int] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class ItemExtended(_message.Message):
     __slots__ = ("item", "totalWeight", "chars")

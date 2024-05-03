@@ -9,28 +9,16 @@ option go_package = "protos/parser";
 
 message ItemsRequestWithPrefs {
   ItemsRequest request = 1;
-  repeated UserPref userPrefs = 2;
+  map<string, UserPref> prefs = 2;
 }
 
-// {
-//   "key": "string",
-//   "priority": "int32",
-//   "value": {
-//     "numVal": "double",
-//     "listVal": {
-//       "values": [ "string", ... ]
-//     }
-//   }
-// }
 message UserPref {
-  string key = 1;
-  int32 priority = 2;
+  int32 priority = 1;
   oneof value {
-    double numVal = 3;
-    StringList listVal = 4;
+    double numVal = 2;
+    StringList listVal = 3;
   }
 }
-
 
 message ItemExtended {
   Item item = 1;

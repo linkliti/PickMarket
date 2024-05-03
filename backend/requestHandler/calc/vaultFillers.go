@@ -24,8 +24,8 @@ func (c *calc) getVaultByKey(key string, create bool) *calcVault {
 }
 
 func (c *calc) fillPreferences() {
-	for _, pref := range c.userPref {
-		v := c.getVaultByKey(pref.Key, true)
+	for key, pref := range c.userPref {
+		v := c.getVaultByKey(key, true)
 		v.prefPointer = pref
 		switch pref.Value.(type) {
 		case *parser.UserPref_NumVal:
@@ -33,7 +33,7 @@ func (c *calc) fillPreferences() {
 		case *parser.UserPref_ListVal:
 			v.prefType = LIST_TYPE
 		}
-		slog.Debug("Set vault", "key", pref.Key, "type", v.prefType.Name())
+		slog.Debug("Set vault", "key", key, "type", v.prefType.Name())
 	}
 }
 

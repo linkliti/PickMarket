@@ -35,7 +35,7 @@ export default function Categories(): ReactElement {
       return;
     }
     const searchParams = new URLSearchParams();
-    searchParams.set("market", selectedMarket.shortLabel);
+    searchParams.set("market", selectedMarket.id.toString());
     searchParams.set("category", selectedCategory.url);
     const targetURL: string = `/items?${searchParams.toString()}`;
     navigate(targetURL);
