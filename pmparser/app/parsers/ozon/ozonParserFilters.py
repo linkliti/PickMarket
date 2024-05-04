@@ -204,6 +204,7 @@ class OzonFilterWorker(OzonParser):
           value: str = data["action"]["params"]["value"]
           o = typesPB.SelectionFilterItem(text=text, value=value)
           items.append(o)
+      return typesPB.SelectionFilter(isRadio=isRadio, items=items)
     # No "All tags" button present OR filter is too large
     for tag in self.j[self.externalType]["tags"]:
       text: str = tag["tag"]["text"]
