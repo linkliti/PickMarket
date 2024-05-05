@@ -3,11 +3,13 @@ import FilterForm from "@/components/filters/FilterForm";
 
 import { Button } from "@/components/ui/button";
 import { Filter } from "@/proto/app/protos/items";
+import { ItemsRequestWithPrefs } from "@/proto/app/protos/reqHandlerTypes";
 import { Markets } from "@/proto/app/protos/types";
 import { PrefForm } from "@/types/filterTypes";
-
-import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { JsonValue } from "@protobuf-ts/runtime";
+
+import { FilterStore, blacklistKeys, useFilterStore } from "@/store/filterStore";
+import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import axios, { AxiosResponse } from "axios";
 import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,62 +24,65 @@ export default function FiltersSection({
 }): ReactElement {
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<Filter[]>([]);
-  const { handleSubmit, control } = useForm<PrefForm>();
+  const [formPrefs, setActivePrefs, setFormPrefs] = useFilterStore((state: FilterStore) => [
+    state.formPrefs,
+    state.setActivePrefs,
+    state.setFormPrefs,
+  ]);
+  const { handleSubmit, control, reset } = useForm<PrefForm>({
+    defaultValues: formPrefs ? formPrefs : {},
+  });
 
   function onSubmit(data: PrefForm): void {
-    console.log(data);
-    // const req: ItemsRequestWithPrefs = {
-    //   request: {
-    //     market: market,
-    //     pageUrl: category,
-    //     numOfPages: 1,
-    //     params: "",
-    //     userQuery: "",
-    //   },
-    //   prefs: {},
-    // };
+    const req: ItemsRequestWithPrefs = {
+      request: {
+        market: market,
+        pageUrl: category,
+        numOfPages: 1,
+        params: "",
+        userQuery: "",
+      },
+      prefs: {},
+    };
 
-    // Object.entries(data).forEach(([key, value]: [string, number | boolean | Option[]]): void => {
-    //   terminal.log(value);
-    //   switch (typeof value) {
-    //     case "number": {
-    //       if (!value) break;
-    //       req.prefs[key] = { priority: 0, value: { oneofKind: "numVal", numVal: value } };
-    //       break;
-    //     }
-    //     case "boolean": {
-    //       req.prefs[key] = {
-    //         priority: 0,
-    //         value: {
-    //           oneofKind: "listVal",
-    //           listVal: {
-    //             values: value ? ["Да"] : ["Нет"],
-    //           },
-    //         },
-    //       };
-    //       break;
-    //     }
-    //     case "object": {
-    //       if (!value.length) break;
-    //       req.prefs[key] = {
-    //         priority: 0,
-    //         value: {
-    //           oneofKind: "listVal",
-    //           listVal: {
-    //             values: value.map((item: Option): string => item.value),
-    //           },
-    //         },
-    //       };
-    //     }
-    //   }
-    // });
-
-    // console.log(req);
+    for (const [key, priority] of Object.entries(data.priorities)) {
+      if (!priority) continue;
+      const charData: number | boolean | string[] = data.prefs[key];
+      switch (typeof charData) {
+        case "number": {
+          req.prefs[key] = { priority: priority, value: { oneofKind: "numVal", numVal: charData } };
+          break;
+        }
+        case "boolean": {
+          req.prefs[key] = {
+            priority: priority,
+            value: {
+              oneofKind: "listVal",
+              listVal: {
+                values: charData ? ["Да"] : ["Нет"],
+              },
+            },
+          };
+          break;
+        }
+        case "object": {
+          if (!charData.length) break;
+          req.prefs[key] = {
+            priority: priority,
+            value: {
+              oneofKind: "listVal",
+              listVal: {
+                values: charData,
+              },
+            },
+          };
+        }
+      }
+    }
+    setActivePrefs(req);
   }
 
   useEffect((): void => {
-    const blacklistKeys: string[] = ["pm_isAdult", "trucode", "sku"];
-
     async function getFilters(market: number, category: string): Promise<void> {
       try {
         const res: AxiosResponse = await axios.get<JsonValue[]>(
@@ -105,31 +110,42 @@ export default function FiltersSection({
             <LoadingSpinner /> <p>Загрузка фильтров</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <h1 className="pb-4 text-2xl font-bold"> Настройка предпочтений:</h1>
-            <div className="grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
-              {[
-                filters.slice(0, filters.length / 3),
-                filters.slice(filters.length / 3, (2 * filters.length) / 3),
-                filters.slice((2 * filters.length) / 3),
-              ].map(
-                (group: Filter[], index: number): ReactElement => (
-                  <div key={index}>
-                    {group.map(
-                      (filter: Filter): ReactElement => (
-                        <FilterForm
-                          control={control}
-                          filter={filter}
-                          key={filter.key}
-                        />
-                      ),
-                    )}
-                  </div>
-                ),
-              )}
-            </div>
-            <Button type="submit">Применить</Button>
-          </form>
+          <>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <h1 className="pb-4 text-2xl font-bold"> Настройка предпочтений:</h1>
+              <div className="grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
+                {[
+                  filters.slice(0, filters.length / 3),
+                  filters.slice(filters.length / 3, (2 * filters.length) / 3),
+                  filters.slice((2 * filters.length) / 3),
+                ].map(
+                  (group: Filter[], index: number): ReactElement => (
+                    <div key={index}>
+                      {group.map(
+                        (filter: Filter): ReactElement => (
+                          <FilterForm
+                            control={control}
+                            filter={filter}
+                            key={filter.key}
+                          />
+                        ),
+                      )}
+                    </div>
+                  ),
+                )}
+              </div>
+              <Button type="submit">Применить</Button>
+              <Button
+                onClick={(event): void => {
+                  event.preventDefault();
+                  setFormPrefs(null);
+                  reset();
+                }}
+              >
+                Сбросить
+              </Button>
+            </form>
+          </>
         )}
       </>
     </WhiteBlock>

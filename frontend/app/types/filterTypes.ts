@@ -1,18 +1,5 @@
-import { StringList } from "@/proto/app/protos/types";
 import { z } from "zod";
 
-export type FilterPrefValue =
-  | {
-      oneofKind: "numVal";
-      numVal: number;
-    }
-  | {
-      oneofKind: "listVal";
-      listVal: StringList;
-    }
-  | {
-      oneofKind: undefined;
-    };
 
 const PrefFormSchema = z.object({
   params: z.string(),

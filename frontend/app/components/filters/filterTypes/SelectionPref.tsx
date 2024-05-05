@@ -36,6 +36,7 @@ export default function SelectionPref({
           <FilterWrapper
             name={filterTitle}
             keyName={keyName}
+            control={control}
           >
             <MultipleSelector
               className="mx-6 mt-2 bg-white"

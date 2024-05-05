@@ -1,8 +1,15 @@
 import { Category } from "@/proto/app/protos/categories";
 import { Markets } from "@/proto/app/protos/types";
-import { CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { Marketplace } from "@/types/categoryTypes";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+
+export type CategoryStore = {
+  selectedMarket: Marketplace;
+  selectedCategory: Category | null;
+  setSelectedMarket: (market: Marketplace) => void;
+  setSelectedCategory: (category: Category | null) => void;
+};
 
 export const marketplaces: Marketplace[] = [
   { label: "OZON", value: "https://ozon.ru", shortLabel: "ozon", id: Markets.OZON },

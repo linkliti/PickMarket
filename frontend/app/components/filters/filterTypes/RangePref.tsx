@@ -22,7 +22,7 @@ export default function RangePref({
     <Controller
       name={`prefs.${keyName}`}
       control={control}
-      defaultValue={range.max}
+      defaultValue={range.min}
       render={({ field: { onChange, onBlur, value, disabled, name, ref } }) => {
         // Transform value to always be a number or undefined
         const transformedValue: number = typeof value === "number" ? value : 0;
@@ -31,39 +31,42 @@ export default function RangePref({
           <FilterWrapper
             name={filterTitle}
             keyName={keyName}
+            control={control}
           >
-            <div className="flex flex-row items-center gap-4 p-4">
-              <Input
-                className="mb-6 h-8 w-1/3 bg-white p-2"
-                value={transformedValue}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
-                  const num: number = parseInt(event.target.value, 10);
-                  if (isNaN(num) || num === 0) {
-                    onChange(range.min);
-                  } else {
-                    onChange(num);
-                  }
-                }}
-                ref={ref}
-                onBlur={onBlur}
-                disabled={disabled}
-                name={name}
-              />
-              <div className="flex grow flex-col">
-                <Slider
-                  className=""
-                  min={range.min}
-                  max={range.max}
-                  step={(range.max - range.min) / 100}
-                  value={[transformedValue]}
-                  onValueChange={(num: number[]): void => onChange(num[0])}
+            <>
+              <div className="flex flex-row items-center gap-4 p-4 pb-0">
+                <Input
+                  className="mb-6 h-8 w-1/3 bg-white p-2"
+                  value={transformedValue}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
+                    const num: number = parseInt(event.target.value, 10);
+                    if (isNaN(num) || num === 0) {
+                      onChange(0);
+                    } else {
+                      onChange(num);
+                    }
+                  }}
+                  ref={ref}
+                  onBlur={onBlur}
+                  disabled={disabled}
+                  name={name}
                 />
-                <p className="pt-2 text-left text-xs text-gray-500">
-                  {range.min}
-                  <span className="float-right">{range.max}</span>
-                </p>
+                <div className="flex grow flex-col">
+                  <Slider
+                    className=""
+                    min={range.min}
+                    max={range.max}
+                    step={(range.max - range.min) / 100}
+                    value={[transformedValue]}
+                    onValueChange={(num: number[]): void => onChange(num[0])}
+                  />
+                  <p className="pt-2 text-left text-xs text-gray-500">
+                    {range.min}
+                    <span className="float-right">{range.max}</span>
+                  </p>
+                </div>
               </div>
-            </div>
+            </>
           </FilterWrapper>
         );
       }}

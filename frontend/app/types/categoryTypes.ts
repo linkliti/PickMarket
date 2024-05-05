@@ -14,11 +14,3 @@ export type Marketplace = {
   shortLabel: string;
   id: Markets
 };
-
-export type CategoryStore = {
-  selectedMarket: Marketplace;
-  selectedCategory: Category | null;
-  setSelectedMarket: (market: Marketplace) => void;
-  setSelectedCategory: (category: Category | null) => void;
-};
-

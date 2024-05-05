@@ -4,9 +4,9 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { PrefForm } from "@/types/filterTypes";
+import { Star } from "lucide-react";
 import { ReactElement } from "react";
 import { Control, Controller } from "react-hook-form";
 
@@ -38,10 +38,10 @@ export default function PrioritySelector({
       control={control}
       defaultValue={0}
       render={({ field: { onChange, value, disabled, name } }) => {
-        const handleOnChange = (selectedValue: string) => {
-          const num = Number(selectedValue);
+        function handleOnChange(selectedValue: string): void {
+          const num: number = Number(selectedValue);
           onChange(num);
-        };
+        }
 
         return (
           <Select
@@ -51,18 +51,21 @@ export default function PrioritySelector({
             name={name}
           >
             <SelectTrigger className="h-8 w-fit px-2 py-0">
-              <SelectValue />
+              {value}
+              <Star className="ml-1 size-4" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {prefItems.map((item) => (
-                  <SelectItem
-                    key={item.value}
-                    value={item.value.toString()}
-                  >
-                    {item.label}
-                  </SelectItem>
-                ))}
+                {prefItems.map(
+                  (item: PriorityItem): ReactElement => (
+                    <SelectItem
+                      key={item.value}
+                      value={item.value.toString()}
+                    >
+                      {item.label}
+                    </SelectItem>
+                  ),
+                )}
               </SelectGroup>
             </SelectContent>
           </Select>
