@@ -2,22 +2,16 @@ import WhiteBlock from "@/components/base/WhiteBlock";
 import FilterForm from "@/components/filters/FilterForm";
 
 import { Button } from "@/components/ui/button";
-import { Option } from "@/components/ui/multiple-selector";
 import { Filter } from "@/proto/app/protos/items";
-import { ItemsRequestWithPrefs } from "@/proto/app/protos/reqHandlerTypes";
 import { Markets } from "@/proto/app/protos/types";
+import { PrefForm } from "@/types/filterTypes";
 
-import { blacklistKeys } from "@/store/filtersStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { JsonValue } from "@protobuf-ts/runtime";
 import axios, { AxiosResponse } from "axios";
 import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import terminal from "virtual:terminal";
-
-type PrefForm = {
-  [key in string]: number | boolean | Option[];
-};
 
 export default function FiltersSection({
   market,
@@ -28,73 +22,76 @@ export default function FiltersSection({
 }): ReactElement {
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<Filter[]>([]);
-  const { handleSubmit, control: formControl } = useForm<PrefForm>();
-
-  async function getFilters(market: number, category: string): Promise<void> {
-    try {
-      const res: AxiosResponse = await axios.get<JsonValue[]>(
-        `/api/categories/${Markets[market].toLowerCase()}/filter?url=${category}`,
-      );
-      const filtersTemp: Filter[] = res.data
-        .map((item: JsonValue): Filter => Filter.fromJson(item))
-        .filter((item: Filter): boolean => !blacklistKeys.includes(item.key));
-      setFilters(filtersTemp);
-    } catch (error) {
-      terminal.error(error);
-    }
-  }
+  const { handleSubmit, control } = useForm<PrefForm>();
 
   function onSubmit(data: PrefForm): void {
-    const req: ItemsRequestWithPrefs = {
-      request: {
-        market: market,
-        pageUrl: category,
-        numOfPages: 1,
-        params: "",
-        userQuery: "",
-      },
-      prefs: {},
-    };
+    console.log(data);
+    // const req: ItemsRequestWithPrefs = {
+    //   request: {
+    //     market: market,
+    //     pageUrl: category,
+    //     numOfPages: 1,
+    //     params: "",
+    //     userQuery: "",
+    //   },
+    //   prefs: {},
+    // };
 
-    Object.entries(data).forEach(([key, value]: [string, number | boolean | Option[]]): void => {
-      terminal.log(value);
-      switch (typeof value) {
-        case "number": {
-          if (!value) break;
-          req.prefs[key] = { priority: 0, value: { oneofKind: "numVal", numVal: value } };
-          break;
-        }
-        case "boolean": {
-          req.prefs[key] = {
-            priority: 0,
-            value: {
-              oneofKind: "listVal",
-              listVal: {
-                values: value ? ["Да"] : ["Нет"],
-              },
-            },
-          };
-          break;
-        }
-        case "object": {
-          if (!value.length) break; // value is an array with length of at least 1
-          req.prefs[key] = {
-            priority: 0,
-            value: {
-              oneofKind: "listVal",
-              listVal: {
-                values: value.map((item: Option): string => item.value),
-              },
-            },
-          };
-        }
-      }
-    });
+    // Object.entries(data).forEach(([key, value]: [string, number | boolean | Option[]]): void => {
+    //   terminal.log(value);
+    //   switch (typeof value) {
+    //     case "number": {
+    //       if (!value) break;
+    //       req.prefs[key] = { priority: 0, value: { oneofKind: "numVal", numVal: value } };
+    //       break;
+    //     }
+    //     case "boolean": {
+    //       req.prefs[key] = {
+    //         priority: 0,
+    //         value: {
+    //           oneofKind: "listVal",
+    //           listVal: {
+    //             values: value ? ["Да"] : ["Нет"],
+    //           },
+    //         },
+    //       };
+    //       break;
+    //     }
+    //     case "object": {
+    //       if (!value.length) break;
+    //       req.prefs[key] = {
+    //         priority: 0,
+    //         value: {
+    //           oneofKind: "listVal",
+    //           listVal: {
+    //             values: value.map((item: Option): string => item.value),
+    //           },
+    //         },
+    //       };
+    //     }
+    //   }
+    // });
 
-    console.log(req);
+    // console.log(req);
   }
 
   useEffect((): void => {
+    const blacklistKeys: string[] = ["pm_isAdult", "trucode", "sku"];
+
+    async function getFilters(market: number, category: string): Promise<void> {
+      try {
+        const res: AxiosResponse = await axios.get<JsonValue[]>(
+          `/api/categories/${Markets[market].toLowerCase()}/filter?url=${category}`,
+        );
+        const filtersTemp: Filter[] = res.data
+          .map((item: JsonValue): Filter => Filter.fromJson(item))
+          .filter((item: Filter): boolean => !blacklistKeys.includes(item.key));
+        setFilters(filtersTemp);
+      } catch (error) {
+        terminal.error(error);
+      }
+    }
+
     // Fetching
     getFilters(market, category);
     setIsLoading(false);
@@ -121,8 +118,9 @@ export default function FiltersSection({
                     {group.map(
                       (filter: Filter): ReactElement => (
                         <FilterForm
-                          control={formControl}
+                          control={control}
                           filter={filter}
+                          key={filter.key}
                         />
                       ),
                     )}

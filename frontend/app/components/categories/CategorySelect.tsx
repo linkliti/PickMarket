@@ -74,6 +74,7 @@ export default function CategorySelect({
           {filteredCategories.map(
             (category: Category): ReactElement => (
               <CategoryItem
+                key={category.url}
                 category={category}
                 level={level}
                 handleCategoryChange={handleCategoryChange}
@@ -134,6 +135,7 @@ export default function CategorySelect({
         {parents.map(
           (category: Category): ReactElement => (
             <CategoryItem
+              key={category.url}
               category={category}
               level={level++}
               handleCategoryChange={handleCategoryChange}
@@ -144,6 +146,7 @@ export default function CategorySelect({
         {startNeighbours.map(
           (category: Category): ReactElement => (
             <CategoryItem
+              key={category.url}
               category={category}
               level={level}
               handleCategoryChange={handleCategoryChange}
@@ -152,6 +155,7 @@ export default function CategorySelect({
           ),
         )}
         <CategoryItem
+          key={selectedCategory.url}
           category={selectedCat}
           level={level}
           handleCategoryChange={handleCategoryChange}
@@ -161,6 +165,7 @@ export default function CategorySelect({
           children.map(
             (category: Category): ReactElement => (
               <CategoryItem
+                key={category.url}
                 category={category}
                 level={level + 1}
                 handleCategoryChange={handleCategoryChange}
@@ -171,6 +176,7 @@ export default function CategorySelect({
         {endNeighbours.map(
           (category: Category): ReactElement => (
             <CategoryItem
+              key={category.url}
               category={category}
               level={level}
               handleCategoryChange={handleCategoryChange}

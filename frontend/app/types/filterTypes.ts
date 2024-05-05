@@ -1,20 +1,5 @@
-import { UserPref } from "@/proto/app/protos/reqHandlerTypes";
 import { StringList } from "@/proto/app/protos/types";
-
-export type FiltersStore = {
-  market: number,
-  pageUrl: string
-  numOfPages: number
-  params: string
-  userQuery: string
-  prefs: Record<string, UserPref>
-  setPageData: (market: number, pageUrl: string) => void;
-  setNumOfPages: (numOfPages: number) => void;
-  setParams: (params: string) => void;
-  setUserQuery: (userQuery: string) => void;
-  modifyPref: (key: string, value: UserPref) => void;
-  resetStore: () => void;
-};
+import { z } from "zod";
 
 export type FilterPrefValue =
   | {
@@ -28,3 +13,14 @@ export type FilterPrefValue =
   | {
       oneofKind: undefined;
     };
+
+const PrefFormSchema = z.object({
+  params: z.string(),
+  userQuery: z.string(),
+  priorities: z.record(z.number()),
+  prefs: z.record(
+    z.union([z.number(), z.array(z.string()), z.boolean()]),
+  ),
+});
+
+export type PrefForm = z.infer<typeof PrefFormSchema>;

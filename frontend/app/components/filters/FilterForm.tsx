@@ -4,6 +4,7 @@ import SelectionPref from "@/components/filters/filterTypes/SelectionPref";
 import { Option } from "@/components/ui/multiple-selector";
 import { Filter } from "@/proto/app/protos/items";
 import { SelectionFilterItem } from "@/proto/app/protos/types";
+import { PrefForm } from "@/types/filterTypes";
 import { ReactElement } from "react";
 import { Control } from "react-hook-form";
 
@@ -12,7 +13,7 @@ export default function FilterForm({
   control,
 }: {
   filter: Filter;
-  control: Control;
+  control: Control<PrefForm, unknown>;
 }): ReactElement {
   switch (filter.data.oneofKind) {
     case "rangeFilter": {
@@ -21,7 +22,7 @@ export default function FilterForm({
           key={filter.key}
           keyName={filter.key}
           control={control}
-          name={filter.title}
+          filterTitle={filter.title}
           range={filter.data.rangeFilter}
         />
       );
@@ -38,7 +39,7 @@ export default function FilterForm({
           key={filter.key}
           keyName={filter.key}
           control={control}
-          name={filter.title}
+          filterTitle={filter.title}
           options={listVals}
         />
       );
@@ -49,7 +50,7 @@ export default function FilterForm({
           key={filter.key}
           keyName={filter.key}
           control={control}
-          name={filter.title}
+          filterTitle={filter.title}
         />
       );
     }
