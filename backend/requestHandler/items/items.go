@@ -31,6 +31,12 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	itemR := reqBodyProto.GetRequest()
+
+	if *itemR.NumOfPages == 0 {
+		http.Error(rw, "NumOfPages must be > 0", http.StatusBadRequest)
+		return
+	}
+
 	req := &parser.ItemsRequest{
 		Market:     market,
 		PageUrl:    itemR.PageUrl,

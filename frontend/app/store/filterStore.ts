@@ -4,7 +4,7 @@ import terminal from "virtual:terminal";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-export const blacklistKeys: string[] = ["pm_isAdult", "trucode", "sku"];
+export const blacklistKeys: string[] = ["pm_isadult", "trucode", "sku"];
 
 export type FilterStore = {
   activePrefs: ItemsRequestWithPrefs | null,

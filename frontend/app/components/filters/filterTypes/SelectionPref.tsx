@@ -42,6 +42,7 @@ export default function SelectionPref({
               className="mx-6 mt-2 bg-white"
               defaultOptions={options}
               placeholder="Выберите предпочтения..."
+              hidePlaceholderWhenSelected={true}
               emptyIndicator={
                 <p className="text-center text-lg leading-10 text-gray-500 dark:text-gray-500">
                   Не найдено

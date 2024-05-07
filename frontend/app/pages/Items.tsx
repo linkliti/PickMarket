@@ -1,5 +1,6 @@
 import FiltersNotSelected from "@/components/filters/FiltersNotSelected";
 import FiltersSection from "@/components/filters/FiltersSection";
+import ItemsSection from "@/components/items/ItemsSection";
 import { Markets } from "@/proto/app/protos/types";
 import { ReactElement } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -21,9 +22,12 @@ export default function ItemsPage(): ReactElement {
     return <FiltersNotSelected />;
   }
   return (
-    <FiltersSection
-      market={market}
-      category={categoryURL}
-    />
+    <>
+      <FiltersSection
+        market={market}
+        category={categoryURL}
+      />
+      <ItemsSection market={market} />
+    </>
   );
 }

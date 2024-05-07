@@ -27,7 +27,7 @@ def test_grpcGetItems(logger: None, channel: grpc.Channel) -> None:
 def test_getItemChars(logger: None, channel: grpc.Channel) -> None:
   """Test getItemChars via gRPC"""
   itemUrl: str = \
-    '/product/gigabyte-videokarta-geforce-rtx-3080-10-gb-gv-n3080gaming-oc-10gd-2-0-lhr-306060738'
+    '/product/xiaomi-smartfon-redmi-note-13-pro-12-512-gb-chernyy-1410043273/'
   market: typesPB.Markets = typesPB.Markets.OZON
 
   stub = itemsPBgrpc.ItemParserStub(channel=channel)

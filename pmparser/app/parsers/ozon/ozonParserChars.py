@@ -29,7 +29,7 @@ class OzonParserChars(OzonParser):
         if charData in char:
           for charObj in char[charData]:
             name: str = charObj["name"]
-            key: str = charObj["key"]
+            key: str = str(charObj["key"]).lower()
             value: str | int | float | list[str] | None = None
             # List
             if len(charObj["values"]) > 1:

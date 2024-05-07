@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { marketplaces, useCategoryStore } from "@/store/categoryStore";
-import { CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { CategoryStore, marketplaces, useCategoryStore } from "@/store/categoryStore";
+import { Marketplace } from "@/types/categoryTypes";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { ReactElement, useState } from "react";
 

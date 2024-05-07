@@ -33,21 +33,21 @@ func (c *ItemsClient) appendExtraChars(itemsList []*parser.ItemExtended) {
 			if item.Item.OldPrice != nil {
 				oldPriceChar := parser.Characteristic{
 					Name:  "Старая цена",
-					Key:   "pm_oldPrice",
+					Key:   "pm_oldprice",
 					Value: &parser.Characteristic_NumVal{NumVal: *item.Item.OldPrice},
 				}
 				chars = append(chars, &oldPriceChar)
 			}
 			originalChar := parser.Characteristic{
 				Name:  "Оригинал",
-				Key:   "pm_isOriginal",
+				Key:   "pm_isoriginal",
 				Value: &parser.Characteristic_ListVal{ListVal: pmutils.BoolToStringList(item.Item.GetOriginal())},
 			}
 			chars = append(chars, &originalChar)
 
 			adultChar := parser.Characteristic{
 				Name:  "Для взрослых",
-				Key:   "pm_isAdult",
+				Key:   "pm_isadult",
 				Value: &parser.Characteristic_ListVal{ListVal: pmutils.BoolToStringList(item.Item.GetIsAdult())},
 			}
 			chars = append(chars, &adultChar)

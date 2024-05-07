@@ -14,14 +14,16 @@ const navItems: navItemsType[] = [
 
 export default function Header(): ReactElement {
   return (
-    <header className="flex w-full flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl bg-sky-200 p-4">
-      <Link
-        to="/"
-        className="flex-1 text-2xl font-extrabold"
-      >
-        PickMarket
-      </Link>
-      <nav className="flex flex-wrap gap-x-5 gap-y-2 ">
+    <header className="inline-flex w-full flex-wrap items-center rounded-2xl bg-sky-200 p-4">
+      <div className="grow">
+        <Link
+          to="/"
+          className="text-2xl font-extrabold"
+        >
+          PickMarket
+        </Link>
+      </div>
+      <nav className="inline-flex flex-wrap gap-x-5 gap-y-2 ">
         {navItems.map(
           (item: navItemsType): ReactElement => (
             <Link

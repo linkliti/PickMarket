@@ -104,7 +104,7 @@ class OzonFilterMerge:
                                   internalType=typesPB.Filters.RANGE,
                                   rangeFilter=typesPB.RangeFilter(min=0, max=5))
     oldPriceFilter = itemsPB.Filter(title="Старая цена",
-                                    key="pm_oldPrice",
+                                    key="pm_oldprice",
                                     internalType=typesPB.Filters.RANGE,
                                     rangeFilter=typesPB.RangeFilter(
                                       min=0, max=self.guessMaxValue(maxOldPrice)))
@@ -114,11 +114,11 @@ class OzonFilterMerge:
                                  rangeFilter=typesPB.RangeFilter(min=0,
                                                                  max=self.guessMaxValue(maxPrice)))
     isOriginalFilter = itemsPB.Filter(title="Оригинал",
-                                      key="pm_isOriginal",
+                                      key="pm_isoriginal",
                                       internalType=typesPB.Filters.BOOL,
                                       boolFilter=typesPB.BoolFilter(value="t"))
     isAdultFilter = itemsPB.Filter(title="Для взрослых",
-                                   key="pm_isAdult",
+                                   key="pm_isadult",
                                    internalType=typesPB.Filters.BOOL,
                                    boolFilter=typesPB.BoolFilter(value="t"))
     pmFilters += [
