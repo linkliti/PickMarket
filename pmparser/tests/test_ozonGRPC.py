@@ -14,12 +14,12 @@ from .test_base import channel, logger
 
 def test_grpcGetItems(logger: None, channel: grpc.Channel) -> None:
   """Test getItems via gRPC"""
-  categoryUrl = "/category/ingalyatory-i-aksessuary-35039/"
+  categoryUrl = "/category/smartfony-15502/"
   market: typesPB.Markets = typesPB.Markets.OZON
 
   stub = itemsPBgrpc.ItemParserStub(channel=channel)
   response: itemsPB.ItemResponse = stub.GetItems(
-    itemsPB.ItemsRequest(market=market, pageUrl=categoryUrl, numOfPages=2))
+    itemsPB.ItemsRequest(market=market, pageUrl=categoryUrl, userQuery="apple", numOfPages=2))
   for item in response:  # type: ignore
     print(item)
 

@@ -58,8 +58,9 @@ class OzonParserItems(OzonParser):
     """ Get items from page """
     log.info('Getting items from page', extra={"pageUrl": pageUrl, "page": page})
     if jString is None:  # First page
+      reqParams["page"] = str(page)
       jString = self.getData(host=self.host,
-                             url=self.api + pageUrl + "&page=" + str(page),
+                             url=self.api + pageUrl,
                              params=reqParams)
     # Convert data to JSON
     log.info('Converting data to JSON', extra={"pageUrl": pageUrl, "page": page})

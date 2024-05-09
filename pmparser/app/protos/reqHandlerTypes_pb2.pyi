@@ -33,11 +33,13 @@ class UserPref(_message.Message):
     def __init__(self, priority: _Optional[int] = ..., numVal: _Optional[float] = ..., listVal: _Optional[_Union[_types_pb2.StringList, _Mapping]] = ...) -> None: ...
 
 class ItemExtended(_message.Message):
-    __slots__ = ("item", "totalWeight", "chars")
+    __slots__ = ("item", "similar", "totalWeight", "chars")
     ITEM_FIELD_NUMBER: _ClassVar[int]
+    SIMILAR_FIELD_NUMBER: _ClassVar[int]
     TOTALWEIGHT_FIELD_NUMBER: _ClassVar[int]
     CHARS_FIELD_NUMBER: _ClassVar[int]
     item: _items_pb2.Item
+    similar: _containers.RepeatedCompositeFieldContainer[_items_pb2.Item]
     totalWeight: float
     chars: _containers.RepeatedCompositeFieldContainer[_items_pb2.Characteristic]
-    def __init__(self, item: _Optional[_Union[_items_pb2.Item, _Mapping]] = ..., totalWeight: _Optional[float] = ..., chars: _Optional[_Iterable[_Union[_items_pb2.Characteristic, _Mapping]]] = ...) -> None: ...
+    def __init__(self, item: _Optional[_Union[_items_pb2.Item, _Mapping]] = ..., similar: _Optional[_Iterable[_Union[_items_pb2.Item, _Mapping]]] = ..., totalWeight: _Optional[float] = ..., chars: _Optional[_Iterable[_Union[_items_pb2.Characteristic, _Mapping]]] = ...) -> None: ...

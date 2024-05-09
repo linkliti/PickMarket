@@ -15,9 +15,15 @@ function printChar(char: Characteristic) {
   return "";
 }
 
+const charPercent = 0.95;
+
 export default function ItemTopPrefs({ chars }: { chars: Characteristic[] }): ReactElement {
-  const weightedChars = chars.filter((char) => char.charWeight !== 0);
-  const nonWeightedChars = chars.filter((char) => char.charWeight === 0);
+  const weightedChars = chars.filter(
+    (char) => char.charWeight >= char.maxWeight * charPercent && char.maxWeight > 0,
+  );
+  const nonWeightedChars = chars.filter(
+    (char) => char.charWeight < char.maxWeight * charPercent || char.maxWeight === 0,
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   return (

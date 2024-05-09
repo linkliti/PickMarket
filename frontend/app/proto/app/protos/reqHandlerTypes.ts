@@ -65,11 +65,15 @@ export interface ItemExtended {
      */
     item?: Item;
     /**
-     * @generated from protobuf field: double totalWeight = 2;
+     * @generated from protobuf field: repeated app.protos.Item similar = 2;
+     */
+    similar: Item[];
+    /**
+     * @generated from protobuf field: double totalWeight = 3;
      */
     totalWeight: number;
     /**
-     * @generated from protobuf field: repeated app.protos.Characteristic chars = 3;
+     * @generated from protobuf field: repeated app.protos.Characteristic chars = 4;
      */
     chars: Characteristic[];
 }
@@ -220,12 +224,14 @@ class ItemExtended$Type extends MessageType<ItemExtended> {
     constructor() {
         super("app.protos.ItemExtended", [
             { no: 1, name: "item", kind: "message", T: () => Item },
-            { no: 2, name: "totalWeight", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 3, name: "chars", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Characteristic }
+            { no: 2, name: "similar", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Item },
+            { no: 3, name: "totalWeight", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 4, name: "chars", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Characteristic }
         ]);
     }
     create(value?: PartialMessage<ItemExtended>): ItemExtended {
         const message = globalThis.Object.create((this.messagePrototype!));
+        message.similar = [];
         message.totalWeight = 0;
         message.chars = [];
         if (value !== undefined)
@@ -240,10 +246,13 @@ class ItemExtended$Type extends MessageType<ItemExtended> {
                 case /* app.protos.Item item */ 1:
                     message.item = Item.internalBinaryRead(reader, reader.uint32(), options, message.item);
                     break;
-                case /* double totalWeight */ 2:
+                case /* repeated app.protos.Item similar */ 2:
+                    message.similar.push(Item.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                case /* double totalWeight */ 3:
                     message.totalWeight = reader.double();
                     break;
-                case /* repeated app.protos.Characteristic chars */ 3:
+                case /* repeated app.protos.Characteristic chars */ 4:
                     message.chars.push(Characteristic.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
@@ -261,12 +270,15 @@ class ItemExtended$Type extends MessageType<ItemExtended> {
         /* app.protos.Item item = 1; */
         if (message.item)
             Item.internalBinaryWrite(message.item, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* double totalWeight = 2; */
+        /* repeated app.protos.Item similar = 2; */
+        for (let i = 0; i < message.similar.length; i++)
+            Item.internalBinaryWrite(message.similar[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* double totalWeight = 3; */
         if (message.totalWeight !== 0)
-            writer.tag(2, WireType.Bit64).double(message.totalWeight);
-        /* repeated app.protos.Characteristic chars = 3; */
+            writer.tag(3, WireType.Bit64).double(message.totalWeight);
+        /* repeated app.protos.Characteristic chars = 4; */
         for (let i = 0; i < message.chars.length; i++)
-            Characteristic.internalBinaryWrite(message.chars[i], writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+            Characteristic.internalBinaryWrite(message.chars[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

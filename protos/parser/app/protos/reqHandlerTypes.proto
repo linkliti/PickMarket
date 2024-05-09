@@ -22,6 +22,7 @@ message UserPref {
 
 message ItemExtended {
   Item item = 1;
-  double totalWeight = 2;
-  repeated Characteristic chars = 3;
+  repeated Item similar = 2;
+  double totalWeight = 3;
+  repeated Characteristic chars = 4;
 }

@@ -32,11 +32,11 @@ func CalcList_numOfMatches(char *parser.Characteristic, pref *parser.UserPref) {
 	char.CharWeight = float64(len(pmutils.InterSection(charList, prefList)))
 }
 
-func CalcNum_difference(char *parser.Characteristic, pref *parser.UserPref) {
-	// Weight by the difference
-	charVal, prefVal := getNumVals(char, pref)
-	char.CharWeight = prefVal - charVal
-}
+// func CalcNum_difference(char *parser.Characteristic, pref *parser.UserPref) {
+// 	// Weight by the difference
+// 	charVal, prefVal := getNumVals(char, pref)
+// 	char.CharWeight = prefVal - charVal
+// }
 
 func CalcList_atleastOne(char *parser.Characteristic, pref *parser.UserPref) {
 	// Weight by having at least one pref in char

@@ -11,9 +11,7 @@ import (
 
 // Keys must be lowered
 var caseFuncs = map[string]caseStruct{
-	"color":       {fn: cases.CalcList_Color, calcType: LIST_TYPE},
-	"pm_price":    {fn: cases.CalcNum_difference, calcType: NUM_TYPE},
-	"pm_oldprice": {fn: cases.CalcNum_difference, calcType: NUM_TYPE},
+	"color": {fn: cases.CalcList_Color, calcType: LIST_TYPE},
 }
 
 func CalcWeight(itemList []*parser.ItemExtended, userPref map[string]*parser.UserPref, req *parser.ItemsRequest) error {
@@ -90,6 +88,7 @@ func (c *calc) calculateWeights() {
 		}
 		// Normalizing and multiplying by priority
 		for _, char := range v.charPointers {
+			char.MaxWeight = float64(v.prefPointer.Priority)
 			char.CharWeight = (char.CharWeight - min) / (max - min) * float64(v.prefPointer.Priority)
 			slog.Debug("calcWeight: Calculated weight", "key", key, "char", char.Key, "weight", char.CharWeight)
 		}

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ItemExtended } from "@/proto/app/protos/reqHandlerTypes";
-import { valueLabels } from "@/types/itemTypes";
+import { ValueLabel, valueLabels } from "@/types/itemTypes";
 
 export default function ItemWeightSection({
   item,
@@ -32,7 +32,8 @@ export default function ItemWeightSection({
       <div className="mt-3 self-center text-sm">
         {
           valueLabels.find(
-            (label) => label.value === Math.round((item.totalWeight / maxTotalWeight) * 5),
+            (label: ValueLabel): boolean =>
+              label.value === Math.round((item.totalWeight / maxTotalWeight) * 5),
           )?.label
         }
       </div>

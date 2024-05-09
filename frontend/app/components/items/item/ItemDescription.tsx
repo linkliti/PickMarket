@@ -35,6 +35,22 @@ export default function ItemDescription({
           <MessageCircleIcon className="size-4 fill-sky-300 text-sky-300" />
           <span>{comments === 0 ? "Нет комментариев" : `${comments}`}</span>
         </div>
+        <div className="text-sm">
+          {item.similar.length > 0 ? <p className="font-bold">Похожие:</p> : null}
+          {item.similar.map((item) => (
+            <p>
+              <a
+                href={"https://ozon.ru" + item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bold pb-2 hover:cursor-pointer hover:underline"
+              >
+                {item.name}
+              </a>
+            </p>
+          ))}
+        </div>
+
         <ItemTopPrefs chars={item.chars} />
       </div>
     </div>

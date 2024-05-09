@@ -160,18 +160,22 @@ export interface Characteristic {
      */
     charWeight: number; // RequestHandler field
     /**
+     * @generated from protobuf field: double maxWeight = 4;
+     */
+    maxWeight: number;
+    /**
      * @generated from protobuf oneof: value
      */
     value: {
         oneofKind: "numVal";
         /**
-         * @generated from protobuf field: double numVal = 4;
+         * @generated from protobuf field: double numVal = 5;
          */
         numVal: number;
     } | {
         oneofKind: "listVal";
         /**
-         * @generated from protobuf field: app.protos.StringList listVal = 5;
+         * @generated from protobuf field: app.protos.StringList listVal = 6;
          */
         listVal: StringList;
     } | {
@@ -625,8 +629,9 @@ class Characteristic$Type extends MessageType<Characteristic> {
             { no: 1, name: "key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "charWeight", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 4, name: "numVal", kind: "scalar", oneof: "value", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 5, name: "listVal", kind: "message", oneof: "value", T: () => StringList }
+            { no: 4, name: "maxWeight", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 5, name: "numVal", kind: "scalar", oneof: "value", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 6, name: "listVal", kind: "message", oneof: "value", T: () => StringList }
         ]);
     }
     create(value?: PartialMessage<Characteristic>): Characteristic {
@@ -634,6 +639,7 @@ class Characteristic$Type extends MessageType<Characteristic> {
         message.key = "";
         message.name = "";
         message.charWeight = 0;
+        message.maxWeight = 0;
         message.value = { oneofKind: undefined };
         if (value !== undefined)
             reflectionMergePartial<Characteristic>(this, message, value);
@@ -653,13 +659,16 @@ class Characteristic$Type extends MessageType<Characteristic> {
                 case /* double charWeight */ 3:
                     message.charWeight = reader.double();
                     break;
-                case /* double numVal */ 4:
+                case /* double maxWeight */ 4:
+                    message.maxWeight = reader.double();
+                    break;
+                case /* double numVal */ 5:
                     message.value = {
                         oneofKind: "numVal",
                         numVal: reader.double()
                     };
                     break;
-                case /* app.protos.StringList listVal */ 5:
+                case /* app.protos.StringList listVal */ 6:
                     message.value = {
                         oneofKind: "listVal",
                         listVal: StringList.internalBinaryRead(reader, reader.uint32(), options, (message.value as any).listVal)
@@ -686,12 +695,15 @@ class Characteristic$Type extends MessageType<Characteristic> {
         /* double charWeight = 3; */
         if (message.charWeight !== 0)
             writer.tag(3, WireType.Bit64).double(message.charWeight);
-        /* double numVal = 4; */
+        /* double maxWeight = 4; */
+        if (message.maxWeight !== 0)
+            writer.tag(4, WireType.Bit64).double(message.maxWeight);
+        /* double numVal = 5; */
         if (message.value.oneofKind === "numVal")
-            writer.tag(4, WireType.Bit64).double(message.value.numVal);
-        /* app.protos.StringList listVal = 5; */
+            writer.tag(5, WireType.Bit64).double(message.value.numVal);
+        /* app.protos.StringList listVal = 6; */
         if (message.value.oneofKind === "listVal")
-            StringList.internalBinaryWrite(message.value.listVal, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+            StringList.internalBinaryWrite(message.value.listVal, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

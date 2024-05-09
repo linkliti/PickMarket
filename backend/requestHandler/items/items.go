@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"pickmarket/requestHandler/calc"
+	"pickmarket/requestHandler/itemMerge"
 	"pickmarket/requestHandler/misc"
 	"protos/parser"
 
@@ -30,18 +31,18 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
-	itemR := reqBodyProto.GetRequest()
-
-	if *itemR.NumOfPages == 0 {
-		http.Error(rw, "NumOfPages must be > 0", http.StatusBadRequest)
+	errString, ok := ValidateItemsRequestWithPrefs(reqBodyProto)
+	if !ok {
+		http.Error(rw, errString, http.StatusBadRequest)
 		return
 	}
+	itemR := reqBodyProto.GetRequest()
 
 	req := &parser.ItemsRequest{
-		Market:     market,
-		PageUrl:    itemR.PageUrl,
-		UserQuery:  itemR.UserQuery,
-		Params:     itemR.Params,
+		Market:    market,
+		PageUrl:   itemR.PageUrl,
+		UserQuery: itemR.UserQuery,
+		// Params:     itemR.Params,
 		NumOfPages: itemR.NumOfPages,
 	}
 	slog.Debug("GetItems", "request", req)
@@ -53,7 +54,14 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userPrefs := reqBodyProto.GetPrefs()
+	// Append extra chars
 	c.appendExtraChars(itemsList)
+	// Merge duplicates
+	switch req.Market {
+	case parser.Markets_OZON:
+		itemsList = itemMerge.OzonMergeItems(itemsList)
+	}
+	// Calc Weight
 	err = calc.CalcWeight(itemsList, userPrefs, req)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -81,4 +89,24 @@ func (c *ItemsClient) PostItems(rw http.ResponseWriter, r *http.Request) {
 	// Return
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(itemsJSON)
+}
+
+func ValidateItemsRequestWithPrefs(req *parser.ItemsRequestWithPrefs) (string, bool) {
+	if req == nil {
+		return "Request is nil", false
+	}
+
+	if req.Request.PageUrl == "" {
+		return "PageUrl is empty", false
+	}
+
+	if *req.Request.NumOfPages <= 0 || *req.Request.NumOfPages > 5 {
+		return "NumOfPages is not within the range of 1 to 5", false
+	}
+
+	if len(req.Prefs) == 0 {
+		return "Prefs is empty", false
+	}
+
+	return "", true
 }

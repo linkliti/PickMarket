@@ -55,9 +55,10 @@ message Characteristic {
   string key = 1;
   string name = 2;
   double charWeight = 3; // RequestHandler field
+  double maxWeight = 4;
   oneof value {
-    double numVal = 4;
-    StringList listVal = 5;
+    double numVal = 5;
+    StringList listVal = 6;
   }
 }
 
