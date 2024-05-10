@@ -7,7 +7,6 @@ import Terminal from "vite-plugin-terminal";
 
 const port = (process.env.FRONTEND_ADDR ?? "127.0.0.1:1111").split(":")[2];
 const handlerAddr = process.env.HANDLER_ADDR ?? "http://127.0.0.1:1111";
-console.log("handlerAddr", handlerAddr);
 
 export default defineConfig({
   server: {

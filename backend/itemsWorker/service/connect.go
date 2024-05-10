@@ -22,7 +22,7 @@ func NewItemsService(parsClient parser.ItemParserClient, db *db.Database) *Items
 var serviceConfig = `{
 	"loadBalancingPolicy": "round_robin",
 	"healthCheckConfig": {
-		"serviceName": "items"
+		"serviceName": "parser"
 	}
 }`
 

@@ -24,5 +24,4 @@ COPY ./bin/grpc_health_probe-linux-amd64 /bin/grpc_health_probe
 RUN chmod +x /bin/grpc_health_probe
 WORKDIR /application
 COPY --from=builder /build/app /application/app
-RUN touch ./$SERVICE_NAME.log
 CMD ["/application/app"]

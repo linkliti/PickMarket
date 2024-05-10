@@ -22,5 +22,4 @@ RUN go build -o /build/app /build/src/main.go
 FROM alpine
 WORKDIR /application
 COPY --from=builder /build/app /application/app
-RUN touch ./$SERVICE_NAME.log
 CMD ["/application/app"]

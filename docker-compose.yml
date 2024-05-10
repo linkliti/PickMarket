@@ -15,8 +15,8 @@ services:
     build:
       context: ./pmparser
       dockerfile: app.dockerfile
-    environment:
-      - DEBUG=True
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./pmparser/.env
     volumes:
@@ -64,12 +64,12 @@ services:
       dockerfile: categoriesWorker.dockerfile
       args:
         SERVICE_NAME: categoriesWorker
-    environment:
-      - DEBUG=True
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./categoriesWorker.log:/application/categoriesWorker.log
+      - ./logs/categoriesWorker.log:/application/categoriesWorker.log
 
   # itemsWorker
   items_worker:
@@ -92,12 +92,12 @@ services:
       dockerfile: itemsWorker.dockerfile
       args:
         SERVICE_NAME: itemsWorker
-    environment:
-      - DEBUG=True
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./itemsWorker.log:/application/itemsWorker.log
+      - ./logs/itemsWorker.log:/application/itemsWorker.log
 
   # requestHandler
   request_handler:
@@ -120,10 +120,12 @@ services:
       dockerfile: requestHandler.dockerfile
       args:
         SERVICE_NAME: requestHandler
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./requestHandler.log:/application/requestHandler.log
+      - ./logs/requestHandler.log:/application/requestHandler.log
   # frontend
   frontend:
     ports:
@@ -137,5 +139,5 @@ services:
       dockerfile: app.dockerfile
     env_file:
       - ./frontend/.env
-    volumes:
-      - ./frontend.log:/application/frontend.log
+    # volumes:
+    #   - ./logs/frontend.log:/application/frontend.log

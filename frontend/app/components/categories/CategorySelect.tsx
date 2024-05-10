@@ -1,9 +1,10 @@
 import CategoryItem from "@/components/categories/CategoryItem";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Category } from "@/proto/app/protos/categories";
-import { useCategoryStore } from "@/store/categoryStore";
-import { CategoryStore, Marketplace } from "@/types/categoryTypes";
+import { CategoryStore, useCategoryStore } from "@/store/categoryStore";
+import { Marketplace } from "@/types/categoryTypes";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
+import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { ReactElement, useEffect, useState } from "react";
 import terminal from "virtual:terminal";
@@ -13,48 +14,66 @@ export default function CategorySelect({
 }: {
   marketplace: Marketplace;
 }): ReactElement {
+  const [categoryURL, setCategoryURL] = useState<string>(
+    `/api/categories/${marketplace.shortLabel}/root`,
+  );
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useCategoryStore((state: CategoryStore) => [
     state.selectedCategory,
     state.setSelectedCategory,
   ]);
 
   useEffect((): void => {
-    setSelectedCategory(null);
     setCategories([]);
-    fetchCategories(`/api/categories/${marketplace.shortLabel}/root`);
-    setIsLoading(false);
+    setSelectedCategory(null);
   }, [marketplace.shortLabel, setSelectedCategory]);
 
-  async function fetchCategories(url: string): Promise<void> {
+  const {
+    isPending: isLoading,
+    error,
+    data: recentCategories,
+  } = useQuery({
+    queryKey: ["categories", categoryURL],
+    queryFn: getCategories,
+    staleTime: Infinity,
+  });
+
+  useEffect((): void => {
+    if (!recentCategories) {
+      return;
+    }
+    recentCategories.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
+    if (selectedCategory) {
+      selectedCategory.isParsed = true;
+    }
+    setCategories((prevCategories: Category[]): Category[] => [
+      ...new Map(
+        [...prevCategories, ...recentCategories].map((item: Category): [string, Category] => [
+          item.url,
+          item,
+        ]),
+      ).values(),
+    ]);
+  }, [recentCategories, selectedCategory]);
+
+  async function getCategories(): Promise<Category[] | undefined> {
     try {
-      const res: AxiosResponse = await axios.get<Category[]>(url);
+      terminal.log("Fetching", categoryURL);
+      const res: AxiosResponse = await axios.get<Category[]>(categoryURL);
       const data: Category[] = res.data;
-      if (data) {
-        data.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
-        setCategories((prevCategories: Category[]): Category[] => [
-          ...new Map(
-            [...prevCategories, ...data].map((item: Category): [string, Category] => [
-              item.url,
-              item,
-            ]),
-          ).values(),
-        ]);
-      }
+      return data;
     } catch (error) {
-      terminal.error(error);
+      if (error instanceof Error) {
+        terminal.error(error.message);
+        throw new Error(error.message);
+      }
     }
   }
 
   function handleCategoryChange(category: Category): void {
-    if (!category.isParsed) {
-      terminal.log("Fetching", category.url);
-      fetchCategories(
-        `/api/categories/${marketplace.shortLabel}/sub?url=${encodeURIComponent(category.url)}`,
-      );
-      category.isParsed = true;
-    }
+    setCategoryURL(
+      `/api/categories/${marketplace.shortLabel}/sub?url=${encodeURIComponent(category.url)}`,
+    );
     setSelectedCategory(category);
     terminal.log("Selected", category.title);
   }
@@ -190,9 +209,13 @@ export default function CategorySelect({
 
   return (
     <>
-      {isLoading ? (
+      {isLoading && !categories ? (
         <div className="flex items-center gap-2">
           <LoadingSpinner /> <p>Загрузка категорий</p>
+        </div>
+      ) : error ? (
+        <div className="flex items-center gap-2">
+          <p>Ошибка при загрузке категорий: {error?.message}</p>
         </div>
       ) : (
         <>

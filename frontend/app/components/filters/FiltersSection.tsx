@@ -14,9 +14,10 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { FilterStore, blacklistKeys, useFilterStore } from "@/store/filterStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
+import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { ChevronsUpDown } from "lucide-react";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import terminal from "virtual:terminal";
 
@@ -27,8 +28,6 @@ export default function FiltersSection({
   market: number;
   category: string;
 }): ReactElement {
-  const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState<Filter[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [formPrefs, setActivePrefs, setFormPrefs] = useFilterStore((state: FilterStore) => [
     state.formPrefs,
@@ -37,6 +36,16 @@ export default function FiltersSection({
   ]);
   const { handleSubmit, control, reset } = useForm<PrefForm>({
     defaultValues: formPrefs ? formPrefs : {},
+  });
+
+  const {
+    isPending: isLoading,
+    error,
+    data: filters,
+  } = useQuery({
+    queryKey: ["filters", market, category],
+    queryFn: getFilters,
+    staleTime: Infinity,
   });
 
   function onSubmit(data: PrefForm): void {
@@ -89,25 +98,23 @@ export default function FiltersSection({
     setIsOpen(false);
   }
 
-  async function getFilters(market: number, category: string): Promise<void> {
+  async function getFilters(): Promise<Filter[] | undefined> {
     try {
+      terminal.log("Fetching", category);
       const res: AxiosResponse = await axios.get<JsonValue[]>(
         `/api/categories/${Markets[market].toLowerCase()}/filter?url=${category}`,
       );
       const filtersTemp: Filter[] = res.data
         .map((item: JsonValue): Filter => Filter.fromJson(item))
         .filter((item: Filter): boolean => !blacklistKeys.includes(item.key));
-      setFilters(filtersTemp);
-      setIsLoading(false);
+      return filtersTemp;
     } catch (error) {
-      terminal.error(error);
+      if (error instanceof Error) {
+        terminal.error(error.message);
+        throw new Error(error.message);
+      }
     }
   }
-
-  useEffect((): void => {
-    // Fetching
-    getFilters(market, category);
-  }, [category, market]);
 
   return (
     <WhiteBlock className={cn("w-full")}>
@@ -119,6 +126,8 @@ export default function FiltersSection({
           <div className="flex items-center gap-2">
             <LoadingSpinner /> <p>Загрузка фильтров</p>
           </div>
+        ) : !filters || error ? (
+          <p>Ошибка при загрузке фильтров: {error?.message}</p>
         ) : (
           <>
             <form onSubmit={handleSubmit(onSubmit)}>
