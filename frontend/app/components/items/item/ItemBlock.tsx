@@ -8,14 +8,17 @@ import { ReactElement } from "react";
 export default function ItemBlock({
   item,
   maxTotalWeight,
+  market,
 }: {
   item: ItemExtended;
   maxTotalWeight: number;
+  market: number;
 }): ReactElement {
   return (
     <WhiteBlock className="w-full">
       <div className="flex w-full justify-between gap-5 rounded-2xl max-md:max-w-full max-md:flex-wrap">
         <ItemDescription
+          market={market}
           item={item}
           className="max-m:w-ful w-8/12"
         />

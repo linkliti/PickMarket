@@ -155,7 +155,7 @@ export default function FiltersSection({
                   )}
                 </div>
               </CollapsibleContent>
-              <div className="inline-flex w-full flex-wrap items-end gap-2">
+              <div className="inline-flex w-full items-end gap-2 max-sm:flex-wrap">
                 <div className="grow">
                   <Label>Поисковой запрос</Label>
                   <Controller
@@ -165,14 +165,14 @@ export default function FiltersSection({
                     render={({ field }): ReactElement => {
                       return (
                         <Input
-                          className=" max-w-[300px] bg-white"
+                          className="bg-white"
                           {...field}
                         />
                       );
                     }}
                   ></Controller>
                 </div>
-                <div className="">
+                <div className="w-[100px] grow">
                   <Label>Страниц</Label>
                   <Controller
                     control={control}
@@ -200,7 +200,7 @@ export default function FiltersSection({
                     }}
                   ></Controller>
                 </div>
-                <div className="inline-flex flex-wrap gap-2">
+                <div className="inline-flex gap-2 max-sm:flex-wrap">
                   <Button type="submit">Применить</Button>
                   <Button
                     onClick={(event): void => {

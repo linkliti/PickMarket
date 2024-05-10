@@ -79,3 +79,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* width */
+::-webkit-scrollbar {
+  @apply h-full w-2.5
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-border relative flex-1 rounded-full
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary
+}
+
+::-webkit-scrollbar-thumb:active {
+  @apply bg-sky-300
+}

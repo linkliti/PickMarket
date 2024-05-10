@@ -1,6 +1,6 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
 import ItemBlock from "@/components/items/item/ItemBlock";
-import { ItemExtended, ItemsRequestWithPrefs } from "@/proto/app/protos/reqHandlerTypes";
+import { ItemExtended, ItemsRequestWithPrefs, UserPref } from "@/proto/app/protos/reqHandlerTypes";
 import { Markets } from "@/proto/app/protos/types";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
@@ -13,6 +13,7 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
   const [activePrefs] = useFilterStore((state: FilterStore) => [state.activePrefs]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState<ItemExtended[]>([]);
+  const [error, setError] = useState<string>();
 
   // function dummyDataParser(): ItemExtended[] {
   //   const itemsDummy: ItemExtended[] = dummyData.map(
@@ -21,29 +22,33 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
   //   return itemsDummy;
   // }
 
-  async function getItems(): Promise<void> {
-    try {
-      if (activePrefs) {
-        const res: AxiosResponse = await axios.post<JsonValue[]>(
-          `/api/calc/${Markets[market].toLowerCase()}/list`,
-          ItemsRequestWithPrefs.toJson(activePrefs),
-          {
-            headers: { "Content-Type": "application/json" },
-            timeout: 120 * 1000,
-          },
-        );
-        const itemsTemp: ItemExtended[] = res.data.map(
-          (item: JsonValue): ItemExtended => ItemExtended.fromJson(item),
-        );
-        setItems(itemsTemp);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      terminal.error(error);
-    }
-  }
-
   useEffect((): void => {
+    async function getItems(): Promise<void> {
+      try {
+        if (activePrefs) {
+          terminal.log("Posting items request");
+          const res: AxiosResponse = await axios.post<JsonValue[]>(
+            `/api/calc/${Markets[market].toLowerCase()}/list`,
+            ItemsRequestWithPrefs.toJson(activePrefs),
+            {
+              headers: { "Content-Type": "application/json" },
+              timeout: 120 * 1000,
+            },
+          );
+          const itemsTemp: ItemExtended[] = res.data.map(
+            (item: JsonValue): ItemExtended => ItemExtended.fromJson(item),
+          );
+          setItems(itemsTemp);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          terminal.error(error);
+          setError(error.message);
+        }
+      }
+    }
+
     // setItems(dummyDataParser());
     // setIsLoading(false);
     if (activePrefs) {
@@ -51,10 +56,15 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
       setItems([]);
       getItems();
     }
-  }, [activePrefs]);
+  }, [activePrefs, market]);
 
   if (!activePrefs) {
     return <WhiteBlock className="w-full">Здесь будут отображаться товары</WhiteBlock>;
+  }
+  if (error) {
+    return (
+      <WhiteBlock className="w-full">Не удалось получить товары. Попробуйте еще раз</WhiteBlock>
+    );
   }
   if (isLoading) {
     return (
@@ -66,7 +76,7 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
     );
   }
 
-  const sortedItems = items.sort((a, b) => {
+  const sortedItems: ItemExtended[] = items.sort((a: ItemExtended, b: ItemExtended): 0 | 1 | -1 => {
     if (a.totalWeight > b.totalWeight) {
       return -1;
     }
@@ -76,8 +86,8 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
     return 0;
   });
 
-  let maxTotalWeight = Object.values(activePrefs.prefs).reduce(
-    (sum, userpref) => sum + userpref.priority,
+  let maxTotalWeight: number = Object.values(activePrefs.prefs).reduce(
+    (sum: number, userpref: UserPref): number => sum + userpref.priority,
     0,
   );
 
@@ -93,6 +103,7 @@ export default function ItemsSection({ market }: { market: number }): ReactEleme
       {sortedItems.map(
         (item: ItemExtended, index: number): ReactElement => (
           <ItemBlock
+            market={market}
             key={index}
             item={item}
             maxTotalWeight={maxTotalWeight}
