@@ -20,7 +20,7 @@ services:
     env_file:
       - ./pmparser/.env
     volumes:
-      - ./pmparser.log:/application/pmparser.log
+      - ./logs/pmparser.log:/application/pmparser.log
 
   # postgreSQL
   db:

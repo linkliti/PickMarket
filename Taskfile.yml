@@ -103,7 +103,8 @@ tasks:
   logs:
     desc: "Create log files"
     cmds:
-      - touch categoriesWorker.log itemsWorker.log requestHandler.log pmparser.log
+      - mkdir -p ./logs
+      - touch ./logs/categoriesWorker.log ./logs/itemsWorker.log ./logs/requestHandler.log ./logs/pmparser.log
 
   js-dev:
     desc: "Run frontend in development mode"
