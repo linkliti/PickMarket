@@ -19,9 +19,21 @@ func NewItemsService(parsClient parser.ItemParserClient, db *db.Database) *Items
 	return &ItemsService{parsClient: parsClient, db: db}
 }
 
+var serviceConfig = `{
+	"loadBalancingPolicy": "round_robin",
+	"healthCheckConfig": {
+		"serviceName": "items"
+	}
+}`
+
 func ConnectToParser() (parser.ItemParserClient, error) {
+	options := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(serviceConfig),
+	}
+
 	parserAddr := pmutils.GetEnv("PARSER_ADDR", "localhost:1111")
-	conn, err := grpc.Dial(parserAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(parserAddr, options...)
 	if err != nil {
 		return nil, err
 	}

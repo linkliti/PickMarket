@@ -6,7 +6,7 @@ import socket
 # import threading
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import Process, cpu_count
+from multiprocessing import Process
 
 import grpc
 from app.grpcs.categoryParserServicer import PMCategoryParserServicer
@@ -18,6 +18,7 @@ from app.selen.seleniumPool import browserQueue
 from app.utilities.log import setupLogger
 # from flask import Flask, Response
 from grpc._server import _Server
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 
 # from waitress import serve as waitress_serve
 
@@ -25,8 +26,8 @@ DEBUG = bool(os.environ.get('DEBUG', False))
 setupLogger(name='root', debug=DEBUG)
 
 log = logging.getLogger(__name__)
-workerCount: int = cpu_count() // 4
-browserCount: int = workerCount
+workerCount: int = 4
+browserCount: int = 4
 
 
 def serve(bindAddress: str) -> None:
@@ -37,6 +38,8 @@ def serve(bindAddress: str) -> None:
   itemsPBgrpc.add_ItemParserServicer_to_server(servicer=PMItemParserServicer(), server=server)
   categPBgrpc.add_CategoryParserServicer_to_server(servicer=PMCategoryParserServicer(),
                                                    server=server)
+  # Health server and workers
+  configureHealthServer(server=server)
   server.add_insecure_port(address=bindAddress)
   server.start()
   log.info("Server started", extra={"bindAddress": bindAddress})
@@ -53,6 +56,16 @@ def reservePort():
   host, port = address.split(sep=":")
   sock.bind((host, int(port)))
   return sock.getsockname()
+
+
+def configureHealthServer(server: grpc.Server) -> None:
+  """ Configure health server """
+  healthServicer = health.HealthServicer(
+    experimental_non_blocking=True,
+    experimental_thread_pool=futures.ThreadPoolExecutor(max_workers=2),
+  )
+  health_pb2_grpc.add_HealthServicer_to_server(healthServicer, server)
+  healthServicer.set("parser", health_pb2.HealthCheckResponse.SERVING)
 
 
 def setCookies(w: SeleniumWorkerMarkets) -> None:
@@ -89,21 +102,6 @@ def main() -> None:
     worker = Process(target=serve, args=(addrStr,))
     worker.start()
     workers.append(worker)
-  # Flask app for health check
-  # app = Flask(import_name=__name__)
-
-  # @app.route(rule='/health', methods=['GET'])
-  # def healthCheck() -> Response:
-  #   return Response(response="OK", status=200)
-
-  # # Run Flask app in a separate thread
-  # threading.Thread(target=waitress_serve,
-  #                  kwargs={
-  #                    'app': app,
-  #                    'host': addr[0],
-  #                    'port': 9999
-  #                  }).start()
-  # log.info("Health check server started")
   for worker in workers:
     worker.join()
 
