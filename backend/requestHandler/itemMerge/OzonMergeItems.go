@@ -45,11 +45,12 @@ func OzonMergeItems(items []*parser.ItemExtended) []*parser.ItemExtended {
 
 func MergeItemData(existingItem *parser.ItemExtended, item *parser.ItemExtended) {
 	// Add similar items
+	for _, similarItem := range existingItem.Similar {
+		if similarItem.Url == item.Item.Url {
+			return
+		}
+	}
 	existingItem.Similar = append(existingItem.Similar, item.Item)
-	// Name
-	// existingItemNameSplit := strings.Split(existingItem.Item.Name, " ")
-	// itemNameSplit := strings.Split(item.Item.Name, " ")
-	// existingItem.Item.Name = strings.Join(pmutils.InterSection(existingItemNameSplit, itemNameSplit), " ")
 	// Chars
 	for _, char := range item.Chars {
 		switch v := char.Value.(type) {

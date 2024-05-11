@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"math"
 	"pickmarket/requestHandler/calc/cases"
-	"pmutils"
 	"protos/parser"
 )
 
@@ -36,38 +35,6 @@ func CalcWeight(itemList []*parser.ItemExtended, userPref map[string]*parser.Use
 	return nil
 }
 
-func (c *calc) calculateDifferences() {
-	for key, v := range c.vaults {
-		// Special cases
-		if fnStruct, ok := caseFuncs[key]; ok {
-			if v.prefType != fnStruct.calcType {
-				slog.Error("calcDif: Special case key has incorrect type", "key", key, "expected", fnStruct.calcType.Name(), "got", v.prefType.Name())
-				return
-			}
-			funcName := pmutils.GetFunctionName(fnStruct.fn)
-			slog.Debug("calcDif: Calculating key using special func", "key", key, "func", funcName, "isList", fnStruct.calcType.Name())
-			for _, char := range v.charPointers {
-				fnStruct.fn(char, v.prefPointer)
-			}
-			return
-		}
-		// General cases
-		switch v.prefType {
-		case NUM_TYPE:
-			slog.Debug("calcDif: Calculating key using numVal func", "key", key)
-			for _, char := range v.charPointers {
-				cases.CalcNum_negAbsDifference(char, v.prefPointer)
-			}
-		case LIST_TYPE:
-			slog.Debug("calcDif: Calculating key using listVal func", "key", key)
-			for _, char := range v.charPointers {
-				cases.CalcList_numOfMatches(char, v.prefPointer)
-			}
-		}
-
-	}
-}
-
 func (c *calc) calculateWeights() {
 	for key, v := range c.vaults {
 		// Min and max values
@@ -80,28 +47,20 @@ func (c *calc) calculateWeights() {
 				max = char.CharWeight
 			}
 		}
-		// Remove vault from calculations if all values are equal
+		// Multiplying same values by priority
 		if min == max {
 			slog.Debug("calcWeight: Removing vault with equal max and min", "key", key)
-			delete(c.vaults, key)
-			continue
+			for _, char := range v.charPointers {
+				char.MaxWeight = float64(v.prefPointer.Priority)
+				char.CharWeight = max * float64(v.prefPointer.Priority)
+			}
+			return
 		}
 		// Normalizing and multiplying by priority
 		for _, char := range v.charPointers {
 			char.MaxWeight = float64(v.prefPointer.Priority)
 			char.CharWeight = (char.CharWeight - min) / (max - min) * float64(v.prefPointer.Priority)
 			slog.Debug("calcWeight: Calculated weight", "key", key, "char", char.Key, "weight", char.CharWeight)
-		}
-	}
-}
-
-func (c *calc) sumWeights() {
-	for _, item := range c.itemList {
-		for _, char := range item.Chars {
-			// Sum weights that are present in the vault
-			if _, ok := c.vaults[char.Key]; ok {
-				item.TotalWeight += char.CharWeight
-			}
 		}
 	}
 }
