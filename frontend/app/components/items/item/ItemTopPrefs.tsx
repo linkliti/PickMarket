@@ -1,7 +1,8 @@
+import { ItemContext } from "@/components/items/ItemContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Characteristic } from "@/proto/app/protos/items";
 import { MinusSquareIcon, PlusSquareIcon } from "lucide-react";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 
 function printChar(char: Characteristic) {
   if (char.value.oneofKind === "listVal") {
@@ -17,7 +18,9 @@ function printChar(char: Characteristic) {
 
 const charPercent = 0.9;
 
-export default function ItemTopPrefs({ chars }: { chars: Characteristic[] }): ReactElement {
+export default function ItemTopPrefs(): ReactElement {
+  const { chars } = useContext(ItemContext);
+
   const weightedChars = chars.filter(
     (char) => char.charWeight >= char.maxWeight * charPercent && char.maxWeight > 0,
   );

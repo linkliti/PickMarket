@@ -1,14 +1,16 @@
 import { saveToFav } from "@/components/favorites/itemSaveLoad";
+import { ItemContext } from "@/components/items/ItemContext";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { ItemExtended } from "@/proto/app/protos/reqHandlerTypes";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
-import { Bookmark, TriangleAlert } from "lucide-react";
-import { ReactElement } from "react";
+import { Bookmark, CircleCheck, TriangleAlert } from "lucide-react";
+import { ReactElement, useContext } from "react";
 
-export default function ItemFavouriteButton({ item }: { item: ItemExtended }): ReactElement {
+export default function ItemFavouriteButton(): ReactElement {
   const [formPrefs] = useFilterStore((state: FilterStore) => [state.formPrefs]);
+
+  const { item } = useContext(ItemContext);
 
   const { toast } = useToast();
 
@@ -22,6 +24,7 @@ export default function ItemFavouriteButton({ item }: { item: ItemExtended }): R
             <span className="first-letter:capitalize">Не удалось сохранить товар</span>
           </div>
         ),
+        duration: 3000,
       });
       return;
     }
@@ -30,10 +33,11 @@ export default function ItemFavouriteButton({ item }: { item: ItemExtended }): R
       className: "p-4 border border-border",
       action: (
         <div className="flex w-full items-center">
-          <TriangleAlert className="mr-2" />
+          <CircleCheck className="mr-2" />
           <span className="first-letter:capitalize">Товар добавлен в избранное</span>
         </div>
       ),
+      duration: 3000,
     });
   }
 

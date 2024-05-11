@@ -1,36 +1,45 @@
+import { ItemContext } from "@/components/items/ItemContext";
 import ItemSimilar from "@/components/items/item/ItemSimilar";
 import ItemTopPrefs from "@/components/items/item/ItemTopPrefs";
 import { cn } from "@/lib/utils";
-import { ItemExtended } from "@/proto/app/protos/reqHandlerTypes";
 import { MessageCircleIcon, Star } from "lucide-react";
+import { useContext, useState } from "react";
 
-export default function ItemDescription({
-  item,
-  market,
-  className = "",
-}: {
-  item: ItemExtended;
-  market: number;
-  className: string;
-}) {
-  const rating: number = item.item?.rating || 0;
-  const comments: number = item.item?.comments || 0;
+export default function ItemDescription({ className = "" }: { className: string }) {
+  const { item } = useContext(ItemContext);
+
+  const rating: number = item.rating || 0;
+  const comments: number = item.comments || 0;
+
+  const [blurred, setBlurred] = useState(item.isAdult);
 
   return (
     <div className={cn("flex items-start gap-4", className)}>
-      <img
-        src={item.item?.imageUrl}
-        alt={item.item?.name}
-        className="w-[100px] shrink-0 rounded-2xl border bg-zinc-300"
-      />
+      <div className="flex flex-col items-center">
+        <button
+          type="button"
+          className={cn(
+            "w-[100px] cursor-default rounded-2xl bg-zinc-300",
+            blurred && "cursor-pointer blur-sm hover:opacity-80",
+          )}
+          onClick={() => setBlurred(false)}
+        >
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="h-full w-full rounded-2xl object-cover"
+          />
+        </button>
+        {item.original && <span className="text-sm font-bold">Оригинал</span>}
+      </div>
       <div className="flex w-full flex-col">
         <a
-          href={"https://ozon.ru" + item.item?.url}
+          href={"https://ozon.ru" + item.url}
           target="_blank"
           rel="noopener noreferrer"
           className="pb-2 text-lg font-bold hover:cursor-pointer hover:underline"
         >
-          {item.item?.name}
+          {item.name}
         </a>
         <div className="inline-flex items-center gap-1 pb-2 font-bold">
           <Star className="size-4 fill-yellow-500 text-yellow-500" />
@@ -44,11 +53,8 @@ export default function ItemDescription({
             </>
           )}
         </div>
-        <ItemSimilar
-          item={item}
-          market={market}
-        />
-        <ItemTopPrefs chars={item.chars} />
+        <ItemSimilar />
+        <ItemTopPrefs />
       </div>
     </div>
   );

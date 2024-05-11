@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { PrefForm } from "@/types/filterTypes";
 import { ChevronsUpDown } from "lucide-react";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { Control, Controller, UseFormReset } from "react-hook-form";
 
 export default function FiltersFooter({
@@ -48,17 +48,25 @@ export default function FiltersFooter({
           render={({ field: { onChange, onBlur, value, disabled, name, ref } }) => {
             return (
               <Input
+                type="number"
+                min={1}
+                max={5}
+                step={1}
                 className=" bg-white"
                 onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
-                  const num: number = parseInt(event.target.value, 10);
+                  const num: number = parseFloat(event.target.value);
                   if (isNaN(num) || num === 0) {
                     onChange(0);
-                  } else {
-                    onChange(num);
+                    return;
                   }
+                  if (num > 5) {
+                    onChange(5);
+                    return;
+                  }
+                  onChange(num);
                 }}
                 onBlur={onBlur}
-                value={value}
+                value={Number(value).toString()}
                 disabled={disabled}
                 name={name}
                 ref={ref}

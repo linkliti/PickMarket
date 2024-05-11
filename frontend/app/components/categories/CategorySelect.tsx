@@ -1,12 +1,12 @@
 import CategoryItem from "@/components/categories/CategoryItem";
+import findParents from "@/components/categories/findParents";
+import useFetchCategories from "@/components/categories/useFetchCategories";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Category } from "@/proto/app/protos/categories";
 import { CategoryStore, useCategoryStore } from "@/store/categoryStore";
 import { Marketplace } from "@/types/categoryTypes";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosResponse } from "axios";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect } from "react";
 import terminal from "virtual:terminal";
 
 export default function CategorySelect({
@@ -14,61 +14,18 @@ export default function CategorySelect({
 }: {
   marketplace: Marketplace;
 }): ReactElement {
-  const [categoryURL, setCategoryURL] = useState<string>(
-    `/api/categories/${marketplace.shortLabel}/root`,
+  const { categories, isLoading, error, setCategoryURL } = useFetchCategories(
+    marketplace.shortLabel,
   );
-  const [categories, setCategories] = useState<Category[]>([]);
+
   const [selectedCategory, setSelectedCategory] = useCategoryStore((state: CategoryStore) => [
     state.selectedCategory,
     state.setSelectedCategory,
   ]);
 
   useEffect((): void => {
-    setCategories([]);
     setSelectedCategory(null);
   }, [marketplace.shortLabel, setSelectedCategory]);
-
-  const {
-    isPending: isLoading,
-    error,
-    data: recentCategories,
-  } = useQuery({
-    queryKey: ["categories", categoryURL],
-    queryFn: getCategories,
-    staleTime: Infinity,
-  });
-
-  useEffect((): void => {
-    if (!recentCategories) {
-      return;
-    }
-    recentCategories.sort((a: Category, b: Category): number => a.title.localeCompare(b.title));
-    if (selectedCategory) {
-      selectedCategory.isParsed = true;
-    }
-    setCategories((prevCategories: Category[]): Category[] => [
-      ...new Map(
-        [...prevCategories, ...recentCategories].map((item: Category): [string, Category] => [
-          item.url,
-          item,
-        ]),
-      ).values(),
-    ]);
-  }, [recentCategories, selectedCategory]);
-
-  async function getCategories(): Promise<Category[] | undefined> {
-    try {
-      terminal.log("Fetching", categoryURL);
-      const res: AxiosResponse = await axios.get<Category[]>(categoryURL);
-      const data: Category[] = res.data;
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        terminal.error(error.message);
-        throw new Error(error.message);
-      }
-    }
-  }
 
   function handleCategoryChange(category: Category): void {
     setCategoryURL(
@@ -78,7 +35,43 @@ export default function CategorySelect({
     terminal.log("Selected", category.title);
   }
 
-  function displayCategories(categories: Category[]): ReactElement {
+  if (isLoading && !categories) {
+    return (
+      <div className="flex items-center gap-2">
+        <LoadingSpinner /> <p>Загрузка категорий</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex items-center gap-2">
+        <p>Ошибка при загрузке категорий: {error?.message}</p>
+      </div>
+    );
+  }
+  return (
+    <>
+      <p className="mb-4">
+        {"Выбранная категория: "}
+        {selectedCategory?.title ? selectedCategory.title : "Не выбрана"}
+      </p>
+      <RadioGroup>{CategoryDisplay(categories)}</RadioGroup>
+    </>
+  );
+
+  function renderCategoryItem(category: Category, level: number): ReactElement {
+    return (
+      <CategoryItem
+        key={category.url}
+        category={category}
+        level={level}
+        handleCategoryChange={handleCategoryChange}
+        selectedCategory={selectedCategory}
+      />
+    );
+  }
+
+  function CategoryDisplay(categories: Category[]): ReactElement {
     if (categories.length === 0) {
       return <p>Не удалось загрузить категории</p>;
     }
@@ -97,6 +90,7 @@ export default function CategorySelect({
                 category={category}
                 level={level}
                 handleCategoryChange={handleCategoryChange}
+                selectedCategory={selectedCategory}
               />
             ),
           )}
@@ -104,27 +98,10 @@ export default function CategorySelect({
       );
     }
 
-    // Parents array of selectedCategory for nesting
-    function findParents(parentUrl: string): Category[] {
-      const parentCategories: Category[] = [];
-      for (;;) {
-        const parentCat: Category = categories.filter(
-          (category: Category): boolean => parentUrl === category.url,
-        )[0];
-        parentCategories.unshift(parentCat);
-        if (parentCat.parentUrl) {
-          parentUrl = parentCat.parentUrl;
-        } else {
-          break;
-        }
-      }
-      return parentCategories;
-    }
-
     // Chain of parents
     let parents: Category[] = [];
     if (selectedCategory.parentUrl) {
-      parents = findParents(selectedCategory.parentUrl);
+      parents = findParents(selectedCategory.parentUrl, categories);
     }
     // Neighbours arrays
     const neighbours: Category[] = categories.filter(
@@ -134,9 +111,6 @@ export default function CategorySelect({
       0,
       neighbours.findIndex((category: Category): boolean => category.url === selectedCategory?.url),
     );
-    const selectedCat: Category = categories.filter(
-      (category: Category): boolean => category.url === selectedCategory?.url,
-    )[0];
     const endNeighbours: Category[] = neighbours.slice(
       neighbours.findIndex(
         (category: Category): boolean => category.url === selectedCategory?.url,
@@ -151,81 +125,19 @@ export default function CategorySelect({
     // Return
     return (
       <>
-        {parents.map(
-          (category: Category): ReactElement => (
-            <CategoryItem
-              key={category.url}
-              category={category}
-              level={level++}
-              handleCategoryChange={handleCategoryChange}
-              selectedCategory={selectedCategory}
-            />
-          ),
-        )}
+        {parents.map((category: Category): ReactElement => renderCategoryItem(category, level++))}
         {startNeighbours.map(
-          (category: Category): ReactElement => (
-            <CategoryItem
-              key={category.url}
-              category={category}
-              level={level}
-              handleCategoryChange={handleCategoryChange}
-              selectedCategory={selectedCategory}
-            />
-          ),
+          (category: Category): ReactElement => renderCategoryItem(category, level),
         )}
-        <CategoryItem
-          key={selectedCategory.url}
-          category={selectedCat}
-          level={level}
-          handleCategoryChange={handleCategoryChange}
-          selectedCategory={selectedCategory}
-        />
+        {renderCategoryItem(selectedCategory, level)}
         {children.length > 0 &&
           children.map(
-            (category: Category): ReactElement => (
-              <CategoryItem
-                key={category.url}
-                category={category}
-                level={level + 1}
-                handleCategoryChange={handleCategoryChange}
-                selectedCategory={selectedCategory}
-              />
-            ),
+            (category: Category): ReactElement => renderCategoryItem(category, level + 1),
           )}
         {endNeighbours.map(
-          (category: Category): ReactElement => (
-            <CategoryItem
-              key={category.url}
-              category={category}
-              level={level}
-              handleCategoryChange={handleCategoryChange}
-              selectedCategory={selectedCategory}
-            />
-          ),
+          (category: Category): ReactElement => renderCategoryItem(category, level),
         )}
       </>
     );
   }
-
-  return (
-    <>
-      {isLoading && !categories ? (
-        <div className="flex items-center gap-2">
-          <LoadingSpinner /> <p>Загрузка категорий</p>
-        </div>
-      ) : error ? (
-        <div className="flex items-center gap-2">
-          <p>Ошибка при загрузке категорий: {error?.message}</p>
-        </div>
-      ) : (
-        <>
-          <p className="mb-4">
-            {"Выбранная категория: "}
-            {selectedCategory?.title ? selectedCategory.title : "Не выбрана"}
-          </p>
-          <RadioGroup>{displayCategories(categories)}</RadioGroup>
-        </>
-      )}
-    </>
-  );
 }

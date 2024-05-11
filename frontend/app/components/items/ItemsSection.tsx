@@ -1,6 +1,8 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
+import { ItemContextProvider, ItemContextType } from "@/components/items/ItemContext";
 import ItemBlock from "@/components/items/item/ItemBlock";
 import useFetchData from "@/components/items/useFetchItems";
+import { Item } from "@/proto/app/protos/items";
 import { ItemExtended, UserPref } from "@/proto/app/protos/reqHandlerTypes";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
@@ -56,16 +58,25 @@ export default function ItemsSection(): ReactElement {
       <WhiteBlock className="w-full">
         <h1 className="text-1xl font-bold"> Получено {sortedItems.length} товаров</h1>
       </WhiteBlock>
-      {sortedItems.map(
-        (item: ItemExtended, index: number): ReactElement => (
-          <ItemBlock
-            market={market}
+      {sortedItems.map((item: ItemExtended, index: number): ReactElement => {
+        const itemData: Item = "item" in item ? item.item! : ({} as Item);
+        const data: ItemContextType = {
+          item: itemData,
+          chars: item.chars,
+          similar: item.similar,
+          totalWeight: item.totalWeight,
+          market: market,
+          maxTotalWeight: maxTotalWeight,
+        };
+        return (
+          <ItemContextProvider
+            data={data}
             key={index}
-            item={item}
-            maxTotalWeight={maxTotalWeight}
-          />
-        ),
-      )}
+          >
+            <ItemBlock />
+          </ItemContextProvider>
+        );
+      })}
     </>
   );
 }

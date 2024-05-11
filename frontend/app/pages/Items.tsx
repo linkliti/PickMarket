@@ -7,6 +7,10 @@ import { ReactElement, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default function ItemsPage(): ReactElement {
+  useEffect((): void => {
+    document.title = "Предпочтения";
+  }, []);
+
   const [searchParams] = useSearchParams();
   const [setMarket, setCategoryUrl] = useFilterStore((state) => [
     state.setMarket,

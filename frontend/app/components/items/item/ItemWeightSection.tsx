@@ -1,18 +1,12 @@
+import { ItemContext } from "@/components/items/ItemContext";
 import { cn } from "@/lib/utils";
-import { ItemExtended } from "@/proto/app/protos/reqHandlerTypes";
 import { ValueLabel, valueLabels } from "@/types/itemTypes";
+import { useContext } from "react";
 
-export default function ItemWeightSection({
-  item,
-  maxTotalWeight,
-  className = "",
-}: {
-  item: ItemExtended;
-  maxTotalWeight: number;
-  className: string;
-}) {
+export default function ItemWeightSection() {
+  const { maxTotalWeight, totalWeight } = useContext(ItemContext);
   return (
-    <div className={cn("flex flex-col text-center", className)}>
+    <div className={cn("flex flex-col text-center")}>
       <div className="relative mt-2.5 h-[22px] shrink-0 overflow-hidden rounded-2xl border border-solid border-black ">
         <div
           className={cn(
@@ -22,18 +16,18 @@ export default function ItemWeightSection({
         <div
           className="absolute right-0 h-full bg-white"
           style={{
-            width: `${((maxTotalWeight - item.totalWeight) / maxTotalWeight) * 100}%`,
+            width: `${((maxTotalWeight - totalWeight) / maxTotalWeight) * 100}%`,
           }}
         />
       </div>
       <div className="text-base text-zinc-500">
-        {item.totalWeight.toPrecision(3)}/{maxTotalWeight.toFixed(0)}
+        {totalWeight.toPrecision(2)}/{maxTotalWeight.toFixed(0)}
       </div>
       <div className="mt-3 self-center text-sm">
         {
           valueLabels.find(
             (label: ValueLabel): boolean =>
-              label.value === Math.round((item.totalWeight / maxTotalWeight) * 5),
+              label.value === Math.round((totalWeight / maxTotalWeight) * 5),
           )?.label
         }
       </div>

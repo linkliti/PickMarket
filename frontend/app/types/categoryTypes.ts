@@ -5,7 +5,7 @@ export type CategoryItemProps = {
   category: Category;
   level: number;
   handleCategoryChange: (category: Category) => void;
-  selectedCategory?: Category;
+  selectedCategory: Category | null;
 };
 
 export type Marketplace = {

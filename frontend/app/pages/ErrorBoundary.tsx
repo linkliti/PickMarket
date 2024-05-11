@@ -1,6 +1,9 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 
 export default function ErrorBoundary(): ReactElement {
+  useEffect(() => {
+    document.title = "Произошла ошибка!";
+  }, []);
   return (
     <div className="min-h-screen text-center">
       <h1 className="my-8 text-3xl font-bold">Произошла ошибка!</h1>

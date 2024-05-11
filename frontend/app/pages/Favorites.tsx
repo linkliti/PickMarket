@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ReactElement, useEffect, useState } from "react";
 
 export default function Favorites(): ReactElement {
+  useEffect((): void => {
+    document.title = "Избранное";
+  }, []);
+
   const [favorites, setFavorites] = useState<FavRecord>({});
 
   useEffect((): void => {

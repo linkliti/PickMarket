@@ -5,6 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { PrefForm } from "@/types/filterTypes";
 import { Star } from "lucide-react";
 import { ReactElement } from "react";
@@ -51,8 +52,8 @@ export default function PrioritySelector({
             name={name}
           >
             <SelectTrigger className="h-8 w-fit px-2 py-0">
-              {value}
-              <Star className="ml-1 size-4" />
+              <span className="w-2">{value}</span>
+              <Star className={cn("ml-1 size-4", value > 0 && "fill-yellow-400 text-yellow-400")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>

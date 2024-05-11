@@ -7,10 +7,14 @@ import { Category } from "@/proto/app/protos/categories";
 import { CategoryStore, useCategoryStore } from "@/store/categoryStore";
 import { Marketplace } from "@/types/categoryTypes";
 import { TriangleAlert } from "lucide-react";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export default function Categories(): ReactElement {
+  useEffect((): void => {
+    document.title = "Категории";
+  }, []);
+
   const { toast } = useToast();
   const navigate: NavigateFunction = useNavigate();
 

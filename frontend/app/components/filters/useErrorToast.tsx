@@ -18,10 +18,21 @@ export default function useErrorToast() {
         <>
           <TriangleAlert className="mr-2" />
           <div className="w-full items-center">
-            {toastContent.map(
-              (item: string): ReactElement => (
-                <p className="first-letter:capitalize">{item}</p>
-              ),
+            {toastContent.length === 0 ? (
+              <p className="first-letter:capitalize">Ошибка обработки формы</p>
+            ) : (
+              <>
+                {toastContent.map(
+                  (item: string, index: number): ReactElement => (
+                    <p
+                      className="first-letter:capitalize"
+                      key={index}
+                    >
+                      {item}
+                    </p>
+                  ),
+                )}
+              </>
             )}
           </div>
         </>

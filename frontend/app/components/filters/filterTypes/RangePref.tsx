@@ -24,7 +24,7 @@ export default function RangePref({
       control={control}
       defaultValue={range.min}
       render={({ field: { onChange, onBlur, value, disabled, name, ref } }) => {
-        // Transform value to always be a number or undefined
+        // Transform value to always be a number or 0
         const transformedValue: number = typeof value === "number" ? value : 0;
 
         return (
@@ -38,14 +38,16 @@ export default function RangePref({
                 <Input
                   className="mb-6 h-8 w-1/3 bg-white p-2"
                   type="number"
-                  value={transformedValue}
+                  step="any"
+                  min={0}
+                  value={Number(transformedValue).toString()}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
                     const num: number = parseFloat(event.target.value);
                     if (isNaN(num) || num === 0) {
                       onChange(0);
-                    } else {
-                      onChange(num);
+                      return;
                     }
+                    onChange(num);
                   }}
                   ref={ref}
                   onBlur={onBlur}

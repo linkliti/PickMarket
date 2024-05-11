@@ -1,9 +1,13 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
 import { Button } from "@/components/ui/button";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Hero(): ReactElement {
+  useEffect((): void => {
+    document.title = "PickMarket";
+  }, []);
+
   return (
     <WhiteBlock className="flex w-full grow flex-col items-center justify-center">
       <div className="mx-auto max-w-xl text-center">

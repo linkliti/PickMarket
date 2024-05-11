@@ -1,7 +1,10 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function NotFound(): ReactElement {
+  useEffect((): void => {
+    document.title = "404";
+  }, []);
   return (
     <section className="mt-4 flex w-full grow flex-col items-center justify-center rounded-2xl bg-white  p-4 max-md:max-w-full">
       <div className="mx-auto max-w-xl text-center">
