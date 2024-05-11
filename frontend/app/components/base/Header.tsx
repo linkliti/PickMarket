@@ -9,7 +9,6 @@ type navItemsType = {
 const navItems: navItemsType[] = [
   { name: "Категории", path: "/categories" },
   { name: "Избранное", path: "/favorites" },
-  { name: "Тест", path: "/test" },
 ];
 
 export default function Header(): ReactElement {

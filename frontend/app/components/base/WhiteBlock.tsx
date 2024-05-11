@@ -11,7 +11,7 @@ export default function WhiteBlock({
   return (
     <section
       className={cn(
-        "bg-card text-card-foreground mt-4 flex flex-col rounded-2xl p-4 max-md:max-w-full",
+        "bg-card text-card-foreground mt-4 flex rounded-2xl p-4 max-md:max-w-full",
         className,
       )}
     >

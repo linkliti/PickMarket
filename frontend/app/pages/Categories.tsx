@@ -43,7 +43,7 @@ export default function Categories(): ReactElement {
 
   return (
     <>
-      <WhiteBlock className="finline-flex w-full justify-center">
+      <WhiteBlock className="w-full flex-col justify-center">
         <h1 className="pb-4 text-2xl font-bold">Выберите маркетплейс:</h1>
         <div className="inline-flex flex-wrap">
           <CategoryMarketSelector
@@ -60,7 +60,7 @@ export default function Categories(): ReactElement {
         </div>
       </WhiteBlock>
       {selectedMarket && (
-        <WhiteBlock className="w-full grow">
+        <WhiteBlock className="w-full grow flex-col">
           <h1 className="pb-4 text-2xl font-bold">Выберите категорию:</h1>
           <CategorySelect marketplace={selectedMarket} />
         </WhiteBlock>

@@ -7,6 +7,10 @@ import { devtools } from "zustand/middleware";
 export const blacklistKeys: string[] = ["pm_isadult", "trucode", "sku"];
 
 export type FilterStore = {
+  market: number,
+  setMarket: (market: number) => void,
+  categoryUrl : string,
+  setCategoryUrl : (categoryUrl: string) => void,
   activePrefs: ItemsRequestWithPrefs | null,
   setActivePrefs: (filters: ItemsRequestWithPrefs | null) => void,
   formPrefs: PrefForm | null,
@@ -15,6 +19,10 @@ export type FilterStore = {
 
 export const useFilterStore = create(
   devtools<FilterStore>((set) => ({
+    market: 0,
+    setMarket: (market: number): void => set({ market }),
+    categoryUrl: "",
+    setCategoryUrl: (categoryUrl: string): void => set({ categoryUrl }),
     activePrefs: null,
     setActivePrefs: (filters: ItemsRequestWithPrefs | null): void => {
       if (filters) {

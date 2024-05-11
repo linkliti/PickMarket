@@ -27,30 +27,30 @@ export default function ItemSimilar({
         (simItem: Item): ReactElement => (
           <a
             href={marketUrl + simItem.url}
+            key={simItem.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="bold inline-flex flex-wrap items-center pb-2 hover:cursor-pointer hover:underline"
+            className="bold inline-flex flex-wrap items-center pb-2 hover:cursor-pointer hover:underline "
           >
             <span className="pe-1">{simItem.name}</span>
+            <div className="inline-flex items-center gap-1">
+              {"["}
 
-            {"["}
-
-            {simItem.rating == 0 ? (
-              <div className="inline-flex flex-wrap items-center">
-                <Star className="size-3 fill-yellow-500 text-yellow-500" />
-                <span>Нет отзывов</span>
-              </div>
-            ) : (
-              <>
-                <Star className="size-3 fill-yellow-500 text-yellow-500" />
-                <span>{simItem.rating?.toFixed(1)}</span>
-                <div className="inline-flex flex-wrap items-center">
+              {simItem.rating == 0 ? (
+                <div className="">
+                  <Star className="size-3 fill-yellow-500 text-yellow-500" />
+                  <span>Нет отзывов</span>
+                </div>
+              ) : (
+                <>
+                  <Star className="size-3 fill-yellow-500 text-yellow-500" />
+                  <span>{simItem.rating?.toFixed(1)}</span>
                   <MessageCircleIcon className="size-3 fill-sky-300 text-sky-300" />
                   <span>{simItem.comments}</span>
-                </div>
-              </>
-            )}
-            {"]"}
+                </>
+              )}
+              {"]"}
+            </div>
           </a>
         ),
       )}

@@ -15,7 +15,7 @@ function printChar(char: Characteristic) {
   return "";
 }
 
-const charPercent = 0.95;
+const charPercent = 0.9;
 
 export default function ItemTopPrefs({ chars }: { chars: Characteristic[] }): ReactElement {
   const weightedChars = chars.filter(
@@ -35,23 +35,31 @@ export default function ItemTopPrefs({ chars }: { chars: Characteristic[] }): Re
             chars={weightedChars}
             plusIcon={<PlusSquareIcon className="size-4 fill-green-400" />}
           />
-          <Collapsible
-            open={isOpen}
-            onOpenChange={setIsOpen}
-            className=""
-          >
-            <CollapsibleTrigger>
-              <p className="font-bold hover:underline">{isOpen ? "Скрыть" : "Показать все"}</p>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
+        </tbody>
+      </table>
+
+      <Collapsible
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className=""
+      >
+        <CollapsibleTrigger asChild>
+          <p className="font-bold hover:cursor-pointer hover:underline">
+            {isOpen ? "Скрыть" : "Показать все"}
+          </p>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <table className="w-full table-auto">
+            <thead></thead>
+            <tbody>
               <TableChars
                 chars={nonWeightedChars}
                 plusIcon={<MinusSquareIcon className="size-4 " />}
               />
-            </CollapsibleContent>
-          </Collapsible>
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </CollapsibleContent>
+      </Collapsible>
     </>
   );
 }

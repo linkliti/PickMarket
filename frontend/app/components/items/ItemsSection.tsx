@@ -1,62 +1,18 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
 import ItemBlock from "@/components/items/item/ItemBlock";
-import { ItemExtended, ItemsRequestWithPrefs, UserPref } from "@/proto/app/protos/reqHandlerTypes";
-import { Markets } from "@/proto/app/protos/types";
+import useFetchData from "@/components/items/useFetchItems";
+import { ItemExtended, UserPref } from "@/proto/app/protos/reqHandlerTypes";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
-import { JsonValue } from "@protobuf-ts/runtime";
-import axios, { AxiosResponse } from "axios";
-import { ReactElement, useEffect, useState } from "react";
-import terminal from "virtual:terminal";
 
-export default function ItemsSection({ market }: { market: number }): ReactElement {
-  const [activePrefs] = useFilterStore((state: FilterStore) => [state.activePrefs]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [items, setItems] = useState<ItemExtended[]>([]);
-  const [error, setError] = useState<string>();
+import { ReactElement } from "react";
 
-  // function dummyDataParser(): ItemExtended[] {
-  //   const itemsDummy: ItemExtended[] = dummyData.map(
-  //     (item: JsonValue): ItemExtended => ItemExtended.fromJson(item),
-  //   );
-  //   return itemsDummy;
-  // }
-
-  useEffect((): void => {
-    async function getItems(): Promise<void> {
-      try {
-        if (activePrefs) {
-          terminal.log("Posting items request");
-          const res: AxiosResponse = await axios.post<JsonValue[]>(
-            `/api/calc/${Markets[market].toLowerCase()}/list`,
-            ItemsRequestWithPrefs.toJson(activePrefs),
-            {
-              headers: { "Content-Type": "application/json" },
-              timeout: 120 * 1000,
-            },
-          );
-          const itemsTemp: ItemExtended[] = res.data.map(
-            (item: JsonValue): ItemExtended => ItemExtended.fromJson(item),
-          );
-          setItems(itemsTemp);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          terminal.error(error);
-          setError(error.message);
-        }
-      }
-    }
-
-    // setItems(dummyDataParser());
-    // setIsLoading(false);
-    if (activePrefs) {
-      setIsLoading(true);
-      setItems([]);
-      getItems();
-    }
-  }, [activePrefs, market]);
+export default function ItemsSection(): ReactElement {
+  const [activePrefs, market] = useFilterStore((state: FilterStore) => [
+    state.activePrefs,
+    state.market,
+  ]);
+  const { items, isLoading, error } = useFetchData();
 
   if (!activePrefs) {
     return <WhiteBlock className="w-full">Здесь будут отображаться товары</WhiteBlock>;

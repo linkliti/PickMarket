@@ -1,17 +1,14 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
 import ItemDescription from "@/components/items/item/ItemDescription";
 import ItemFavouriteButton from "@/components/items/item/ItemFavouriteButton";
-import ItemWeightSection from "@/components/items/item/ItemWeightSection";
 import { ItemExtended } from "@/proto/app/protos/reqHandlerTypes";
 import { ReactElement } from "react";
 
-export default function ItemBlock({
+export default function ItemBlockFav({
   item,
-  maxTotalWeight = 0,
   market,
 }: {
   item: ItemExtended;
-  maxTotalWeight: number;
   market: number;
 }): ReactElement {
   return (
@@ -34,12 +31,6 @@ export default function ItemBlock({
             </div>
             <ItemFavouriteButton item={item} />
           </div>
-
-          <ItemWeightSection
-            item={item}
-            maxTotalWeight={maxTotalWeight}
-            className=""
-          />
         </div>
       </div>
     </WhiteBlock>

@@ -5,7 +5,6 @@ import ErrorBoundary from "@/pages/ErrorBoundary";
 import Favorites from "@/pages/Favorites";
 import Hero from "@/pages/Hero";
 import ItemsPage from "@/pages/Items";
-import Test from "@/pages/Test";
 import { createBrowserRouter } from "react-router-dom";
 
 const mainRouter = createBrowserRouter([
@@ -34,10 +33,6 @@ const mainRouter = createBrowserRouter([
         element: <Categories />,
       },
     ],
-  },
-  {
-    element: <Test />,
-    path: "/test",
   },
 ]);
 

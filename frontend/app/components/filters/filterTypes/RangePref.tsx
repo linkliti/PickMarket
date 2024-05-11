@@ -37,9 +37,10 @@ export default function RangePref({
               <div className="flex flex-row items-center gap-4 p-4 pb-0">
                 <Input
                   className="mb-6 h-8 w-1/3 bg-white p-2"
+                  type="number"
                   value={transformedValue}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
-                    const num: number = parseInt(event.target.value, 10);
+                    const num: number = parseFloat(event.target.value);
                     if (isNaN(num) || num === 0) {
                       onChange(0);
                     } else {

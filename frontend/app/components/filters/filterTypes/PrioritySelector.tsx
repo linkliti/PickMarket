@@ -11,17 +11,17 @@ import { ReactElement } from "react";
 import { Control, Controller } from "react-hook-form";
 
 type PriorityItem = {
-  value: string;
+  value: number;
   label: string;
 };
 
 const prefItems: PriorityItem[] = [
-  { value: "0", label: "Без разницы" },
-  { value: "1", label: "Необязательно" },
-  { value: "2", label: "Полезно" },
-  { value: "3", label: "Важно" },
-  { value: "4", label: "Очень важно" },
-  { value: "5", label: "Обязательно" },
+  { value: 0, label: "Без разницы" },
+  { value: 1, label: "Необязательно" },
+  { value: 2, label: "Полезно" },
+  { value: 3, label: "Важно" },
+  { value: 4, label: "Очень важно" },
+  { value: 5, label: "Обязательно" },
 ];
 // Define the items as a constant
 
