@@ -12,12 +12,14 @@ import (
 
 func (c *ItemsService) GetItems(req *parser.ItemsRequest, srv parser.ItemParser_GetItemsServer) error {
 	// Get from parser
+	slog.Debug("Incoming GetItems request", "request", req)
 	stream, err := c.parsClient.GetItems(context.Background(), req)
 	if err != nil {
 		errText := "failed to get items from parser"
 		slog.Error(errText, "err", err)
 		return sendErrorStatus_GetItems(srv, errText)
 	}
+	slog.Debug("Sending items from parser", "request", req)
 	for {
 		itemResponse, err := stream.Recv()
 		// Break on final item

@@ -9,7 +9,6 @@ option go_package = "protos/parser";
 service CategoryParser {
   rpc GetRootCategories(RootCategoriesRequest) returns (stream CategoryResponse);
   rpc GetSubCategories(SubCategoriesRequest) returns (stream CategoryResponse);
-  rpc GetCategoryFilters(FiltersRequest) returns (stream FilterResponse);
 }
 
 message RootCategoriesRequest {
@@ -32,28 +31,5 @@ message Category {
   string title = 1;
   string url = 2;
   optional string parentUrl = 3;
-}
-
-message FiltersRequest {
-  Markets market = 1;
-  string categoryUrl = 2;
-}
-
-message FilterResponse {
-  oneof message {
-    Filter filter = 1;
-    google.rpc.Status status = 2;
-  }
-}
-
-message Filter {
-  string title = 1;
-  string key = 2;
-  string externalType = 3;
-  Filters internalType = 4;
-  oneof data {
-    RangeFilter rangeFilter = 5;
-    SelectionFilter selectionFilter = 6;
-    BoolFilter boolFilter = 7;
-  }
+  optional bool isParsed = 4;
 }

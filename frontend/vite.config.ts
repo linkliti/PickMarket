@@ -1,15 +1,42 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import { defineConfig } from "vite";
+import Terminal from "vite-plugin-terminal";
 
 // https://vitejs.dev/config/
+
+const port = (process.env.FRONTEND_ADDR ?? "127.0.0.1:1111").split(":")[2];
+const handlerAddr = process.env.HANDLER_ADDR ?? "http://127.0.0.1:1111";
+
 export default defineConfig({
   server: {
-    port: 5005,
+    port: Number.parseInt(port),
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: handlerAddr,
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
   preview: {
-    port: 5005,
+    port: Number.parseInt(port),
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: handlerAddr,
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
-  plugins: [react()],
-})
+  plugins: [react(), Terminal({ console: "terminal" })],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./app"),
+    },
+  },
+});

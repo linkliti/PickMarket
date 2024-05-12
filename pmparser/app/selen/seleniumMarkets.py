@@ -1,11 +1,11 @@
 """ Selenium Module for marketplaces """
 import json
-import random
 import logging
-from bs4 import BeautifulSoup, NavigableString, Tag
+import random
 
 from app.selen.seleniumWorker import SeleniumWorker
 from app.utilities.jsonUtil import toJson
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 log = logging.getLogger(__name__)
 

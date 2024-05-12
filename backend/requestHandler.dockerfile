@@ -20,7 +20,7 @@ RUN go build -o /build/app /build/src/main.go
 
 # App
 FROM alpine
+RUN apk add --update curl
 WORKDIR /application
 COPY --from=builder /build/app /application/app
-RUN touch ./$SERVICE_NAME.log
 CMD ["/application/app"]

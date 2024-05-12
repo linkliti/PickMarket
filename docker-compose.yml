@@ -2,27 +2,38 @@ version: "3"
 services:
   # pmparser (python parser)
   parser:
-    restart: on-failure:3
-    build:
-      context: ./pmparser
-      dockerfile: app.dockerfile
-    environment:
-      - DEBUG=True
-    env_file:
-      - ./pmparser/.env
-    volumes:
-      - ./pmparser.log:/application/pmparser.log
     ports:
       - 5000:5000
       # - 9999:9999
+    restart: on-failure:3
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/grpc_health_probe -addr=parser:5000 -service=parser"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 30s # Browser startup
+    build:
+      context: ./pmparser
+      dockerfile: app.dockerfile
+    # environment:
+    #   - DEBUG=True
+    env_file:
+      - ./pmparser/.env
+    volumes:
+      - ./logs/pmparser.log:/application/pmparser.log
+
   # postgreSQL
   db:
-    restart: on-failure:3
+    ports:
+      - 5001:5001
+    command: -p 5001
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -p 5001"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 10s
+    restart: on-failure:3
     image: postgres:15.2
     environment:
       POSTGRES_USER: postgres
@@ -31,79 +42,102 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/001.sql
       - ./db/pgdata:/var/lib/postgresql/data
-    command: -p 5001
-    ports:
-      - 5001:5001
+
   # categoriesWorker
   categories_worker:
+    ports:
+      - 5002:5002
     depends_on:
       db:
         condition: service_healthy
       parser:
-        condition: service_started
+        condition: service_healthy
     restart: on-failure:3
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/grpc_health_probe -addr=categories_worker:5002 -service=categories"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5m # Possible categories parsing
     build:
       context: ./backend/
       dockerfile: categoriesWorker.dockerfile
       args:
         SERVICE_NAME: categoriesWorker
-    environment:
-      - DEBUG=True
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./categoriesWorker.log:/application/categoriesWorker.log
-    ports:
-      - 5002:5002
+      - ./logs/categoriesWorker.log:/application/categoriesWorker.log
+
   # itemsWorker
   items_worker:
+    ports:
+      - 5003:5003
     depends_on:
       db:
         condition: service_healthy
       parser:
-        condition: service_started
+        condition: service_healthy
     restart: on-failure:3
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/grpc_health_probe -addr=items_worker:5003 -service=items"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     build:
       context: ./backend/
       dockerfile: itemsWorker.dockerfile
       args:
         SERVICE_NAME: itemsWorker
-    environment:
-      - DEBUG=True
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./itemsWorker.log:/application/itemsWorker.log
-    ports:
-      - 5003:5003
+      - ./logs/itemsWorker.log:/application/itemsWorker.log
+
   # requestHandler
   request_handler:
+    ports:
+      - 5004:5004
     depends_on:
-        - categories_worker
-        - items_worker
+        categories_worker:
+          condition: service_healthy
+        items_worker:
+          condition: service_healthy
     restart: on-failure:3
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -f -X GET http://request_handler:5004/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     build:
       context: ./backend/
       dockerfile: requestHandler.dockerfile
       args:
         SERVICE_NAME: requestHandler
+    # environment:
+    #   - DEBUG=True
     env_file:
       - ./backend/.env
     volumes:
-      - ./requestHandler.log:/application/requestHandler.log
-    ports:
-      - 5004:5004
+      - ./logs/requestHandler.log:/application/requestHandler.log
   # frontend
   frontend:
+    ports:
+      - 5005:5005
     depends_on:
-      - request_handler
+      request_handler:
+        condition: service_healthy
     restart: on-failure:3
     build:
       context: ./frontend/
       dockerfile: app.dockerfile
     env_file:
       - ./frontend/.env
-    volumes:
-      - ./frontend.log:/application/frontend.log
-    ports:
-      - 5005:5005
+    # volumes:
+    #   - ./logs/frontend.log:/application/frontend.log

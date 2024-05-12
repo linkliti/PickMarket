@@ -18,23 +18,27 @@
         "detail": "",
         "description": "Hides configuration/cache files",
         "hidden": [
-          "frontend/node_modules",
-          "frontend/.eslintrc.cjs",
+          "requests_backup",
+          "pmparser/venv",
+          "parser/requirements.txt",
+          "go.work.sum",
+          "frontend/tsconfig*",
+          "frontend/postcss.config.js",
           "frontend/package*",
-          "frontend/*config.*",
-          "*/vite.config.ts",
+          "frontend/node_modules",
+          "frontend/components.json",
+          "frontend/.eslintrc.cjs",
+          "**/vite-env.d.ts",
           "**/go.sum",
           "**/go.mod",
-          "**/__debug*",
-          "go.work.sum",
-          "pmparser/venv",
-          "**/__pycache__",
-          "**/.pytest_cache",
           "**/downloaded_files",
-          "parser/requirements.txt",
+          "**/*.egg-info",
+          "**/.pytest_cache",
+          "**/__pycache__",
+          "**/__debug*",
           ".style.yapf",
           ".pylintrc",
-          "**/*.egg-info"
+          ".prettierrc",
         ]
       }
     ]
@@ -44,26 +48,9 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true,
-    "frontend/node_modules": true,
-    "frontend/.eslintrc.cjs": true,
-    "frontend/package*": true,
-    "frontend/*config.*": true,
-    "*/vite.config.ts": true,
-    "**/go.sum": true,
-    "**/go.mod": true,
-    "**/__debug*": true,
-    "go.work.sum": true,
-    "pmparser/venv": true,
-    "**/__pycache__": true,
-    "**/.pytest_cache": true,
-    "**/downloaded_files": true,
-    "parser/requirements.txt": true,
-    ".style.yapf": true,
-    ".pylintrc": true,
-    "**/*.egg-info": true
+    "**/.DS_Store": true
   },
-  "hidefiles.selectedProfile": "Hide Files",
+  "hidefiles.selectedProfile": "Show All Files",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.analysis.diagnosticSeverityOverrides": {
@@ -91,5 +78,9 @@
     "pmparser/app/protos"
   ],
   "go.testEnvFile": "${workspaceFolder}/backend/.env",
-  "python.envFile": "${workspaceFolder}/pmparser/.env"
+  "python.envFile": "${workspaceFolder}/pmparser/.env",
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "cmdk",
+    "@radix-ui"
+  ]
 }

@@ -1,0 +1,28 @@
+syntax = "proto3";
+package app.protos;
+
+import "app/protos/items.proto";
+import "app/protos/types.proto";
+
+option go_package = "protos/parser";
+
+
+message ItemsRequestWithPrefs {
+  ItemsRequest request = 1;
+  map<string, UserPref> prefs = 2;
+}
+
+message UserPref {
+  int32 priority = 1;
+  oneof value {
+    double numVal = 2;
+    StringList listVal = 3;
+  }
+}
+
+message ItemExtended {
+  Item item = 1;
+  repeated Item similar = 2;
+  double totalWeight = 3;
+  repeated Characteristic chars = 4;
+}

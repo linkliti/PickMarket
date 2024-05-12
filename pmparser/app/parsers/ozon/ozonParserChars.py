@@ -2,10 +2,10 @@
 import logging
 from typing import Generator
 
+from app.parsers.ozon.ozonParser import OzonParser
 from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
-from app.parsers.ozon.ozonParser import OzonParser
-from app.utilities.jsonUtil import toJson
+from app.utilities.jsonUtil import msgToStr, toJson
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class OzonParserChars(OzonParser):
         if charData in char:
           for charObj in char[charData]:
             name: str = charObj["name"]
-            key: str = charObj["key"]
+            key: str = str(charObj["key"]).lower()
             value: str | int | float | list[str] | None = None
             # List
             if len(charObj["values"]) > 1:
@@ -37,30 +37,27 @@ class OzonParserChars(OzonParser):
             else:
               # String
               value = charObj["values"][0]["text"]
-              # Try to Float/Int
+              # Try to Num
               value = tryConvertStrToNum(v=str(value))
             # Determine value type
             if isinstance(value, str):
-              charObj = itemsPB.Characteristic(key=key, name=name, strValue=value)
-            elif isinstance(value, int):
-              charObj = itemsPB.Characteristic(key=key, name=name, intValue=value)
+              listValue = typesPB.StringList(values=[value])
+              charObj = itemsPB.Characteristic(key=key, name=name, listVal=listValue)
             elif isinstance(value, float):
-              charObj = itemsPB.Characteristic(key=key, name=name, floatValue=value)
+              charObj = itemsPB.Characteristic(key=key, name=name, numVal=value)
             elif isinstance(value, list):
               listValue = typesPB.StringList(values=value)
-              charObj = itemsPB.Characteristic(key=key, name=name, listValue=listValue)
+              charObj = itemsPB.Characteristic(key=key, name=name, listVal=listValue)
             else:
               log.error("Invalid value type", extra={"value": value, "type": type(value)})
               raise ValueError("Invalid value type " + str(type(value)))
-            log.debug("char data", extra={"char": charObj})
+            log.debug("char data", extra={"char": msgToStr(msg=charObj)})
             yield charObj
 
 
-def tryConvertStrToNum(v: str) -> int | float | str:
+def tryConvertStrToNum(v: str) -> float | str:
   """Try to convert str to number"""
   try:
-    vnum: int | float = float(v)
-    vnum = int(v) if vnum.is_integer() else vnum
-    return vnum
+    return float(v)
   except ValueError:
     return v

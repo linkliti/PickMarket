@@ -8,3 +8,4 @@ pytest
 python-json-logger
 seleniumbase
 waitress
+grpcio-health-checking

@@ -14,12 +14,12 @@ from .test_base import channel, logger
 
 def test_grpcGetItems(logger: None, channel: grpc.Channel) -> None:
   """Test getItems via gRPC"""
-  categoryUrl = "/category/ingalyatory-i-aksessuary-35039/"
+  categoryUrl = "/category/smartfony-15502/"
   market: typesPB.Markets = typesPB.Markets.OZON
 
   stub = itemsPBgrpc.ItemParserStub(channel=channel)
   response: itemsPB.ItemResponse = stub.GetItems(
-    itemsPB.ItemsRequest(market=market, pageUrl=categoryUrl, numOfPages=2))
+    itemsPB.ItemsRequest(market=market, pageUrl=categoryUrl, userQuery="apple", numOfPages=2))
   for item in response:  # type: ignore
     print(item)
 
@@ -27,7 +27,7 @@ def test_grpcGetItems(logger: None, channel: grpc.Channel) -> None:
 def test_getItemChars(logger: None, channel: grpc.Channel) -> None:
   """Test getItemChars via gRPC"""
   itemUrl: str = \
-    '/product/gigabyte-videokarta-geforce-rtx-3080-10-gb-gv-n3080gaming-oc-10gd-2-0-lhr-306060738'
+    '/product/xiaomi-smartfon-redmi-note-13-pro-12-512-gb-chernyy-1410043273/'
   market: typesPB.Markets = typesPB.Markets.OZON
 
   stub = itemsPBgrpc.ItemParserStub(channel=channel)
@@ -63,11 +63,11 @@ def test_grpcGetSubCategories(logger: None, channel: grpc.Channel) -> None:
 
 def test_grpcGetFilters(logger: None, channel: grpc.Channel) -> None:
   """Test getFilters via gRPC"""
-  categoryUrl: str = "/category/bluzy-i-rubashki-zhenskie-7511/"
+  categoryUrl: str = "/category/smartfony-15502/"
   market: typesPB.Markets = typesPB.Markets.OZON
 
-  stub = categPBgrpc.CategoryParserStub(channel=channel)
-  response: categPB.FilterResponse = stub.GetCategoryFilters(
-    categPB.FiltersRequest(market=market, categoryUrl=categoryUrl))
+  stub = itemsPBgrpc.ItemParserStub(channel=channel)
+  response: itemsPB.FilterResponse = stub.GetCategoryFilters(
+    itemsPB.FiltersRequest(market=market, categoryUrl=categoryUrl))
   for filt in response:  # type: ignore
     print(filt)

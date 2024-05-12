@@ -13,6 +13,7 @@ import (
 
 func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest, srv parser.ItemParser_GetItemCharacteristicsServer) error {
 	// Get Chars from DB
+	slog.Debug("Incoming GetItemCharacteristics request", "request", req)
 	chars, err := c.db.DBGetChars(req.ItemUrl, req.Market)
 	if err != nil {
 		errText := "failed to get characteristics from database"
@@ -20,6 +21,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 		return sendErrorStatus_GetItemCharacteristics(srv, errText)
 	}
 	// Get from parser
+	slog.Debug("Sending chars from parser", "request", req)
 	if len(chars) == 0 {
 		stream, err := c.parsClient.GetItemCharacteristics(context.Background(), req)
 		if err != nil {
@@ -47,7 +49,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 				return sendErrorStatus_GetItemCharacteristics(srv, errText)
 			}
 			// Message
-			if char, ok := charResponse.Message.(*parser.CharacteristicResponse_Characteristic); ok {
+			if char, ok := charResponse.Message.(*parser.CharacteristicResponse_Char); ok {
 				resp := &parser.CharacteristicResponse{
 					Message: char,
 				}
@@ -55,7 +57,7 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 					slog.Error("failed to send characteristic to caller", "err", err)
 					return err
 				}
-				charsToSave = append(charsToSave, char.Characteristic)
+				charsToSave = append(charsToSave, char.Char)
 			} else {
 				errText := "received a non-characteristic message"
 				slog.Error(errText, "message", charResponse)
@@ -64,10 +66,11 @@ func (c *ItemsService) GetItemCharacteristics(req *parser.CharacteristicsRequest
 		}
 	} else {
 		// Send chars from DB
+		slog.Debug("Sending chars from database", "request", req)
 		for _, char := range chars {
 			resp := &parser.CharacteristicResponse{
-				Message: &parser.CharacteristicResponse_Characteristic{
-					Characteristic: char,
+				Message: &parser.CharacteristicResponse_Char{
+					Char: char,
 				},
 			}
 			if err := srv.Send(resp); err != nil {

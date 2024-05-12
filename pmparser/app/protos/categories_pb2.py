@@ -16,7 +16,7 @@ from app.protos import types_pb2 as app_dot_protos_dot_types__pb2
 from google.rpc import status_pb2 as google_dot_rpc_dot_status__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pp/protos/categories.proto\x12\napp.protos\x1a\x16\x61pp/protos/types.proto\x1a\x17google/rpc/status.proto\"<\n\x15RootCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\"P\n\x14SubCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\x12\x13\n\x0b\x63\x61tegoryUrl\x18\x02 \x01(\t\"m\n\x10\x43\x61tegoryResponse\x12(\n\x08\x63\x61tegory\x18\x01 \x01(\x0b\x32\x14.app.protos.CategoryH\x00\x12$\n\x06status\x18\x02 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\t\n\x07message\"L\n\x08\x43\x61tegory\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x16\n\tparentUrl\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_parentUrl\"J\n\x0e\x46iltersRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\x12\x13\n\x0b\x63\x61tegoryUrl\x18\x02 \x01(\t\"g\n\x0e\x46ilterResponse\x12$\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x12.app.protos.FilterH\x00\x12$\n\x06status\x18\x02 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\t\n\x07message\"\x83\x02\n\x06\x46ilter\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\x12\x14\n\x0c\x65xternalType\x18\x03 \x01(\t\x12)\n\x0cinternalType\x18\x04 \x01(\x0e\x32\x13.app.protos.Filters\x12.\n\x0brangeFilter\x18\x05 \x01(\x0b\x32\x17.app.protos.RangeFilterH\x00\x12\x36\n\x0fselectionFilter\x18\x06 \x01(\x0b\x32\x1b.app.protos.SelectionFilterH\x00\x12,\n\nboolFilter\x18\x07 \x01(\x0b\x32\x16.app.protos.BoolFilterH\x00\x42\x06\n\x04\x64\x61ta2\x8e\x02\n\x0e\x43\x61tegoryParser\x12V\n\x11GetRootCategories\x12!.app.protos.RootCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x12T\n\x10GetSubCategories\x12 .app.protos.SubCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x12N\n\x12GetCategoryFilters\x12\x1a.app.protos.FiltersRequest\x1a\x1a.app.protos.FilterResponse0\x01\x42\x0fZ\rprotos/parserb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pp/protos/categories.proto\x12\napp.protos\x1a\x16\x61pp/protos/types.proto\x1a\x17google/rpc/status.proto\"<\n\x15RootCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\"P\n\x14SubCategoriesRequest\x12#\n\x06market\x18\x01 \x01(\x0e\x32\x13.app.protos.Markets\x12\x13\n\x0b\x63\x61tegoryUrl\x18\x02 \x01(\t\"m\n\x10\x43\x61tegoryResponse\x12(\n\x08\x63\x61tegory\x18\x01 \x01(\x0b\x32\x14.app.protos.CategoryH\x00\x12$\n\x06status\x18\x02 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\t\n\x07message\"p\n\x08\x43\x61tegory\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x16\n\tparentUrl\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08isParsed\x18\x04 \x01(\x08H\x01\x88\x01\x01\x42\x0c\n\n_parentUrlB\x0b\n\t_isParsed2\xbe\x01\n\x0e\x43\x61tegoryParser\x12V\n\x11GetRootCategories\x12!.app.protos.RootCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x12T\n\x10GetSubCategories\x12 .app.protos.SubCategoriesRequest\x1a\x1c.app.protos.CategoryResponse0\x01\x42\x0fZ\rprotos/parserb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -31,13 +31,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_CATEGORYRESPONSE']._serialized_start=236
   _globals['_CATEGORYRESPONSE']._serialized_end=345
   _globals['_CATEGORY']._serialized_start=347
-  _globals['_CATEGORY']._serialized_end=423
-  _globals['_FILTERSREQUEST']._serialized_start=425
-  _globals['_FILTERSREQUEST']._serialized_end=499
-  _globals['_FILTERRESPONSE']._serialized_start=501
-  _globals['_FILTERRESPONSE']._serialized_end=604
-  _globals['_FILTER']._serialized_start=607
-  _globals['_FILTER']._serialized_end=866
-  _globals['_CATEGORYPARSER']._serialized_start=869
-  _globals['_CATEGORYPARSER']._serialized_end=1139
+  _globals['_CATEGORY']._serialized_end=459
+  _globals['_CATEGORYPARSER']._serialized_start=462
+  _globals['_CATEGORYPARSER']._serialized_end=652
 # @@protoc_insertion_point(module_scope)

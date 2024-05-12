@@ -1,5 +1,6 @@
 """ Base parser class for marketplaces """
 import logging
+from urllib.parse import urlencode
 
 from app.selen.seleniumPool import getBrowserToGetPageSource
 from bs4 import BeautifulSoup, ResultSet, Tag
@@ -16,7 +17,7 @@ class Parser():
   def getData(self, host: str, url: str, params: dict[str, str] | None = None) -> str:
     """ Get any data from url """
     if params:
-      url += "?" + "&".join([f"{key}={value}" for key, value in params.items()])
+      url += "?" + urlencode(params)
     data = self.getDataViaSelenium(url="https://" + host + url)
     return data
 

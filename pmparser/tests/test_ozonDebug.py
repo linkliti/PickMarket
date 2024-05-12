@@ -85,7 +85,7 @@ def test_getAllJsons(logger: None, browserPool: None):
     print(item)
     encodedUrl: str = quote(string=str(item["url"]), safe=':/?+=')
     # if item["mobile"]:
-    data: str = p.getData(host="www.ozon.ru", url=encodedUrl, useMobile=True)
+    data: str = p.getData(host="www.ozon.ru", url=encodedUrl)
     #   data: str = p.getData(host="www.ozon.ru", url=encodedUrl, driver=driver)
     with open(file=f"./.temp/jsons/{item["tag"]}.{item["type"]}", mode="w", encoding="utf-8") as f:
       f.write(data)

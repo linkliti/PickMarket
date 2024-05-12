@@ -31,11 +31,13 @@ func main() {
 	catR := sm.Methods(http.MethodGet).PathPrefix("/categories").Subrouter()
 	catR.HandleFunc("/{market}/root", categClient.GetRootCategories)
 	catR.HandleFunc("/{market}/sub", categClient.GetSubCategories)
-	catR.HandleFunc("/{market}/filter", categClient.GetCategoryFilters)
+	catR.HandleFunc("/{market}/filter", itemClient.GetCategoryFilters)
 
-	itR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
-	itR.HandleFunc("/{market}/list", itemClient.GetItems)
-	itR.HandleFunc("/{market}/chars", itemClient.GetItemCharacteristics)
+	// itR := sm.Methods(http.MethodGet).PathPrefix("/items").Subrouter()
+	// itR.HandleFunc("/{market}/chars", itemClient.GetItemCharacteristics)
+
+	itCalc := sm.Methods(http.MethodPost).PathPrefix("/calc").Subrouter()
+	itCalc.HandleFunc("/{market}/list", itemClient.PostItems)
 
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 

@@ -24,11 +24,6 @@ class CategoryParserStub(object):
                 request_serializer=app_dot_protos_dot_categories__pb2.SubCategoriesRequest.SerializeToString,
                 response_deserializer=app_dot_protos_dot_categories__pb2.CategoryResponse.FromString,
                 )
-        self.GetCategoryFilters = channel.unary_stream(
-                '/app.protos.CategoryParser/GetCategoryFilters',
-                request_serializer=app_dot_protos_dot_categories__pb2.FiltersRequest.SerializeToString,
-                response_deserializer=app_dot_protos_dot_categories__pb2.FilterResponse.FromString,
-                )
 
 
 class CategoryParserServicer(object):
@@ -46,12 +41,6 @@ class CategoryParserServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetCategoryFilters(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_CategoryParserServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -64,11 +53,6 @@ def add_CategoryParserServicer_to_server(servicer, server):
                     servicer.GetSubCategories,
                     request_deserializer=app_dot_protos_dot_categories__pb2.SubCategoriesRequest.FromString,
                     response_serializer=app_dot_protos_dot_categories__pb2.CategoryResponse.SerializeToString,
-            ),
-            'GetCategoryFilters': grpc.unary_stream_rpc_method_handler(
-                    servicer.GetCategoryFilters,
-                    request_deserializer=app_dot_protos_dot_categories__pb2.FiltersRequest.FromString,
-                    response_serializer=app_dot_protos_dot_categories__pb2.FilterResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -111,22 +95,5 @@ class CategoryParser(object):
         return grpc.experimental.unary_stream(request, target, '/app.protos.CategoryParser/GetSubCategories',
             app_dot_protos_dot_categories__pb2.SubCategoriesRequest.SerializeToString,
             app_dot_protos_dot_categories__pb2.CategoryResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GetCategoryFilters(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/app.protos.CategoryParser/GetCategoryFilters',
-            app_dot_protos_dot_categories__pb2.FiltersRequest.SerializeToString,
-            app_dot_protos_dot_categories__pb2.FilterResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

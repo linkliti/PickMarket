@@ -1,0 +1,115 @@
+version: "3"
+
+vars:
+  PYENV:
+    cmds: source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv
+
+tasks:
+  util-ask-prompt:
+    desc: "Ask for confirmation"
+    interactive: true
+    silent: true
+    internal: true
+    cmds:
+      - |
+        read -p "Are you sure? (y/N): " confirm
+        confirm=${confirm,,}  # tolower
+        if [[ $confirm =~ ^(yes|y)$ ]]; then
+            exit 0
+        else
+            echo "Cancelled"
+            exit 1
+        fi
+
+  py-activate:
+    desc: "Activate conda environment"
+    internal: true
+    cmds:
+      - bash -c "source $(conda info --base)/etc/profile.d/conda.sh && conda activate ./pmparser/venv"
+
+  py-venv:
+    desc: "Create conda environment and install requirements"
+    cmds:
+      - conda create --prefix ./pmparser/venv python=3.12 -y
+      - conda activate "./pmparser/venv"
+      - cd pmparser python -m pip install -r 'requirements.txt'"
+
+  py-freeze:
+    desc: "Update requirements_freeze.txt"
+    cmds:
+      - task: py-activate
+      - "cd pmparser && python -m pip freeze > 'requirements_freeze.txt'"
+
+  clean-workspace:
+    desc: "Clean non-tracked files from workspace"
+    cmds:
+      - task: util-ask-prompt
+      - git clean -Xdf
+
+  remove-env:
+    desc: "Remove Node modules and conda environment"
+    cmds:
+      - task: util-ask-prompt
+      - rm -rf "./frontend/node_modules"
+      - conda env remove -p ./pmparser/venv -y
+
+  proto:
+    desc: "Generate proto and gRPC files. Use `npm install @protobuf-ts/plugin`` for TS"
+    cmds:
+      - task: py-activate
+      - |
+        python -m grpc_tools.protoc -I ./protos/parser -I ./protos/thirdParty \
+        --python_out=./pmparser --grpc_python_out=./pmparser --pyi_out=./pmparser \
+        --go-grpc_out=./backend --go_out=./backend \
+         ./protos/parser/app/protos/*.proto
+      - |
+        npx protoc -I ./protos/parser -I ./protos/thirdParty --experimental_allow_proto3_optional \
+        --ts_out ./frontend/app/proto \
+        ./protos/parser/app/protos/*.proto ./protos/thirdParty/**/**/*.proto
+      - rm -f ./frontend/app/proto/app/protos/*.client.ts
+
+  db-rm:
+    desc: "Remove database using sudo"
+    cmds:
+      - task: util-ask-prompt
+      - sudo rm -rf ./db/pgdata
+
+  compose-up:
+    desc: "Force recreate containers"
+    cmds:
+      - docker-compose -f docker-compose.yml up --force-recreate
+
+  go-mod-tidy:
+    desc: "Tidy go modules"
+    cmds:
+      - |
+        cd ./backend/categoriesWorker && go mod tidy &
+        cd ./backend/itemsWorker && go mod tidy &
+        cd ./backend/pmutils && go mod tidy &
+        cd ./backend/protos && go mod tidy &
+        cd ./backend/requestHandler && go mod tidy &
+        wait
+
+  js-install:
+    desc: "Install frontend dependencies"
+    cmds:
+      - cd frontend && npm install
+
+  js-build:
+    desc: "Build frontend"
+    cmds:
+      - cd frontend && npm run build
+
+  logs:
+    desc: "Create log files"
+    cmds:
+      - mkdir -p ./logs
+      - touch ./logs/categoriesWorker.log ./logs/itemsWorker.log ./logs/requestHandler.log ./logs/pmparser.log
+
+  js-dev:
+    desc: "Run frontend in development mode"
+    interactive: true
+    dotenv:
+      - "./frontend/vscode.env"
+    cmds:
+      - cd frontend && npm run dev

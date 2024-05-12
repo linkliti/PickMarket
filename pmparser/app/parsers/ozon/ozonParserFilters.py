@@ -1,14 +1,13 @@
 """ Ozon Parser Module for categories """
-from itertools import islice
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
+from itertools import islice
 from typing import Any, Generator, Iterator
 
-from concurrent.futures import ThreadPoolExecutor
-
 from app.parsers.ozon.ozonParser import OzonParser
+from app.protos import items_pb2 as itemsPB
 from app.protos import types_pb2 as typesPB
-from app.protos import categories_pb2 as categPB
 from app.utilities.jsonUtil import toJson
 
 log = logging.getLogger(__name__)
@@ -28,7 +27,7 @@ class OzonParserFilters(OzonParser):
     self.tooLargeFilterTitles: list[str] = ["Продавец"]
     super().__init__()
 
-  def getRootFilters(self, categoryUrl: str) -> Generator[categPB.Filter, None, None]:
+  def getRootFilters(self, categoryUrl: str) -> Generator[itemsPB.Filter, None, None]:
     """ Get filters for category """
     self.categoryUrl = categoryUrl
     log.info('Getting filters: %s', self.categoryUrl)
@@ -42,15 +41,19 @@ class OzonParserFilters(OzonParser):
     j = self.getEmbededJson(j=j["widgetStates"], keyName="filters")
 
     log.info('Parsing filters: %s', self.categoryUrl)
+    # Merging with extra filters in j["sections"][2]
+    filterList: list = j["sections"][1]["filters"]
+    if len(j["sections"]) > 2 and "filters" in j["sections"][2]:
+      filterList.extend(j["sections"][2]["filters"])
+
     with ThreadPoolExecutor() as executor:
-      futures: Iterator[categPB.Filter | None] = executor.map(self.worker,
-                                                              j["sections"][1]["filters"])
+      futures: Iterator[itemsPB.Filter | None] = executor.map(self.worker, filterList)
       for res in futures:
-        fdata: categPB.Filter | None = res
+        fdata: itemsPB.Filter | None = res
         if fdata:
           yield fdata
 
-  def worker(self, filt) -> categPB.Filter | None:
+  def worker(self, filt) -> itemsPB.Filter | None:
     """Get filter values from OZON"""
     fw = OzonFilterWorker(filterJson=filt, categoryUrl=self.categoryUrl)
     return fw.returnFilter()
@@ -103,15 +106,19 @@ class OzonFilterWorker(OzonParser):
         self.boolFilter = self.getBoolFilterValues()
         self.internalType = typesPB.Filters.BOOL
         return
+      case "cellWithSubtitleCounter":
+        self.selectionFilter = self.getCollapsedTagFilterValues()
+        self.internalType = self.determineSelectionType(isRadio=self.selectionFilter.isRadio)
+        return
       case _:
         log.warning('Unknown filter type: %s', self.externalType)
         return
 
-  def returnFilter(self) -> categPB.Filter | None:
+  def returnFilter(self) -> itemsPB.Filter | None:
     """Return filter"""
     if self.internalType is None:
       return None
-    filt: categPB.Filter | None = None
+    filt: itemsPB.Filter | None = None
     kwargs: dict[str, Any] = {
       'title': self.title,
       'key': self.key,
@@ -124,7 +131,7 @@ class OzonFilterWorker(OzonParser):
       kwargs['selectionFilter'] = self.selectionFilter
     elif self.boolFilter:
       kwargs['boolFilter'] = self.boolFilter
-    filt: categPB.Filter | None = categPB.Filter(**kwargs)
+    filt: itemsPB.Filter | None = itemsPB.Filter(**kwargs)
     return filt
 
   def determineSelectionType(self, isRadio) -> typesPB.Filters:
@@ -183,6 +190,7 @@ class OzonFilterWorker(OzonParser):
       re.search(
         pattern=r"-radio-filter$",
         string=self.j[self.externalType]["tags"][0]["tag"]["testInfo"]["automatizationId"]))
+    # Key
     link: str = self.j[self.externalType]["tags"][0]["tag"]["action"]["link"]
     self.key = link.split("&")[1].split("=")[0]
     items: list[typesPB.SelectionFilterItem] = []
@@ -196,6 +204,7 @@ class OzonFilterWorker(OzonParser):
           value: str = data["action"]["params"]["value"]
           o = typesPB.SelectionFilterItem(text=text, value=value)
           items.append(o)
+      return typesPB.SelectionFilter(isRadio=isRadio, items=items)
     # No "All tags" button present OR filter is too large
     for tag in self.j[self.externalType]["tags"]:
       text: str = tag["tag"]["text"]
@@ -223,6 +232,24 @@ class OzonFilterWorker(OzonParser):
     value: str = link.split("&")[-1].split("=")[-1]
     # Return
     return typesPB.BoolFilter(value=value)
+
+  def getCollapsedTagFilterValues(self) -> typesPB.SelectionFilter:
+    """Get collapsed tag values for filter"""
+    isRadio = False
+    # Key
+    link: str = self.j[self.externalType]["action"]["link"]
+    self.key = link.split("&")[1].split("=")[1]
+    items: list[typesPB.SelectionFilterItem] = []
+    # Get tags
+    j: dict = self.getJsonWithMoreValues()
+    for section in j["sections"]:
+      for item in section["values"]:
+        data: dict = item[item["type"]]
+        text: str = data["title"]
+        value: str = data["action"]["params"]["value"]
+        o = typesPB.SelectionFilterItem(text=text, value=value)
+        items.append(o)
+    return typesPB.SelectionFilter(isRadio=isRadio, items=items)
 
   def getJsonWithMoreValues(self) -> dict:
     """Get values for filter from OZON"""

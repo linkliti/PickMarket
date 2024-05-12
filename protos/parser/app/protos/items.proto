@@ -9,6 +9,7 @@ option go_package = "protos/parser";
 service ItemParser {
   rpc GetItems(ItemsRequest) returns (stream ItemResponse);
   rpc GetItemCharacteristics(CharacteristicsRequest) returns (stream CharacteristicResponse);
+  rpc GetCategoryFilters(FiltersRequest) returns (stream FilterResponse);
 }
 
 message ItemsRequest {
@@ -33,8 +34,9 @@ message Item {
   bool isAdult = 4;
   double price = 5;
   optional double oldPrice = 6;
-  optional float rating = 7;
+  optional double rating = 7;
   optional int32 comments = 8;
+  bool original = 9;
 }
 
 message CharacteristicsRequest {
@@ -44,7 +46,7 @@ message CharacteristicsRequest {
 
 message CharacteristicResponse {
   oneof message {
-    Characteristic characteristic = 1;
+    Characteristic char = 1;
     google.rpc.Status status = 2;
   }
 }
@@ -52,10 +54,34 @@ message CharacteristicResponse {
 message Characteristic {
   string key = 1;
   string name = 2;
+  double charWeight = 3; // RequestHandler field
+  double maxWeight = 4;
   oneof value {
-    string strValue = 3;
-    int32 intValue = 4;
-    float floatValue = 5;
-    StringList listValue = 6;
+    double numVal = 5;
+    StringList listVal = 6;
+  }
+}
+
+message FiltersRequest {
+  Markets market = 1;
+  string categoryUrl = 2;
+}
+
+message FilterResponse {
+  oneof message {
+    Filter filter = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message Filter {
+  string title = 1;
+  string key = 2;
+  string externalType = 3;
+  Filters internalType = 4;
+  oneof data {
+    RangeFilter rangeFilter = 5;
+    SelectionFilter selectionFilter = 6;
+    BoolFilter boolFilter = 7;
   }
 }

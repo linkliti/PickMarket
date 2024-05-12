@@ -1,7 +1,9 @@
 """ Selenium Worker Module """
 import logging
 import os
-from app.selen.seleniumHelpers import BlockedError, checkForBlock, cookiesToHeader
+
+from app.selen.seleniumHelpers import (BlockedError, checkForBlock,
+                                       cookiesToHeader)
 from seleniumbase import Driver, undetected
 
 log = logging.getLogger(__name__)

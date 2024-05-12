@@ -11,6 +11,8 @@ import (
 	"runtime"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
@@ -43,10 +45,15 @@ func main() {
 	}
 	slog.Info("All subcategories updated")
 
-	// Start server
+	// Create server
 	grpcServer := grpc.NewServer()
 	categoryService := service.NewCategoryService(parsClient, database)
+	healthService := health.NewServer()
 	parser.RegisterCategoryParserServer(grpcServer, categoryService)
+	// Health
+	healthpb.RegisterHealthServer(grpcServer, healthService)
+	healthService.SetServingStatus("categories", healthpb.HealthCheckResponse_SERVING)
+	// Start server
 	addr := pmutils.GetEnv("CATEGORIES_WORKER_ADDR", "localhost:1111")
 	l, err := net.Listen("tcp", addr)
 	if err != nil {

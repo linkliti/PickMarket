@@ -9,6 +9,8 @@ import (
 	"protos/parser"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
@@ -26,10 +28,15 @@ func main() {
 	}
 	defer database.Conn.Close()
 
-	// Start server
+	// Create server
 	grpcServer := grpc.NewServer()
 	itemsService := service.NewItemsService(parsClient, database)
+	healthService := health.NewServer()
 	parser.RegisterItemParserServer(grpcServer, itemsService)
+	// Health
+	healthpb.RegisterHealthServer(grpcServer, healthService)
+	healthService.SetServingStatus("items", healthpb.HealthCheckResponse_SERVING)
+	// Start server
 	addr := pmutils.GetEnv("ITEM_WORKER_ADDR", ":1111")
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
