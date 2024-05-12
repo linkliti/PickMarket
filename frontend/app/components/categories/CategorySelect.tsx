@@ -1,3 +1,4 @@
+import Loading from "@/components/base/Loading";
 import CategoryItem from "@/components/categories/CategoryItem";
 import findParents from "@/components/categories/findParents";
 import useFetchCategories from "@/components/categories/useFetchCategories";
@@ -5,7 +6,6 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { Category } from "@/proto/app/protos/categories";
 import { CategoryStore, useCategoryStore } from "@/store/categoryStore";
 import { Marketplace } from "@/types/categoryTypes";
-import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { ReactElement, useEffect } from "react";
 import terminal from "virtual:terminal";
 
@@ -36,11 +36,7 @@ export default function CategorySelect({
   }
 
   if (isLoading && !categories) {
-    return (
-      <div className="flex items-center gap-2">
-        <LoadingSpinner /> <p>Загрузка категорий</p>
-      </div>
-    );
+    return <Loading message="Загрузка категорий" />;
   }
   if (error) {
     return (

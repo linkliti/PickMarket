@@ -3,30 +3,21 @@ import FilterForm from "@/components/filters/FilterForm";
 
 import { Filter } from "@/proto/app/protos/items";
 
+import Loading from "@/components/base/Loading";
 import FiltersFooter from "@/components/filters/FiltersFooter";
 import useErrorToast from "@/components/filters/useErrorToast";
 import useFetchFilters from "@/components/filters/useFetchFilters";
 import useFilterForm from "@/components/filters/useFilterForm";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { FilterStore, useFilterStore } from "@/store/filterStore";
-import { LoadingSpinner } from "@/utilities/LoadingSpinner";
-import { ReactElement, useEffect } from "react";
+import { ReactElement } from "react";
 
 export default function FiltersSection(): ReactElement {
   const { errorToast } = useErrorToast();
   const { isLoading, error, filters } = useFetchFilters();
-  const [market, categoryUrl] = useFilterStore((state: FilterStore) => [
-    state.market,
-    state.categoryUrl,
-  ]);
 
-  const { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen, setFormPrefs } =
+  const { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen } =
     useFilterForm();
-
-  useEffect(() => {
-    setFormPrefs(null);
-  }, [setFormPrefs, market, categoryUrl]);
 
   return (
     <WhiteBlock className={cn("w-full flex-col")}>
@@ -35,9 +26,7 @@ export default function FiltersSection(): ReactElement {
         onOpenChange={setIsOpen}
       >
         {isLoading ? (
-          <div className="flex items-center gap-2">
-            <LoadingSpinner /> <p>Загрузка предпочтений</p>
-          </div>
+          <Loading message="Загрузка предпочтений" />
         ) : !filters || error ? (
           <p>Ошибка при загрузке предпочтений: {error?.message}</p>
         ) : (

@@ -1,9 +1,9 @@
+import Loading from "@/components/base/Loading";
 import FiltersNotSelected from "@/components/filters/FiltersNotSelected";
 import FiltersSection from "@/components/filters/FiltersSection";
 import ItemsSection from "@/components/items/ItemsSection";
 import { Markets } from "@/proto/app/protos/types";
 import { useFilterStore } from "@/store/filterStore";
-import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { ReactElement, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import terminal from "virtual:terminal";
@@ -37,11 +37,7 @@ export default function ItemsPage(): ReactElement {
     return <FiltersNotSelected />;
   }
   if (!savedCategoryUrl) {
-    return (
-      <div className="flex items-center gap-2">
-        <LoadingSpinner /> <p>Загрузка предпочтений</p>
-      </div>
-    );
+    return <Loading message="Загрузка предпочтений" />;
   }
   return (
     <>

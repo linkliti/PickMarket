@@ -1,3 +1,4 @@
+import Loading from "@/components/base/Loading";
 import WhiteBlock from "@/components/base/WhiteBlock";
 import { getFav } from "@/components/favorites/favSaveLoad";
 import { FavRecord } from "@/components/favorites/types";
@@ -9,7 +10,6 @@ import { Item } from "@/proto/app/protos/items";
 import { ItemExtended, UserPref } from "@/proto/app/protos/reqHandlerTypes";
 import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { PrefForm } from "@/types/filterTypes";
-import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 
 import { ReactElement, useEffect } from "react";
 
@@ -31,7 +31,8 @@ export default function ItemsSection(): ReactElement {
   }, [market, setActivePrefs, setItems]);
 
   if (!activePrefs) {
-    return <WhiteBlock className="w-full">Здесь будут отображаться товары</WhiteBlock>;
+    // return <WhiteBlock className="w-full">Здесь будут отображаться товары</WhiteBlock>;
+    return <></>;
   }
   if (error) {
     return (
@@ -41,9 +42,7 @@ export default function ItemsSection(): ReactElement {
   if (isLoading) {
     return (
       <WhiteBlock className="w-full">
-        <div className="flex items-center gap-2">
-          <LoadingSpinner /> <p>Загрузка товаров (это может занять некоторое время)</p>
-        </div>
+        <Loading message="Загрузка товаров (это может занять некоторое время)" />
       </WhiteBlock>
     );
   }

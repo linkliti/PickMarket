@@ -1,10 +1,18 @@
-FROM node:20-alpine
 # Dependencies
+FROM node:20-alpine AS build
 WORKDIR /application
-COPY ./frontend/package.json .
-RUN npm install
+COPY ./package.json .
+RUN npm install --verbose
 
 # Build
-COPY ./frontend .
-RUN npm run build
-CMD [ "npm", "run", "preview" ]
+COPY . .
+RUN npm run build --verbose
+
+# Server
+FROM node:20-alpine
+RUN npm install -g vite --verbose
+RUN npm install -g @vitejs/plugin-react-swc --verbose
+WORKDIR /application
+COPY ./vite.config.ts .
+COPY --from=build /application/dist ./dist
+CMD [ "npx" , "vite", "preview"]

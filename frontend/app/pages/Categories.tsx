@@ -1,6 +1,7 @@
 import WhiteBlock from "@/components/base/WhiteBlock";
 import CategoryMarketSelector from "@/components/categories/CategoryMarketSelector";
 import CategorySelect from "@/components/categories/CategorySelect";
+import useFilterForm from "@/components/filters/useFilterForm";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Category } from "@/proto/app/protos/categories";
@@ -18,6 +19,7 @@ export default function Categories(): ReactElement {
 
   const { toast } = useToast();
   const navigate: NavigateFunction = useNavigate();
+  const { setFormPrefs } = useFilterForm();
 
   const [selectedMarket, selectedCategory] = useCategoryStore(
     (state: CategoryStore): [Marketplace, Category | null] => [
@@ -40,6 +42,7 @@ export default function Categories(): ReactElement {
       return;
     }
     const targetURL: string = filtersLink(selectedMarket.id, selectedCategory.url);
+    setFormPrefs(null);
     navigate(targetURL);
   }
 

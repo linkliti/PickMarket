@@ -113,3 +113,11 @@ tasks:
       - "./frontend/vscode.env"
     cmds:
       - cd frontend && npm run dev
+
+  js-preview:
+    desc: "Run frontend in development mode"
+    interactive: true
+    dotenv:
+      - "./frontend/vscode.env"
+    cmds:
+      - cd frontend && npm run preview
