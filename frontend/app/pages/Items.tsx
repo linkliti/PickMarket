@@ -3,8 +3,10 @@ import FiltersSection from "@/components/filters/FiltersSection";
 import ItemsSection from "@/components/items/ItemsSection";
 import { Markets } from "@/proto/app/protos/types";
 import { useFilterStore } from "@/store/filterStore";
+import { LoadingSpinner } from "@/utilities/LoadingSpinner";
 import { ReactElement, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import terminal from "virtual:terminal";
 
 export default function ItemsPage(): ReactElement {
   useEffect((): void => {
@@ -12,9 +14,10 @@ export default function ItemsPage(): ReactElement {
   }, []);
 
   const [searchParams] = useSearchParams();
-  const [setMarket, setCategoryUrl] = useFilterStore((state) => [
+  const [setMarket, setCategoryUrl, savedCategoryUrl] = useFilterStore((state) => [
     state.setMarket,
     state.setCategoryUrl,
+    state.categoryUrl,
   ]);
 
   const marketStr: string | null = searchParams.get("market");
@@ -24,6 +27,7 @@ export default function ItemsPage(): ReactElement {
     if (!marketStr || !categoryURL) {
       return;
     }
+    terminal.log(marketStr, categoryURL);
     const market: number = Number(marketStr);
     setMarket(market);
     setCategoryUrl(categoryURL);
@@ -31,6 +35,13 @@ export default function ItemsPage(): ReactElement {
 
   if (!marketStr || !categoryURL || !Markets[Number(marketStr)]) {
     return <FiltersNotSelected />;
+  }
+  if (!savedCategoryUrl) {
+    return (
+      <div className="flex items-center gap-2">
+        <LoadingSpinner /> <p>Загрузка предпочтений</p>
+      </div>
+    );
   }
   return (
     <>

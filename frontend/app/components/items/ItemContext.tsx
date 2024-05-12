@@ -1,5 +1,5 @@
 import { Characteristic, Item } from "@/proto/app/protos/items";
-import { ReactElement, createContext } from "react";
+import { Context, ReactElement, createContext } from "react";
 
 export interface ItemContextType {
   item: Item;
@@ -8,8 +8,12 @@ export interface ItemContextType {
   totalWeight: number;
   market: number;
   maxTotalWeight: number;
+  isFav: boolean;
+  favUrl: string;
 }
-export const ItemContext = createContext<ItemContextType>({} as ItemContextType);
+export const ItemContext: Context<ItemContextType> = createContext<ItemContextType>(
+  {} as ItemContextType,
+);
 
 export function ItemContextProvider({
   children,

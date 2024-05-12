@@ -9,15 +9,24 @@ import useFetchFilters from "@/components/filters/useFetchFilters";
 import useFilterForm from "@/components/filters/useFilterForm";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { FilterStore, useFilterStore } from "@/store/filterStore";
 import { LoadingSpinner } from "@/utilities/LoadingSpinner";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 
 export default function FiltersSection(): ReactElement {
   const { errorToast } = useErrorToast();
   const { isLoading, error, filters } = useFetchFilters();
+  const [market, categoryUrl] = useFilterStore((state: FilterStore) => [
+    state.market,
+    state.categoryUrl,
+  ]);
 
-  const { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen } =
+  const { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen, setFormPrefs } =
     useFilterForm();
+
+  useEffect(() => {
+    setFormPrefs(null);
+  }, [setFormPrefs, market, categoryUrl]);
 
   return (
     <WhiteBlock className={cn("w-full flex-col")}>
@@ -27,10 +36,10 @@ export default function FiltersSection(): ReactElement {
       >
         {isLoading ? (
           <div className="flex items-center gap-2">
-            <LoadingSpinner /> <p>Загрузка фильтров</p>
+            <LoadingSpinner /> <p>Загрузка предпочтений</p>
           </div>
         ) : !filters || error ? (
-          <p>Ошибка при загрузке фильтров: {error?.message}</p>
+          <p>Ошибка при загрузке предпочтений: {error?.message}</p>
         ) : (
           <>
             <form onSubmit={handleSubmit(onSubmit, errorToast)}>

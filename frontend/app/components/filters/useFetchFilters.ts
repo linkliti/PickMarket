@@ -11,7 +11,6 @@ export default function useFetchFilters() {
 
   const [market, categoryUrl] = useFilterStore(
     (state: FilterStore) => [
-
       state.market,
       state.categoryUrl,
     ],
@@ -29,6 +28,9 @@ export default function useFetchFilters() {
 
   async function getFilters(): Promise<Filter[] | undefined> {
     try {
+      if (!categoryUrl) {
+        return;
+      }
       terminal.log("Fetching", categoryUrl);
       const res: AxiosResponse = await axios.get<JsonValue[]>(
         `/api/categories/${Markets[market].toLowerCase()}/filter?url=${categoryUrl}`,
@@ -40,7 +42,6 @@ export default function useFetchFilters() {
     } catch (error) {
       if (error instanceof Error) {
         terminal.error(error.message);
-        throw new Error(error.message);
       }
     }
   }

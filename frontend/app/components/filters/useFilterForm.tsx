@@ -79,5 +79,5 @@ export default function useFilterForm() {
     setIsOpen(false);
   }
 
-  return { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen };
+  return { isOpen, handleSubmit, control, reset, onSubmit, isSubmitting, setIsOpen, setFormPrefs };
 }

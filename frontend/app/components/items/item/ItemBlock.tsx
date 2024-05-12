@@ -24,7 +24,6 @@ export default function ItemBlock(): ReactElement {
             </div>
             <ItemFavouriteButton />
           </div>
-
           <ItemWeightSection />
         </div>
       </div>

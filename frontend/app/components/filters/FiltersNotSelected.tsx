@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function FiltersNotSelected() {
   return (
     <>
-      <WhiteBlock className="w-full">
+      <WhiteBlock className="flex w-full flex-col">
         <p className="pb-4">Не выбрана категория или маркетплейс</p>
         <Button
           asChild

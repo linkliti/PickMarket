@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import terminal from "virtual:terminal";
 
-export default function useFetchData() {
+export default function useFetchItems() {
   const [activePrefs, market] = useFilterStore((state: FilterStore) => [state.activePrefs, state.market]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState<ItemExtended[]>([]);
@@ -49,5 +49,5 @@ export default function useFetchData() {
     }
   }, [activePrefs, market]);
 
-  return { items, isLoading, error };
+  return { items, isLoading, error, setItems };
 }

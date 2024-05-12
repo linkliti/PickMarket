@@ -65,7 +65,7 @@ class OzonFilterMerge:
         if char.key.lower() not in filterKeys:
           # Add numeric filter
           if char.HasField("numVal"):
-            # Guess max value (4 -> 100, 65 -> 1000, etc)
+            # Guess max value (4 -> 10, 65 -> 100, etc)
             guessedMaxValue: int = self.guessMaxValue(char.numVal)
             rangeFilter = typesPB.RangeFilter(min=0, max=guessedMaxValue)
             newFilt = itemsPB.Filter(title=char.name,
@@ -86,7 +86,7 @@ class OzonFilterMerge:
 
   def guessMaxValue(self, num: float) -> int:
     """ Guess max value """
-    return 10**(len(str(int(num))) + 1)
+    return 10**(len(str(int(num))))
 
   def appendExtraFilters(self, itemList: list[itemsPB.Item]) -> list[itemsPB.Filter]:
     """ Append extra filters """

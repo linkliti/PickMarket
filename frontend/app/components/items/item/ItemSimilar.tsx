@@ -1,19 +1,11 @@
 import { ItemContext } from "@/components/items/ItemContext";
 import { Item } from "@/proto/app/protos/items";
 import { marketplaces } from "@/store/categoryStore";
-import { Marketplace } from "@/types/categoryTypes";
 import { MessageCircleIcon, Star } from "lucide-react";
 import { ReactElement, useContext } from "react";
 
 export default function ItemSimilar(): ReactElement {
   const { market, similar } = useContext(ItemContext);
-  const marketUrl: string | undefined = marketplaces.find(
-    (m: Marketplace): boolean => m.id === market,
-  )?.value;
-
-  if (!marketUrl) {
-    return <></>;
-  }
 
   return (
     <div className="text-sm">
@@ -21,11 +13,11 @@ export default function ItemSimilar(): ReactElement {
       {similar.map(
         (simItem: Item): ReactElement => (
           <a
-            href={marketUrl + simItem.url}
+            href={marketplaces[market].value + simItem.url}
             key={simItem.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="bold inline-flex flex-wrap items-center pb-2 hover:cursor-pointer hover:underline "
+            className="bold inline-flex flex-wrap items-center pb-2 pr-2 hover:cursor-pointer hover:underline"
           >
             <span className="pe-1">
               {simItem.name} {simItem.original && " (Оригинал)"}

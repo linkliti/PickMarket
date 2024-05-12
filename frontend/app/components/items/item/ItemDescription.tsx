@@ -2,11 +2,12 @@ import { ItemContext } from "@/components/items/ItemContext";
 import ItemSimilar from "@/components/items/item/ItemSimilar";
 import ItemTopPrefs from "@/components/items/item/ItemTopPrefs";
 import { cn } from "@/lib/utils";
+import { marketplaces } from "@/store/categoryStore";
 import { MessageCircleIcon, Star } from "lucide-react";
-import { useContext, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 
-export default function ItemDescription({ className = "" }: { className: string }) {
-  const { item } = useContext(ItemContext);
+export default function ItemDescription({ className = "" }: { className: string }): ReactElement {
+  const { item, market } = useContext(ItemContext);
 
   const rating: number = item.rating || 0;
   const comments: number = item.comments || 0;
@@ -22,7 +23,7 @@ export default function ItemDescription({ className = "" }: { className: string 
             "w-[100px] cursor-default rounded-2xl bg-zinc-300",
             blurred && "cursor-pointer blur-sm hover:opacity-80",
           )}
-          onClick={() => setBlurred(false)}
+          onClick={(): void => setBlurred(false)}
         >
           <img
             src={item.imageUrl}
@@ -34,7 +35,7 @@ export default function ItemDescription({ className = "" }: { className: string 
       </div>
       <div className="flex w-full flex-col">
         <a
-          href={"https://ozon.ru" + item.url}
+          href={marketplaces[market].value + item.url}
           target="_blank"
           rel="noopener noreferrer"
           className="pb-2 text-lg font-bold hover:cursor-pointer hover:underline"
@@ -44,7 +45,7 @@ export default function ItemDescription({ className = "" }: { className: string 
         <div className="inline-flex items-center gap-1 pb-2 font-bold">
           <Star className="size-4 fill-yellow-500 text-yellow-500" />
           {rating == 0 ? (
-            "Нет отзывов"
+            <span>Нет отзывов</span>
           ) : (
             <>
               <span className="pr-2">{rating.toFixed(1)}</span>

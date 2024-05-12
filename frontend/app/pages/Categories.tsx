@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Category } from "@/proto/app/protos/categories";
 import { CategoryStore, useCategoryStore } from "@/store/categoryStore";
 import { Marketplace } from "@/types/categoryTypes";
+import filtersLink from "@/utilities/toQuery";
 import { TriangleAlert } from "lucide-react";
 import { ReactElement, useEffect } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
@@ -38,10 +39,7 @@ export default function Categories(): ReactElement {
       });
       return;
     }
-    const searchParams = new URLSearchParams();
-    searchParams.set("market", selectedMarket.id.toString());
-    searchParams.set("category", selectedCategory.url);
-    const targetURL: string = `/items?${searchParams.toString()}`;
+    const targetURL: string = filtersLink(selectedMarket.id, selectedCategory.url);
     navigate(targetURL);
   }
 
