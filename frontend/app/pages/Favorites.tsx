@@ -7,6 +7,7 @@ import { ItemContextProvider, ItemContextType } from "@/components/items/ItemCon
 import { Button } from "@/components/ui/button";
 import { Item } from "@/proto/app/protos/items";
 import { ReactElement, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Favorites(): ReactElement {
   useEffect((): void => {
@@ -21,7 +22,22 @@ export default function Favorites(): ReactElement {
   }, []);
 
   if (Object.keys(favorites).length === 0) {
-    return <WhiteBlock className="w-full">Нет избранных товаров</WhiteBlock>;
+    return (
+      <WhiteBlock className="flex w-full flex-col">
+        <p className="pb-4">Нет избранных товаров</p>
+        <Button
+          asChild
+          className="max-w-[200px]"
+        >
+          <Link
+            to="/categories"
+            className="text-md block w-full rounded-lg px-5 py-3 font-medium sm:w-auto"
+          >
+            Перейти к категориям
+          </Link>
+        </Button>
+      </WhiteBlock>
+    );
   }
 
   return (

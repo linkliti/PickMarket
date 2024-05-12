@@ -1,3 +1,4 @@
+import Logo from "@/components/base/Logo";
 import WhiteBlock from "@/components/base/WhiteBlock";
 import { Button } from "@/components/ui/button";
 import { ReactElement, useEffect } from "react";
@@ -11,7 +12,7 @@ export default function Hero(): ReactElement {
   return (
     <WhiteBlock className="flex w-full grow flex-col items-center justify-center">
       <div className="mx-auto max-w-xl text-center">
-        <h1 className="text-4xl font-extrabold">PickMarket</h1>
+        <Logo className="text-4xl" />
 
         <p className="mt-4 text-lg">Удобная подборка товаров</p>
 
