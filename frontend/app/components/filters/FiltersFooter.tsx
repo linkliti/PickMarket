@@ -85,8 +85,8 @@ export default function FiltersFooter({
         <Button
           onClick={(event): void => {
             event.preventDefault();
-            setFormPrefs(null);
-            reset();
+            setFormPrefs({} as PrefForm);
+            reset({});
           }}
         >
           Сбросить

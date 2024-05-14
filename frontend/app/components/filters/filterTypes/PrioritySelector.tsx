@@ -47,9 +47,10 @@ export default function PrioritySelector({
         return (
           <Select
             onValueChange={handleOnChange}
-            defaultValue={value.toString()}
+            defaultValue={"0"}
             disabled={disabled}
             name={name}
+            value={value.toString()}
           >
             <SelectTrigger className="h-8 w-fit px-2 py-0">
               <span className="w-2">{value}</span>

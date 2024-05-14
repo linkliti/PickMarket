@@ -23,7 +23,8 @@ export default function useFilterForm() {
     reset,
     formState: { isSubmitting },
   } = useForm<PrefForm>({
-    defaultValues: formPrefs ? formPrefs : {},
+    defaultValues: {},
+    values: formPrefs ? formPrefs : ({} as PrefForm),
     resolver: zodResolver(PrefFormSchema),
   });
 
