@@ -21,7 +21,7 @@ export default function ItemWeightSection() {
         />
       </div>
       <div className="text-base text-zinc-500">
-        {totalWeight.toPrecision(2)}/{maxTotalWeight.toFixed(0)}
+        {Math.round(totalWeight * 100) / 100}/{maxTotalWeight.toFixed(0)}
       </div>
       <div className="mt-3 self-center text-sm">
         {

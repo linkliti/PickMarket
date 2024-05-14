@@ -10,7 +10,9 @@ import (
 
 // Keys must be lowered
 var caseFuncs = map[string]caseStruct{
-	"color": {fn: cases.CalcList_Color, calcType: LIST_TYPE},
+	"color":         {fn: cases.CalcList_Color, calcType: LIST_TYPE},
+	"pm_isoriginal": {fn: cases.CalcList_atleastOne, calcType: LIST_TYPE},
+	"refurbished":   {fn: cases.CalcList_atleastOne, calcType: LIST_TYPE},
 }
 
 func CalcWeight(itemList []*parser.ItemExtended, userPref map[string]*parser.UserPref, req *parser.ItemsRequest) error {
@@ -49,12 +51,12 @@ func (c *calc) calculateWeights() {
 		}
 		// Multiplying same values by priority
 		if min == max {
-			slog.Debug("calcWeight: Removing vault with equal max and min", "key", key)
+			slog.Debug("calcWeight: Vault with equal max and min", "key", key)
 			for _, char := range v.charPointers {
 				char.MaxWeight = float64(v.prefPointer.Priority)
 				char.CharWeight = max * float64(v.prefPointer.Priority)
 			}
-			return
+			continue
 		}
 		// Normalizing and multiplying by priority
 		for _, char := range v.charPointers {

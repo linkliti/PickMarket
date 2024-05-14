@@ -5,15 +5,15 @@ import NotFound from "@/pages/404";
 import ErrorBoundary from "@/pages/ErrorBoundary";
 import Favorites from "@/pages/Favorites";
 import Hero from "@/pages/Hero";
+import ItemsPage from "@/pages/Items";
 import PageLoading from "@/routes/PageLoading";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
-const ItemsPage = lazy(() => import("@/pages/Items"));
-// import ItemsPage from "@/pages/Items";
+import Categories from "@/pages/Categories";
+// const ItemsPage = lazy(() => import("@/pages/Items"));
 
-const Categories = lazy(() => import("@/pages/Categories"));
-// import Categories from "@/pages/Categories";
+// const Categories = lazy(() => import("@/pages/Categories"));
 
 const mainRouter = createBrowserRouter([
   {

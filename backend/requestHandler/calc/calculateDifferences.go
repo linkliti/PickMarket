@@ -12,14 +12,14 @@ func (c *calc) calculateDifferences() {
 		if fnStruct, ok := caseFuncs[key]; ok {
 			if v.prefType != fnStruct.calcType {
 				slog.Error("calcDif: Special case key has incorrect type", "key", key, "expected", fnStruct.calcType.Name(), "got", v.prefType.Name())
-				return
+				continue
 			}
 			funcName := pmutils.GetFunctionName(fnStruct.fn)
 			slog.Debug("calcDif: Calculating key using special func", "key", key, "func", funcName, "isList", fnStruct.calcType.Name())
 			for _, char := range v.charPointers {
 				fnStruct.fn(char, v.prefPointer)
 			}
-			return
+			continue
 		}
 		// General cases
 		switch v.prefType {

@@ -33,7 +33,7 @@ browserCount: int = 4
 def serve(bindAddress: str) -> None:
   """ Server """
   options: tuple = (("grpc.so_reuseport", 1),)
-  server: _Server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=2),
+  server: _Server = grpc.server(thread_pool=futures.ThreadPoolExecutor(),
                                 options=options)
   itemsPBgrpc.add_ItemParserServicer_to_server(servicer=PMItemParserServicer(), server=server)
   categPBgrpc.add_CategoryParserServicer_to_server(servicer=PMCategoryParserServicer(),
@@ -62,7 +62,7 @@ def configureHealthServer(server: grpc.Server) -> None:
   """ Configure health server """
   healthServicer = health.HealthServicer(
     experimental_non_blocking=True,
-    experimental_thread_pool=futures.ThreadPoolExecutor(max_workers=2),
+    experimental_thread_pool=futures.ThreadPoolExecutor(),
   )
   health_pb2_grpc.add_HealthServicer_to_server(healthServicer, server)
   healthServicer.set("parser", health_pb2.HealthCheckResponse.SERVING)
