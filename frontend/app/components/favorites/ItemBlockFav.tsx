@@ -11,7 +11,7 @@ export default function ItemBlockFav(): ReactElement {
   return (
     <WhiteBlock className="w-full">
       <div className="flex w-full justify-between gap-5 rounded-2xl max-md:max-w-full max-md:flex-wrap">
-        <ItemDescription className="max-m:w-ful w-8/12" />
+        <ItemDescription />
         <div className="flex w-4/12 flex-col max-md:w-full">
           <div className="inline-flex items-center text-2xl font-bold">
             <div className="inline-flex grow items-center justify-center gap-1">

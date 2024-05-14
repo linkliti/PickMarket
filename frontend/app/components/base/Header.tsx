@@ -14,7 +14,7 @@ const navItems: navItemsType[] = [
 
 export default function Header(): ReactElement {
   return (
-    <header className="inline-flex w-full flex-wrap items-center rounded-2xl bg-sky-200 p-4">
+    <header className="inline-flex w-full flex-wrap items-center gap-y-2 rounded-2xl bg-sky-200 p-4">
       <div className="grow">
         <Link to="/">
           <Logo />

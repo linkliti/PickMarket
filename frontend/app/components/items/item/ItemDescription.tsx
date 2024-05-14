@@ -6,7 +6,7 @@ import { marketplaces } from "@/store/categoryStore";
 import { MessageCircleIcon, Star } from "lucide-react";
 import { ReactElement, useContext, useState } from "react";
 
-export default function ItemDescription({ className = "" }: { className: string }): ReactElement {
+export default function ItemDescription({ className = "" }: { className?: string }): ReactElement {
   const { item, market } = useContext(ItemContext);
 
   const rating: number = item.rating || 0;
@@ -15,7 +15,12 @@ export default function ItemDescription({ className = "" }: { className: string 
   const [blurred, setBlurred] = useState(item.isAdult);
 
   return (
-    <div className={cn("flex items-start gap-4", className)}>
+    <div
+      className={cn(
+        "flex items-start gap-4 max-sm:flex-col max-sm:items-center md:w-8/12",
+        className,
+      )}
+    >
       <div className="flex flex-col items-center">
         <button
           type="button"
