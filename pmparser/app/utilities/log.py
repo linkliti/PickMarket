@@ -29,7 +29,7 @@ def jsonSerializer(obj: Any, *args, **kwargs) -> str:
   return json.dumps(obj=obj, separators=(',', ':'), *args, **kwargs)
 
 
-def setupLogger(name, debug, filename='pmparser.log') -> None:
+def setupLogger(name, debug, filename='logs/pmparser.log') -> None:
   """ Setup logger """
   logger: logging.Logger = logging.getLogger(name=name)
   logger.setLevel(level=logging.DEBUG if debug else logging.INFO)
@@ -39,13 +39,11 @@ def setupLogger(name, debug, filename='pmparser.log') -> None:
                                   json_ensure_ascii=False,
                                   json_serializer=jsonSerializer)
 
-  # Create a file handler and add it to logger
+  # Create handlers and add it to logger
   fileHandler = logging.FileHandler(filename=filename, encoding='utf-8')
   fileHandler.setFormatter(fmt=formatter)
   logger.addHandler(hdlr=fileHandler)
 
-  # If debug is True, add a stream handler to logger
-  if debug:
-    streamHandler = logging.StreamHandler(stream=sys.stdout)
-    streamHandler.setFormatter(fmt=formatter)
-    logger.addHandler(hdlr=streamHandler)
+  streamHandler = logging.StreamHandler(stream=sys.stdout)
+  streamHandler.setFormatter(fmt=formatter)
+  logger.addHandler(hdlr=streamHandler)

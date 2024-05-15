@@ -75,6 +75,7 @@ export default function useFilterForm() {
         }
       }
     }
+    console.log(req);
     setFormPrefs(data);
     setActivePrefs(req);
     setIsOpen(false);

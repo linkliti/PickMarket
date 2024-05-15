@@ -59,13 +59,12 @@ class OzonParserItems(OzonParser):
     log.info('Getting items from page', extra={"pageUrl": pageUrl, "page": page})
     if jString is None:  # First page
       reqParams["page"] = str(page)
-      jString = self.getData(host=self.host,
-                             url=self.api + pageUrl,
-                             params=reqParams)
+      jString = self.getData(host=self.host, url=self.api + pageUrl, params=reqParams)
     # Convert data to JSON
     log.info('Converting data to JSON', extra={"pageUrl": pageUrl, "page": page})
     j: dict = toJson(jString)
-    jItems: dict = self.getEmbededJson(j=j["widgetStates"], keyName="tileGrid2")
+    jItems: dict = self.getEmbededJson(j=j["widgetStates"],
+                                       keyName=["tileGrid2", "searchResultsV2"])
     # Parsing
     log.info('Parsing items', extra={"pageUrl": pageUrl, "page": page})
     for item in jItems["items"]:

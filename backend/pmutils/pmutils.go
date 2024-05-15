@@ -39,10 +39,9 @@ func SetupLogging(module string) {
 		fmt.Printf("Failed to open log file %s for output: %s", module+".log", err)
 		panic(err)
 	}
-	handler := slog.NewJSONHandler(logFile, &slogOpts)
-	if debug {
-		handler = slog.NewJSONHandler(io.MultiWriter(os.Stdout, logFile), &slogOpts)
-	}
+
+	handler := slog.NewJSONHandler(io.MultiWriter(os.Stdout, logFile), &slogOpts)
+
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 }
