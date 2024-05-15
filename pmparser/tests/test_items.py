@@ -34,10 +34,9 @@ request_params: list = [
 def create_value(t: str, value: list[str] | float):
   if t == "listVal":
     return {"values": value}
-  elif t == "numVal":
+  if t == "numVal":
     return value
-  else:
-    raise ValueError(f"Invalid type: {t}")
+  raise ValueError(f"Invalid type: {t}")
 
 
 @pytest.mark.parametrize("request_data", request_params)

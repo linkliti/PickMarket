@@ -26,7 +26,7 @@ class OzonParser(Parser):
     """Get embeded JSON in key with keyName in name"""
     if isinstance(keyName, str):
       keyName = [keyName]  # convert string to single item list
-
+    # [key for key in j.keys()]
     matchingKeys: list = []
     for key in j.keys():
       if any(k in key for k in keyName):

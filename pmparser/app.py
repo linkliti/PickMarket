@@ -23,7 +23,7 @@ from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 # from waitress import serve as waitress_serve
 
 DEBUG = bool(os.environ.get('DEBUG', False))
-setupLogger(name='root', debug=DEBUG)
+setupLogger(name='root', debug=DEBUG, filename='pmparser.log')
 
 log = logging.getLogger(__name__)
 workerCount: int = 4

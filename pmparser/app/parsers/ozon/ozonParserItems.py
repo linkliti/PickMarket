@@ -87,7 +87,10 @@ class OzonParserItems(OzonParser):
     price: int = 0
     # MainState Varibles
     for item in itemJson["mainState"]:
-      atom: dict = item
+      try:
+        atom: dict = item["atom"]
+      except KeyError:
+        atom: dict = item
       if "textAtom" in atom:
         name = atom["textAtom"]["text"]
         name = html.unescape(name)
